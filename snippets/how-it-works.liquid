@@ -1,0 +1,59 @@
+{% comment %}
+  Expects a 'tab' object with the following structure:
+  {
+    "type": "how_it_works",
+    "title": "HOW IT WORKS",
+    "content": {
+      "image": "vid-works.jpg",
+      "heading": "How It Works",
+      "description": "...",
+      "list_items": [
+        "Adaptogens help balance your body in stressful times",
+        ...
+      ]
+    }
+  }
+{% endcomment %}
+
+<div class="content-wrapper">
+  <div class="column">
+    {% if tab.content.image != blank %}
+      <img
+        src="{{ tab.content.image }}"
+        alt="How it works"
+        width="100%"
+        height="auto"
+      >
+    {% endif %}
+
+    {% if tab.content.video != blank %}
+      <div>
+        <div>
+          <video
+            src="{{ tab.content.video }}"
+            id="{{ video_frame_id }}"
+            poster="{{ tab.content.video_poster }}"
+            controls
+            playsinline
+          ></video>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="column">
+    <h3>{{ tab.content.heading }}</h3>
+
+    <p>
+      {{ tab.content.description }}
+    </p>
+
+    {% if tab.content.list_items.size > 0 %}
+      <ul>
+        {% for item in tab.content.list_items %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<section class="hp-find-us">
+  <div class="content-wrapper">
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <div class="logo-grid">
+      {% for block in section.blocks %}
+        <div class="grid-item">
+          <img src="{{ block.settings.logo | img_url: '500x' }}" alt="{{ block.settings.title }}" class="logo">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP Find Us",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Logos",
+        "settings": [
+          {
+            "id": "logo",
+            "type": "image_picker",
+            "label": "Logo"
+          },
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP Find Us",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.hp-find-us {
+    padding: 65px 45px;
+
+    .content-wrapper {
+      h2 {
+        text-align: center;
+      }
+
+      .logo-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+        gap: 35px;
+
+        .grid-item {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img.logo {
+            height: 100%;
+            width: 100%;
+            max-width: 200px;
+          }
+        }
+
+
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 45px;
+      .content-wrapper {
+        .logo-grid {
+          grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+          gap: 25px 35px;
+
+          img.logo {
+            max-width: 155px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 20px;
+
+      .content-wrapper {
+        .logo-grid {
+          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+
+          img.logo {
+            max-width: 115px;
+          }
+          
+        }
+      }
+    }
+
+  }
+
+
+{% endstylesheet %}

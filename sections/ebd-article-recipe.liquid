@@ -1,0 +1,305 @@
+<article class="article-recipe">
+  <section class="heading">
+    <div class="content-wrapper">
+      <div class="image">
+        <img src="{{ article.image | img_url: '1500x' }}" alt="{{ article.image.alt }}">
+      </div>
+      <div class="content">
+        <h1 class="small darkblue">{{ article.title }}</h1>
+        {% if article.content %}
+          <div class="text">
+            {{ article.content }}
+          </div>
+        {% endif %}
+        <div class="servings-time-wrapper">
+          {% if article.metafields.custom.servings != blank %}
+            <div class="card">
+              <h3>SERVINGS</h3>
+              <h4>{{ article.metafields.custom.servings }}</h4>
+            </div>
+          {% endif %}
+          {% if article.metafields.custom.time != blank %}
+            <div class="card">
+              <h3>TOTAL TIME</h3>
+              <h4>{{ article.metafields.custom.time }}</h4>
+            </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <section class="main-content">
+    <div class="content-wrapper">
+      <div class="ingredients">
+        <h2>Ingredients</h2>
+        {% for ingredient in article.metafields.custom.ingredients.value %}
+          <p>{{ ingredient }}</p>
+        {% endfor %}
+      </div>
+      <div class="directions">
+        <h2>Directions</h2>
+        {% for direction in article.metafields.custom.directions.value %}
+          <div class="direction-single">
+            <p class="count">{{ forloop.index }}</p>
+            <p class="direction">
+              {{ direction }}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% if article.metafields.custom.youtube_embed != blank %}
+      <div class="youtube-embed">
+        {{ article.metafields.custom.youtube_embed }}
+      </div>
+    {% endif %}
+  </section>
+</article>
+
+{% stylesheet %}
+  .article-recipe {
+    .heading {
+      padding: 65px;
+      .content-wrapper {
+        max-width: 1600px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 85px;
+        .image {
+          width: 40%;
+          img {
+            border-radius: 15px;
+            width: 100%;
+          }
+        }
+
+        .content {
+          width: 60%;
+          h1 {
+            margin-bottom: 15px;
+          }
+
+          .text {
+            max-width: 700px;
+          }
+
+          .servings-time-wrapper {
+            display: flex;
+            gap: 25px;
+            margin-top: 25px;
+            
+            .card {
+              background-color: #003349;
+              border-radius: 7px;
+              padding: 15px 25px;
+              height: 95px;
+
+              h3 {
+                color: white;
+                text-align: center;
+              }
+
+              h4 {
+                color: white;
+                text-align: center;
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .main-content {
+      background-color: #3a758a;
+      padding: 85px 65px;
+      .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        gap: 45px;
+        .ingredients {
+          width: 40%;
+          h2 {
+            color: white;
+            margin-bottom: 15px;
+          }
+
+          p {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 15px;
+          }
+
+          a {
+            color: white;
+            text-decoration: underline;
+          }
+        }
+
+        .directions {
+          width: 60%;
+          h2 {
+            color: white;
+            margin-bottom: 15px;
+          }
+
+          p {
+            color: white;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 30px;
+
+            &.count {
+              font-size: 28px;
+              font-weight: 800;
+              width: 50px;
+              height: 50px;
+              border: solid 3px white;
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-width: 50px;
+            }
+          }
+
+          .direction-single {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 35px;
+
+            a {
+              color: #003349;
+            }
+          }
+        }
+      }
+    }
+
+    .youtube-embed {
+      max-width: 1080px;
+      margin: 65px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @media (max-width: 1000px) {
+      .heading {
+        padding: 65px 25px;
+        .content-wrapper {
+          gap: 45px;
+          .image {
+            width: 30%;
+          }
+          .content {
+            width: 70%;
+            h1 {
+              font-size: 32px;
+              line-height: 38px;
+              margin-bottom: 15px;
+            }
+
+            .servings-time-wrapper {
+              .card {
+                padding: 15px 35px;
+                h3 {
+                  font-size: 16px;
+                }
+
+                h2 {
+                  font-size: 22px;
+                }
+              }
+            }
+
+            
+
+          }
+        }
+      }
+
+      .main-content {
+        padding: 45px 25px;
+        .content-wrapper {
+          .ingredients {
+            h2 {
+              font-size: 28px;
+            }
+
+            p {
+              font-size: 18px;
+              line-height: 24px;
+              margin-bottom: 10px;
+            }
+          }
+
+          .directions {
+            h2 {
+              font-size: 28px;
+            }
+
+            .direction-single {
+              gap: 15px;
+              margin-bottom: 20px;
+              p.count {
+                font-size: 20px;
+                width: 35px;
+                height: 35px;
+                min-width: 35px;
+              }
+
+              p.direction {
+                font-size: 18px;
+                line-height: 24px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 800px) {
+      .heading {
+        padding: 25px 25px 45px;
+        .content-wrapper {
+          gap: 35px;
+          flex-direction: column;
+          .image {
+            width: 100%;
+            img {
+              max-width: 500px;
+              margin: 0 auto;
+            }
+          }
+
+          .content {
+            width: 100%;
+            .servings-time-wrapper {
+              justify-content: center;
+              flex-wrap: wrap;
+            }
+          }
+        }
+      }
+
+      .main-content {
+        .content-wrapper {
+          flex-direction: column;
+          gap: 25px;
+          .ingredients {
+            width: 100%;
+          }
+
+          .directions {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

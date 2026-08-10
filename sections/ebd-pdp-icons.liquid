@@ -1,0 +1,88 @@
+{% unless product.metafields.custom.hide_icons == true %}
+  <section class="pdp-icons">
+    <div class="content-wrapper">
+      {% for block in section.blocks %}
+        <div class="icon-wrapper">
+          <img src="{{ block.settings.icon | img_url: '300x' }}" alt="{{ block.settings.title }}">
+          <h4>{{ block.settings.title }}</h4>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endunless %}
+
+
+
+{% schema %}
+  {
+    "name": "EBD PDP Icons",
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Icon",
+        "settings": [
+          {
+            "id": "icon",
+            "type": "image_picker",
+            "label": "Icon"
+          },
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP Icons",
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.pdp-icons {
+    background-color: var(--color-darkblue);
+    padding: 40px 65px 45px;
+
+    .content-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 85px;
+
+      .icon-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        img {
+          width: 40px;
+          height: auto;
+        }
+
+        h4 {
+          color: white;
+          text-align: center;
+          margin: 0;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+
+<style>
+  @media screen and (max-width:768px) {
+    section.pdp-icons .content-wrapper {
+      gap: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

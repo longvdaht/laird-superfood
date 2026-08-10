@@ -1,0 +1,109 @@
+<section class="hp-instafeed-heading">
+  <div class="content-wrapper">
+    <h4 class="darkblue">{{ section.settings.subheading }}</h4>
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <div class="socials-wrapper">
+      {% for block in section.blocks %}
+        <a href="{{ block.settings.social_url }}" title="{{ block.settings.title }}" target="_blank">
+          <img src="{{ block.settings.social_icon | img_url: '150x' }}" alt="{{ block.settings.title }}">
+        </a>
+      {% endfor %}
+      <h5>{{ section.settings.handle }}</h5>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP Instafeed Heading",
+    "settings": [
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "handle",
+        "type": "text",
+        "label": "Handle"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Socials",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "social_url",
+            "type": "url",
+            "label": "Social URL"
+          },
+          {
+            "id": "social_icon",
+            "type": "image_picker",
+            "label": "Social Icon"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP Instafeed Heading",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.hp-instafeed-heading {
+    padding: 65px 65px 25px;
+
+    .content-wrapper {
+      max-width: 1440px;
+      h4 {
+        margin-bottom: 0;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      .socials-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+
+        a {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        h5 {
+          margin: 0;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px 25px;
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 20px 20px;
+    }
+  }
+{% endstylesheet %}

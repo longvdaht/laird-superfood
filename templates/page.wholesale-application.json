@@ -1,0 +1,23 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {    
+    "ebd_globo_form_id9ccB": {
+      "type": "ebd-globo-form",
+      "name": "EBD Globo Form",
+      "settings": {
+        "globo_form_embed": "<div class=\"globo-formbuilder\" data-id=\"33674\"></div>"
+      }
+    }
+  },
+  "order": [
+    "ebd_globo_form_id9ccB"
+  ]
+}

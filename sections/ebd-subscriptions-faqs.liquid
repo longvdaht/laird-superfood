@@ -1,0 +1,257 @@
+<section class="ebd-sub-dropdowns">
+  <div class="content-wrapper">
+    <div class="image">
+      <img src="{{ section.settings.image | img_url: '1000x' }}" alt="{{ section.settings.image.alt }}">
+    </div>
+    <div class="dropdowns">
+      {% for block in section.blocks %}
+        <div class="dropdown-single">
+          <div class="dropdown-toggle">
+            {{ block.settings.title }}
+            <img src="{{ section.settings.dropdown_toggle_icon | img_url: '250x' }}" alt="Dropdown Toggle" class="toggle-icon">
+            <img src="{{ section.settings.dropdown_toggle_icon_close | img_url: '250x' }}" alt="Dropdown Toggle Close" class="toggle-icon-close">
+          </div>
+          <div class="dropdown-content">
+            {{ block.settings.content }}
+          </div>
+        </div>
+      {% endfor %}
+      <a href="https://support.lairdsuperfood.com/hc/en-us/search?filter_by=knowledge_base&query=Subscription&utf8=%E2%9C%93" class="btn" title="Learn More About Subscriptions">Learn More About Subscriptions</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Sub Dropdowns",
+    "settings": [
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      },
+      {
+        "id": "dropdown_toggle_icon",
+        "type": "image_picker",
+        "label": "Dropdown Toggle Icon"
+      },
+      {
+        "id": "dropdown_toggle_icon_close",
+        "type": "image_picker",
+        "label": "Dropdown Toggle Icon Close"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Dropdown Item",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "content",
+            "type": "richtext",
+            "label": "Content"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Sub Dropdowns"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-sub-dropdowns {
+    background-color: #f1ede7;
+    padding: 85px 65px;
+    .content-wrapper {
+      display: flex;
+      gap: 45px;
+      align-items: flex-start;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .image {
+        width: 50%;
+        border: solid 2px var(--color-darkblue);
+        img {
+          width: 100%;
+        }
+      }
+
+      .dropdowns {
+        width: 50%;
+        padding-top: 65px;
+
+        .dropdown-single {
+          margin-bottom: 20px;
+          border: 2px solid var(--color-darkblue);
+          overflow: hidden;
+          background-color: #fff;
+          color: var(--color-darkblue);
+
+          .dropdown-toggle {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            background-color: #fff;
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #003747;
+
+            img.toggle-icon {
+              width: auto;
+              max-width: 18px;
+            }
+
+            img.toggle-icon-close {
+              display: none;
+              width: auto;
+              max-width: 18px;
+            }
+          }
+
+          .dropdown-content {
+            display: none;
+            padding: 0 25px 25px 25px;
+            background-color: #fff;
+            p {
+              margin-bottom: 7px;
+            }
+          }
+
+          &.active {
+            background-color: #003747;
+            color: #fff;
+
+            .dropdown-toggle {
+              background-color: #003747;
+              color: #fff;
+
+              .toggle-icon {
+                filter: invert(1);
+              }
+            }
+
+            .dropdown-content {
+              display: block;
+              background-color: #003747;
+              color: #fff;
+            }
+          }
+        }
+
+        a.btn {
+          background-color: #e90044;
+          padding: 16px 25px;
+          border-radius: 50px;
+          color: #fff;
+          font-family: Poppins,sans-serif;
+          font-weight: 700;
+          font-size: 18px;
+          display: inline-block;
+          margin-top: 15px;
+        }
+      }
+    }
+
+    @media (max-width: 1200px) {
+      padding: 65px 25px;
+
+      .content-wrapper {
+        gap: 35px;
+
+        .image {
+          width: 40%;
+        }
+
+        .dropdowns {
+          width: 60%;
+          padding-top: 0;
+          .dropdown-single {
+            .dropdown-toggle {
+              padding: 15px 25px;
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 800px) {
+      padding: 25px 15px 25px;
+      .content-wrapper {
+        flex-direction: column;
+        gap: 15px;
+        .image {
+          width: 100%;
+          img {
+            max-width: 500px;
+            margin: 0 auto;
+            display: block;
+          }
+        }
+
+        .dropdowns {
+          width: 100%;
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      .content-wrapper {
+        .dropdowns {
+          .dropdown-single {
+            .dropdown-toggle {
+              padding: 15px 15px;
+              font-size: 15px;
+              img {
+                width: 20px;
+              }
+            }
+
+            .dropdown-content {
+              padding: 0 15px 15px 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+    dropdownToggles.forEach(toggle => {
+      toggle.addEventListener('click', function () {
+        const parent = this.parentElement;
+        const iconOpen = this.querySelector('.toggle-icon');
+        const iconClose = this.querySelector('.toggle-icon-close');
+        const isActive = parent.classList.contains('active');
+
+        if (isActive) {
+          iconOpen.style.display = 'block';
+          iconClose.style.display = 'none';
+        } else {
+          iconOpen.style.display = 'none';
+          iconClose.style.display = 'block';
+        }
+
+        parent.classList.toggle('active');
+      });
+    });
+  });
+{% endjavascript %}

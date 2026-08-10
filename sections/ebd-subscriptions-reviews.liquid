@@ -1,0 +1,272 @@
+<section class="ebd-sub-review-slider">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h2>{{ section.settings.heading }}</h2>
+      <h3>{{ section.settings.text }}</h3>
+    </div>
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide">
+            <div class="card-wrapper">
+              <div class="content">
+                <img
+                  class="profile"
+                  src="{{ block.settings.image | img_url: '250x' }}"
+                  alt="{{ block.settings.title }}">
+                <h3>{{ block.settings.title }}</h3>
+                <p>{{ block.settings.text }}</p>
+                <img
+                  src="{{ section.settings.star_image | img_url: '250x' }}"
+                  alt="Star Rating"
+                  class="stars">
+                <p class="name">{{ block.settings.name }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-scrollbar"></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Sub Reviews Slider",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      }, {
+        "id": "text",
+        "type": "text",
+        "label": "Text"
+      }, {
+        "id": "star_image",
+        "type": "image_picker",
+        "label": "Star Image"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "review",
+        "name": "Review",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          }, {
+            "id": "image",
+            "type": "image_picker",
+            "label": "Image"
+          }, {
+            "id": "text",
+            "type": "text",
+            "label": "Text"
+          }, {
+            "id": "name",
+            "type": "text",
+            "label": "Name"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Sub Reviews Slider"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-sub-review-slider {
+    padding: 85px 65px;
+    overflow: hidden;
+
+    h2 {
+      font-family: 'Poppins'
+      , sans-serif;
+      font-size: 30px;
+      line-height: 36px;
+      color: #003747;
+      font-weight: 700;
+      max-width: 475px;
+      margin: 0 auto 10px;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 24px;
+      color: black;
+      font-weight: 400;
+      margin-bottom: 15px;
+    }
+
+    .content-wrapper {
+      max-width: 100%;
+      margin: 0 auto;
+
+      .heading {
+        text-align: center;
+        margin-bottom: 45px;
+      }
+
+      .swiper-container {
+        position: relative;
+        .swiper-slide {
+          .card-wrapper {
+            background-color: white;
+            border: solid 2px #003747;
+            padding: 35px 15px;
+            min-height: 425px;
+            a.media {
+              display: block;
+              margin-bottom: 15px;
+            }
+
+            .content {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+
+              img.profile {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                margin-bottom: 25px;
+              }
+
+              h3 {
+                font-family: 'Poppins'
+                , sans-serif;
+                font-size: 21px;
+                line-height: 26px;
+                color: #003747;
+                font-weight: 700;
+                margin-bottom: 15px;
+                text-align: center;
+              }
+
+              p {
+                font-family: 'Poppins'
+                , sans-serif;
+                font-size: 18px;
+                line-height: 22px;
+                color: black;
+                font-weight: 400;
+                margin-bottom: 35px;
+                text-align: center;
+
+                &.name {
+                  margin-bottom: 0;
+                }
+              }
+
+              img.stars {
+                width: 110px;
+                margin-bottom: 10px;
+              }
+
+
+            }
+          }
+        }
+
+        .swiper-scrollbar {
+          bottom: -35px;
+          background-color: #E5DDD2;
+          height: 4px;
+          .swiper-scrollbar-drag {
+            background-color: #003747;
+            height: 4px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1400px) {
+      padding: 65px 25px;
+    }
+
+    @media (max-width: 600px) {
+      padding: 45px 15px 115px;
+      h2 {
+        font-size: 28px;
+        line-height: 32px;
+        margin-bottom: 5px;
+      }
+
+      .heading {
+        margin-bottom: 25px;
+      }
+
+      .content-wrapper {
+        .swiper-container {
+          .swiper-slide {
+            .card-wrapper {
+              .content {
+                h3 {
+                  font-size: 16px;
+                  line-height: 20px;
+                }
+
+                .price-wrapper {
+                  gap: 5px;
+                  span {
+                    font-size: 16px;
+                  }
+                }
+
+                a.btn {
+                  font-size: 14px;
+                  padding: 12px 25px;
+                  margin-top: 10px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    var swiper = new Swiper('.ebd-sub-review-slider .swiper-container', {
+      slidesPerView: 1.05,
+      spaceBetween: 15,
+      scrollbar: {
+        el: '.swiper-scrollbar',
+        draggable: true
+      },
+      breakpoints: {
+        450: {
+          slidesPerView: 1.25
+        },
+        650: {
+          slidesPerView: 1.65,
+          spaceBetween: 25
+        },
+        800: {
+          slidesPerView: 2.05,
+          spaceBetween: 20
+        },
+        1100: {
+          slidesPerView: 3.5
+        },
+        1400: {
+          slidesPerView: 4.05,
+          spaceBetween: 25
+        }
+      }
+    });
+  });
+{% endjavascript %}

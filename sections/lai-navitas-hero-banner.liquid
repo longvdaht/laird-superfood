@@ -1,0 +1,514 @@
+{% comment %}
+  Section: LAI x Navitas Hero Banner
+  Fully self-contained — no external snippets or JS required.
+  Install: paste into sections/lai-navitas-hero-banner.liquid
+  then add via Theme Customizer → Add section → LAI x Navitas Hero Banner
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+{%- liquid
+  assign laird_logo_src   = 'https://www.figma.com/api/mcp/asset/2b817253-20ca-4538-a6f8-ecd3e1fd148d'
+  assign navitas_logo_src = 'https://www.figma.com/api/mcp/asset/74810142-399c-46a3-8869-7885a5c857e8'
+  assign img_cacao        = 'https://www.figma.com/api/mcp/asset/23a0c4b6-24db-4c35-8918-729906808122'
+  assign img_greens       = 'https://www.figma.com/api/mcp/asset/12204c61-0d0c-42b5-9a72-76f9d2039792'
+  assign img_hydrate      = 'https://www.figma.com/api/mcp/asset/c2e55ac0-c9cf-49d7-913b-5b617a252f28'
+  assign img_hemp         = 'https://www.figma.com/api/mcp/asset/f135bd46-e845-4376-9f0b-2330d61bd63b'
+  assign decor_leaf       = 'https://www.figma.com/api/mcp/asset/5f9856ce-35ce-4988-b9bf-3694aa245ea6'
+  assign decor_arc        = 'https://www.figma.com/api/mcp/asset/2942cde2-a80e-4b16-9b50-da1204b03390'
+
+  if section.settings.laird_logo != blank
+    assign laird_logo_src = section.settings.laird_logo | image_url: width: 240
+  endif
+  if section.settings.navitas_logo != blank
+    assign navitas_logo_src = section.settings.navitas_logo | image_url: width: 300
+  endif
+  if section.settings.product_img_cacao != blank
+    assign img_cacao = section.settings.product_img_cacao | image_url: width: 320
+  endif
+  if section.settings.product_img_greens != blank
+    assign img_greens = section.settings.product_img_greens | image_url: width: 340
+  endif
+  if section.settings.product_img_hydrate != blank
+    assign img_hydrate = section.settings.product_img_hydrate | image_url: width: 360
+  endif
+  if section.settings.product_img_hemp != blank
+    assign img_hemp = section.settings.product_img_hemp | image_url: width: 320
+  endif
+-%}
+
+<section id="lnhero-{{ section.id }}" class="lnhero">
+
+  <!-- ======= DESKTOP (≥768px) ======= -->
+  <div class="lnhero__desktop">
+
+    <div class="lnhero__left">
+      <div class="lnhero__logos">
+        <img src="{{ laird_logo_src }}"   alt="{{ section.settings.laird_logo_alt | default: 'Laird Superfood' }}"  class="lnhero__logo lnhero__logo--laird"   loading="eager">
+        <img src="{{ navitas_logo_src }}" alt="{{ section.settings.navitas_logo_alt | default: 'Navitas Organics' }}" class="lnhero__logo lnhero__logo--navitas" loading="eager">
+      </div>
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="lnhero__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="lnhero__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      <div class="lnhero__ctas">
+        {%- if section.settings.btn1_label != blank -%}
+          <a href="{{ section.settings.btn1_url | default: '#' }}" class="lnhero__btn lnhero__btn--red">{{ section.settings.btn1_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.btn2_label != blank -%}
+          <a href="{{ section.settings.btn2_url | default: '#' }}" class="lnhero__btn lnhero__btn--white">{{ section.settings.btn2_label }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="lnhero__right" aria-hidden="true">
+      <img src="{{ decor_leaf }}"  alt="" class="lnhero__decor lnhero__decor--leaf">
+      <img src="{{ decor_arc }}"   alt="" class="lnhero__decor lnhero__decor--arc">
+      <img src="{{ img_cacao }}"   alt="" class="lnhero__prod lnhero__prod--cacao">
+      <img src="{{ img_greens }}"  alt="" class="lnhero__prod lnhero__prod--greens">
+      <img src="{{ img_hydrate }}" alt="" class="lnhero__prod lnhero__prod--hydrate">
+      <img src="{{ img_hemp }}"    alt="" class="lnhero__prod lnhero__prod--hemp">
+    </div>
+
+  </div>
+
+  <!-- ======= MOBILE (<768px) ======= -->
+  <div class="lnhero__mobile">
+
+    <div class="lnhero__logos">
+      <img src="{{ laird_logo_src }}"   alt="{{ section.settings.laird_logo_alt | default: 'Laird Superfood' }}"  class="lnhero__logo lnhero__logo--laird"   loading="eager">
+      <img src="{{ navitas_logo_src }}" alt="{{ section.settings.navitas_logo_alt | default: 'Navitas Organics' }}" class="lnhero__logo lnhero__logo--navitas" loading="eager">
+    </div>
+
+    <div class="lnhero__mob-products" aria-hidden="true">
+      <img src="{{ decor_leaf }}"  alt="" class="lnhero__decor lnhero__decor--leaf">
+      <img src="{{ decor_arc }}"   alt="" class="lnhero__decor lnhero__decor--arc">
+      <img src="{{ img_cacao }}"   alt="" class="lnhero__prod lnhero__prod--cacao">
+      <img src="{{ img_greens }}"  alt="" class="lnhero__prod lnhero__prod--greens">
+      <img src="{{ img_hydrate }}" alt="" class="lnhero__prod lnhero__prod--hydrate">
+      <img src="{{ img_hemp }}"    alt="" class="lnhero__prod lnhero__prod--hemp">
+    </div>
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="lnhero__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <div class="lnhero__subheading-box">
+        <p class="lnhero__subheading">{{ section.settings.subheading }}</p>
+      </div>
+    {%- endif -%}
+
+    <div class="lnhero__ctas">
+      {%- if section.settings.btn1_label != blank -%}
+        <a href="{{ section.settings.btn1_url | default: '#' }}" class="lnhero__btn lnhero__btn--red">{{ section.settings.btn1_label }}</a>
+      {%- endif -%}
+      {%- if section.settings.btn2_label != blank -%}
+        <a href="{{ section.settings.btn2_url | default: '#' }}" class="lnhero__btn lnhero__btn--white">{{ section.settings.btn2_label }}</a>
+      {%- endif -%}
+    </div>
+
+  </div>
+
+</section>
+
+<style>
+/* ────────────────────────────────────────────────────────────
+   CSS custom properties
+──────────────────────────────────────────────────────────── */
+#lnhero-{{ section.id }} {
+  --ln-bg:     {{ section.settings.bg_color | default: '#003349' }};
+  --ln-accent: {{ section.settings.accent_color | default: '#ea0044' }};
+  --ln-azure:  #2c5d7a;
+  --ln-navy:   #003349;
+  --ln-white:  #ffffff;
+  --ln-font:   'Rubik', sans-serif;
+  --ln-radius: 8px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Section base
+──────────────────────────────────────────────────────────── */
+.lnhero {
+  background: var(--ln-bg);
+  font-family: var(--ln-font);
+  color: var(--ln-white);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Desktop layout
+──────────────────────────────────────────────────────────── */
+.lnhero__desktop {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px;
+  box-sizing: border-box;
+  min-height: 537px;
+}
+
+.lnhero__mobile { display: none; }
+
+.lnhero__left {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+.lnhero__right {
+  flex-shrink: 0;
+  position: relative;
+  width: 580px;
+  height: 409px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Logos
+──────────────────────────────────────────────────────────── */
+.lnhero__logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  width: 100%;
+}
+.lnhero__logo           { display: block; object-fit: contain; }
+.lnhero__logo--laird    { width: 120px; height: auto; }
+.lnhero__logo--navitas  { width: 150px; height: auto; }
+
+/* ────────────────────────────────────────────────────────────
+   Typography
+──────────────────────────────────────────────────────────── */
+.lnhero__heading {
+    align-self: stretch;
+color: var(--color-white-solid, #FFF);
+text-align: center;
+
+/* Headline/4xl */
+font-family: Rubik;
+font-size: 36px;
+font-style: normal;
+font-weight: 700;
+line-height: 40px; /* 111.111% */
+}
+
+.lnhero__subheading {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  text-align: center;
+  color: var(--ln-white);
+  margin: 0;
+  width: 100%;
+}
+
+.lnhero__subheading strong,
+.lnhero__subheading b { font-weight: 900; }
+
+/* ────────────────────────────────────────────────────────────
+   Buttons
+──────────────────────────────────────────────────────────── */
+.lnhero__ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.lnhero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 56px;
+  padding: 8px 24px;
+  border-radius: var(--ln-radius);
+  font-family: var(--ln-font);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+.lnhero__btn:hover        { opacity: 0.85; transform: translateY(-1px); }
+.lnhero__btn--red         { background: var(--ln-accent); color: var(--ln-white); }
+.lnhero__btn--white       { background: var(--ln-white);  color: var(--ln-navy);  }
+
+/* ────────────────────────────────────────────────────────────
+   Product collage — shared rules
+──────────────────────────────────────────────────────────── */
+.lnhero__decor,
+.lnhero__prod {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  display: block;
+}
+
+/* ── Desktop collage ── */
+.lnhero__right .lnhero__decor--leaf {
+  left: -5.6%; top: -9.5%; width: 51%; height: auto;
+}
+.lnhero__right .lnhero__decor--arc {
+  right: -8.3%; bottom: 5.9%; width: 38%; height: auto;
+}
+.lnhero__right .lnhero__prod--cacao {
+  left: -4.7%;
+  top: 50%; transform: translateY(-50%);
+  width: 44.5%; height: auto;
+  border-radius: 12px; object-fit: cover;
+}
+.lnhero__right .lnhero__prod--greens {
+  left: 11.2%;
+  top: calc(50% - 69px); transform: translateY(-50%);
+  width: 52.2%; height: auto;
+  border-radius: 12px; object-fit: cover;
+}
+.lnhero__right .lnhero__prod--hydrate {
+  left: 33.9%;
+  top: calc(50% + 22px); transform: translateY(-50%);
+  width: 54.8%; height: auto;
+  border-radius: 12px; object-fit: cover;
+}
+.lnhero__right .lnhero__prod--hemp {
+  left: 61.3%;
+  top: calc(50% - 21px); transform: translateY(-50%);
+  width: 49.4%; height: auto;
+  border-radius: 12px; object-fit: cover;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Mobile  (<768px)
+──────────────────────────────────────────────────────────── */
+@media screen and (max-width: 767px) {
+  .lnhero__desktop { display: none; }
+
+  .lnhero__mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 24px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .lnhero__mobile .lnhero__heading {
+    font-size: 30px;
+    line-height: 36px;
+  }
+
+  .lnhero__subheading-box {
+    width: 100%;
+    background: var(--ln-azure);
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .lnhero__mobile .lnhero__subheading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .lnhero__mobile .lnhero__ctas { width: 100%; }
+
+  /* Mobile product collage container */
+  .lnhero__mob-products {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 49.4%;
+    overflow: visible;
+  }
+
+  .lnhero__mob-products .lnhero__decor--leaf {
+    left: -23.4%; top: 28.2%; width: 52.8%; height: auto;
+  }
+  .lnhero__mob-products .lnhero__decor--arc {
+    right: -5.2%; bottom: -1.5%; width: 30.6%; height: auto;
+  }
+  .lnhero__mob-products .lnhero__prod--cacao {
+    left: -10.3%;
+    top: calc(50% + 19px); transform: translateY(-50%);
+    width: 52.3%; height: auto;
+    border-radius: 10px; object-fit: cover;
+  }
+  .lnhero__mob-products .lnhero__prod--greens {
+    left: 13.1%;
+    top: calc(50% - 3px); transform: translateY(-50%);
+    width: 50.3%; height: auto;
+    border-radius: 10px; object-fit: cover;
+  }
+  .lnhero__mob-products .lnhero__prod--hydrate {
+    left: 38.3%;
+    top: calc(50% + 25px); transform: translateY(-50%);
+    width: 48.6%; height: auto;
+    border-radius: 10px; object-fit: cover;
+  }
+  .lnhero__mob-products .lnhero__prod--hemp {
+    left: 60.2%;
+    top: calc(50% - 3px); transform: translateY(-50%);
+    width: 44.1%; height: auto;
+    border-radius: 10px; object-fit: cover;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Tablet  (768px – 1024px)
+──────────────────────────────────────────────────────────── */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .lnhero__desktop {
+    padding: 48px;
+    gap: 24px;
+    min-height: 0;
+  }
+  .lnhero__right  { width: 380px; height: 268px; }
+  .lnhero__heading   { font-size: 28px; line-height: 34px; }
+  .lnhero__subheading { font-size: 20px; line-height: 28px; }
+}
+</style>
+
+{% schema %}
+{
+  "name": "LAI x Navitas Hero Banner",
+  "tag": "section",
+  "class": "lai-navitas-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Navitas Organics is joining the Laird Superfood family!"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "info": "Wrap words in <strong>...</strong> to make them bold/black.",
+      "default": "To celebrate, <strong>TAKE 25% OFF SITEWIDE</strong> on both sites!"
+    },
+    {
+      "type": "header",
+      "content": "Logos"
+    },
+    {
+      "type": "image_picker",
+      "id": "laird_logo",
+      "label": "Laird Superfood Logo",
+      "info": "Leave empty to use the default from the design."
+    },
+    {
+      "type": "text",
+      "id": "laird_logo_alt",
+      "label": "Laird logo alt text",
+      "default": "Laird Superfood"
+    },
+    {
+      "type": "image_picker",
+      "id": "navitas_logo",
+      "label": "Navitas Organics Logo",
+      "info": "Leave empty to use the default from the design."
+    },
+    {
+      "type": "text",
+      "id": "navitas_logo_alt",
+      "label": "Navitas logo alt text",
+      "default": "Navitas Organics"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "btn1_label",
+      "label": "Button 1 label",
+      "default": "Shop Laird Superfood"
+    },
+    {
+      "type": "url",
+      "id": "btn1_url",
+      "label": "Button 1 URL"
+    },
+    {
+      "type": "text",
+      "id": "btn2_label",
+      "label": "Button 2 label",
+      "default": "Shop Navitas Organics"
+    },
+    {
+      "type": "url",
+      "id": "btn2_url",
+      "label": "Button 2 URL"
+    },
+    {
+      "type": "header",
+      "content": "Product Images (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_img_cacao",
+      "label": "Product — Cacao Powder"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_img_greens",
+      "label": "Product — Daily Greens"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_img_hydrate",
+      "label": "Product — Hydrate"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_img_hemp",
+      "label": "Product — Hemp Seeds"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#003349"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Primary button color",
+      "default": "#ea0044"
+    }
+  ],
+  "presets": [
+    {
+      "name": "LAI x Navitas Hero Banner"
+    }
+  ]
+}
+{% endschema %}

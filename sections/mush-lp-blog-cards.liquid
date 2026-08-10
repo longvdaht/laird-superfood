@@ -1,0 +1,146 @@
+<section class="mushroom-lp-blog-cards">
+  <div class="content-wrapper">
+    <div class="blog-grid">
+      {% for block in section.blocks %}
+        <div class="grid-item">
+          <a href="{{ block.settings.url }}" class="media">
+            <img src="{{ block.settings.image | img_url: '1000x' }}" alt="{{ block.settings.image.alt }}" class="main">
+          </a>
+          <div class="content">
+            <a href="{{ block.settings.url }}" title="{{ block.settings.title }}">
+              <h4>{{ block.settings.title }}</h4>
+            </a>
+            <a href="{{ block.settings.url }}" title="{{ block.settings.title }}" class="text-link">
+              View Recipe <img src="{{ section.settings.arrow_image | img_url: '300x' }}" alt="Button Arrow">
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Mush LP Blog Cards",
+    "settings": [
+      {
+        "id": "arrow_image",
+        "type": "image_picker",
+        "label": "Arrow Image"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Blog",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "url",
+            "type": "url",
+            "label": "URL"
+          },
+          {
+            "id": "image",
+            "type": "image_picker",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "max_blocks": 3,
+    "presets": [
+      {
+        "name": "Mush LP Blog Cards"
+      }
+    ]
+  }
+{% endschema %}
+ 
+{% stylesheet %}
+  section.mushroom-lp-blog-cards {
+    background-color: #f4eee7;
+    padding: 0 65px 65px 65px;
+    .blog-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 25px;
+      .grid-item {
+        a.media {
+          display: block;
+          margin-bottom: 25px;
+          aspect-ratio: 0.85;
+          img {
+            max-width: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+        .content {
+          padding-right: 45px;
+          h4 {
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: solid 1px #6E5238;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+          }
+
+          a.text-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 400;
+            color: #6E5238;
+
+            img {
+              width: auto;
+            }
+            
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1200px) {
+      padding: 0 25px 45px 25px;
+      .blog-grid {
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .blog-grid {
+        gap: 55px 25px;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .blog-grid {
+        grid-template-columns: minmax(0,1fr);
+        gap: 35px;
+        .grid-item {
+          a.media {
+            aspect-ratio: 1;
+            margin-bottom: 15px;
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

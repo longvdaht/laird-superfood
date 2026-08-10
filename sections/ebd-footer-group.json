@@ -1,0 +1,84 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "EBD Footer Group",
+  "sections": {
+    "ebd-footer": {
+      "type": "ebd-footer",
+      "blocks": {
+        "ebd_footer_newsletter": {
+          "type": "footer_newsletter",
+          "settings": {
+            "heading": "Join our email list",
+            "button_label": "Sign up",
+            "placeholder": "Email"
+          }
+        }
+      },
+      "block_order": [
+        "ebd_footer_newsletter"
+      ],
+      "custom_css": [
+        "section.ebd-footer #easy-table-of-content {display: none !important;}"
+      ],
+      "settings": {
+        "logo": "shopify://shop_images/LSF_Logo_4fd42812-96ec-4d63-9619-545ae14fc1f8.svg",
+        "menu": "horizon-footer-menu",
+        "footer_disclaimers": "<p>**By submitting this form and signing up via text, you consent to receive marketing text messages (such as promotion codes and cart reminders) from Laird Superfood at the number provided, including messages sent by autodialer.</p><p>Consent is not a condition of any purchase. Message and data rates may apply. Message frequency varies. You can unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available) in one of our messages. View our Privacy Policy and Terms of Use.</p><p>†These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p><p>††WARNING: Consuming this product can expose you to chemicals including lead which is known to the State of California to cause birth defects or other reproductive harm. For more information go to www.P65Warnings.ca.gov/food</p>"
+      }
+    },
+    "ebd_footer_legal_xWGnAF": {
+      "type": "ebd-footer-legal",
+      "blocks": {
+        "text_fdVgXe": {
+          "type": "text",
+          "settings": {
+            "link_url": "shopify://pages/terms-of-use",
+            "link_label": "Terms of Use"
+          }
+        },
+        "text_egyMVV": {
+          "type": "text",
+          "settings": {
+            "link_url": "shopify://pages/privacy-policy",
+            "link_label": "Privacy Policy"
+          }
+        },
+        "text_c9rBNk": {
+          "type": "text",
+          "settings": {
+            "link_url": "https://lairdsuperfood.com/pages/accessibility",
+            "link_label": "Accessibility"
+          }
+        },
+        "text_cdL6WE": {
+          "type": "text",
+          "settings": {
+            "link_url": "shopify://pages/cookie-notice",
+            "link_label": "Cookie Notice"
+          }
+        }
+      },
+      "block_order": [
+        "text_fdVgXe",
+        "text_egyMVV",
+        "text_c9rBNk",
+        "text_cdL6WE"
+      ],
+      "name": "EBD Footer Legal",
+      "settings": {}
+    }
+  },
+  "order": [
+    "ebd-footer",
+    "ebd_footer_legal_xWGnAF"
+  ]
+}

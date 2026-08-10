@@ -1,0 +1,142 @@
+<section class="recipes-blog">
+  <div class="hero">
+    <picture>
+      <source media="(max-width: 768px)" srcset="{{ section.settings.hero_image_mobile | img_url: '750x' }} 750w, {{ section.settings.hero_image_mobile | img_url: '1500x' }} 1500w">
+      <source media="(min-width: 769px)" srcset="{{ section.settings.hero_image | img_url: '1000x' }} 1000w, {{ section.settings.hero_image | img_url: '1500x' }} 1500w, {{ section.settings.hero_image | img_url: '2000x' }} 2000w">
+      <img src="{{ section.settings.hero_image | img_url: '1500x' }}" alt="{{ section.settings.hero_image.alt }}" loading="lazy">
+    </picture>
+  </div>
+
+  <div class="content-wrapper">
+    {% paginate blog.articles by 20 %}
+      <div class="blog-grid">
+        {% for article in blog.articles %}
+          <div class="recipe-card">
+            <a href="{{ article.url }}">
+              {% if article.image %}
+                <div class="image-wrapper">
+                  <img src="{{ article.image | img_url: '600x' }}" alt="{{ article.image.alt | escape }}">
+                </div>
+              {% endif %}
+              <p class="article-title">{{ article.published_at | date: "%a, %B %d, %Y" }}</p>
+              <h4>{{ article.title }}</h4>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if paginate.pages > 1 %}
+        <div class="pagination">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Recipes",
+    "settings": [
+      {
+        "id": "hero_image",
+        "type": "image_picker",
+        "label": "Hero Image"
+      },
+      {
+        "id": "hero_image_mobile",
+        "type": "image_picker",
+        "label": "Hero Image Mobile"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Recipes",
+        "category": "Recipes"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.recipes-blog {
+    background-color: #efedec;
+
+    .hero {
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .content-wrapper {
+      padding: 85px 65px 25px;
+      .blog-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+        gap: 45px;
+
+        .recipe-card {
+          .image-wrapper {
+            aspect-ratio: 1.3;
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+          p.article-title {
+            font-size: 13px;
+            line-height: 14px;
+            color: var(--color-primary);
+            font-weight: 400;
+            margin: 10px 0 5px;
+          }
+
+          h4 {
+            font-weight: 600;
+          }
+        }
+      }
+
+      .pagination {
+        gap: 25px;
+        margin-top: 45px;
+
+        span.prev {
+          margin-right: 25px;
+        }
+
+        span.next {
+          margin-left: 25px;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        padding: 65px 25px;
+        .blog-grid {
+          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+          gap: 20px;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        padding: 45px 25px;
+        .blog-grid {
+          grid-template-columns: minmax(0,1fr);
+          gap: 20px;
+
+          .recipe-card {
+            .image-wrapper {
+              aspect-ratio: 1.5;
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,151 @@
+<div class="product-tabs">
+  <div class="tab-toggles">
+    <div data-tab-id="description" class="tab active">Description</div>
+    {% if product.metafields.custom.benefits %}
+      <div data-tab-id="benefits" class="tab">Benefits</div>
+    {% endif %}
+    {% if product.metafields.custom.how_to_use %}
+      <div data-tab-id="how-to-use" class="tab">How to use</div>
+    {% endif %}
+    {% if product.metafields.custom.ingredients_tab %}
+      <div data-tab-id="ingredients" class="tab">Ingredients</div>
+    {% endif %}
+  </div>
+  <div class="tab-content">
+
+    <div data-tab-id="description" class="tab-content-single active">
+      {% if product.metafields.custom.short_description %}
+        {{ product.metafields.custom.short_description }}
+      {% else %}
+        {{ product.description }}
+      {% endif %}
+    </div>
+
+    {% if product.metafields.custom.benefits %}
+      <div data-tab-id="benefits" class="tab-content-single">
+        {{ product.metafields.custom.benefits }}
+      </div>
+    {% endif %}
+
+    {% if product.metafields.custom.how_to_use %}
+      <div data-tab-id="how-to-use" class="tab-content-single">
+        {{ product.metafields.custom.how_to_use }}
+      </div>
+    {% endif %}
+
+
+    {% if product.metafields.custom.ingredients_tab %}
+      <div data-tab-id="ingredients" class="tab-content-single">
+        <p>{{ product.metafields.custom.ingredients_tab }}</p>
+      </div>
+    {% endif %}
+
+    {% if product.metafields.custom.prop65 == true %}
+      <a
+        href="#footer-disclaimers"
+        class="prop-65-warning"
+        title="Prop 65 Warning">
+        †† California Residents: View our Prop 65 Warning
+      </a>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tabs = document.querySelectorAll('.product-tabs .tab');
+    var tabContents = document.querySelectorAll('.product-tabs .tab-content-single');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var tabId = this.getAttribute('data-tab-id');
+        if (tabId === 'ingredients') return;
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        tabContents.forEach(function (content) { content.classList.remove('active'); });
+        this.classList.add('active');
+        var target = document.querySelector('.tab-content-single[data-tab-id="' + tabId + '"]');
+        if (target) target.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.product-tabs .prop-65-warning[href="#footer-disclaimers"]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var el = document.getElementById('footer-disclaimers');
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      });
+    });
+  });
+</script>
+
+
+{% schema %}
+  {
+    "name": "EBD Product Tabs",
+    "settings": [],
+    "presets": [
+      {
+        "name": "EBD Product Tabs",
+        "category": "EBD Blocks"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .product-tabs {
+    margin-top: 15px;
+    .tab-toggles {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      .tab {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-mediumblue);
+        cursor: pointer;
+
+        &.active {
+          color: var(--color-darkblue);
+        }
+      }
+    }
+    .tab-content {
+      .tab-content-single {
+        display: none;
+
+        &.active {
+          display: block;
+        }
+      }
+    }
+  }
+
+  a.prop-65-warning {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #2b2b2b;
+    text-decoration: underline;
+    font-weight: 400;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const tabs = document.querySelectorAll('.product-tabs .tab');
+  const tabContents = document.querySelectorAll('.product-tabs .tab-content-single');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab-id');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      this.classList.add('active');
+      document.querySelector(`.tab-content-single[data-tab-id="${tabId}"]`).classList.add('active');
+    });
+  });
+{% endjavascript %}

@@ -1,0 +1,82 @@
+{% comment %}
+  Expects a 'tab' object with the following structure:
+  {
+    "type": "whats_inside",
+    "title": "WHAT'S INSIDE",
+    "content": {
+      "heading": "What's Inside",
+      "description": "...",
+      "list_items": [
+        "22 superfood ingredients in one simple scoop",
+        ...
+      ],
+      "image": "greens-info.jpg"
+    }
+  }
+{% endcomment %}
+
+<div class="content-wrapper">
+  <div class="column">
+    <h3>{{ tab.content.heading }}</h3>
+
+    <p>
+      {{ tab.content.description }}
+    </p>
+
+    {% if tab.content.list_items.size > 0 %}
+      <ul>
+        {% for item in tab.content.list_items %}
+          <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="icon-wrapper">
+      {% unless product.metafields.custom.hide_non_gmo_badge == true %}
+        <img
+          src="https://cdn.shopify.com/s/files/1/1308/3049/files/non-gmo_b32e4a3f-69ed-41d6-b389-67b07ccc437b.png?v=1744133644"
+          alt="Non GMO Verified"
+          loading="lazy"
+          width="110"
+          height="auto"
+        >
+      {% endunless %}
+
+      <img
+        src="https://cdn.shopify.com/s/files/1/1308/3049/files/gluten-free.png?v=1727117923"
+        alt="Gluten Free"
+        loading="lazy"
+        width="60"
+        height="60"
+      >
+
+      <img
+        src="https://cdn.shopify.com/s/files/1/1308/3049/files/soy-free.png?v=1727117923"
+        alt="Soy Free"
+        loading="lazy"
+        width="60"
+        height="60"
+      >
+    </div>
+  </div>
+
+  <div class="column">
+    {% if tab.content.image != blank %}
+      <img
+        src="{{ tab.content.image }}"
+        alt="What's Inside"
+        width="600"
+        height="400"
+        loading="lazy"
+      >
+    {% elsif tab.content.video != blank %}
+      <video
+        src="{{ tab.content.video.url }}"
+        id="video-frame-4"
+        controls
+        playsinline
+        poster="{{ tab.content.video.display_image }}"
+      ></video>
+    {% endif %}
+  </div>
+</div>

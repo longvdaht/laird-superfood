@@ -1,0 +1,257 @@
+<section class="hp-faqs">
+  <div class="content-wrapper">
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <div class="faq-wrapper">
+      {% for block in section.blocks %}
+        <div class="faq-single">
+          <div class="faq-toggle">
+            <h4 class="darkblue">{{ block.settings.title }}</h4>            
+            <div class="toggle-icon">
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+          </div>
+          <div class="toggle-content">
+            {{ block.settings.faq_content }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="link-wrapper">
+      <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
+    </div>
+  </div>
+  <img src="{{ section.settings.background_image | img_url: '1000x' }}" alt="{{ section.settings.background_image.alt }}" class="floating-image">
+</section>
+
+{% schema %}
+  {
+    "name": "HP FAQ",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "background_image",
+        "type": "image_picker",
+        "label": "Background Image"
+      },
+      {
+        "id": "link_url",
+        "type": "url",
+        "label": "Link URL"
+      },
+      {
+        "id": "link_label",
+        "type": "text",
+        "label": "Link Label"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "FAQ",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "faq_content",
+            "type": "richtext",
+            "label": "FAQ Content"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP FAQ",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.hp-faqs {
+    position: relative;
+    padding: 85px 45px;
+    background-color: var(--color-tan);
+    overflow: hidden;
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+
+      h2 {
+        margin: 0 0 30px;
+      }
+
+      .faq-wrapper {
+        width: 80%;
+        .faq-single {
+          border-bottom: solid 2px white;
+
+          &:last-of-type {
+            border-bottom: none;
+          }
+
+          .faq-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            cursor: pointer;
+            gap: 20px;
+
+            h4 {
+              margin: 0;
+            }
+
+            .toggle-icon {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background-color: var(--color-darkblue);
+              position: relative;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              transition: transform .25s ease;
+              
+              .bar {
+                position: absolute;
+                background-color: #ffffff;
+                border-radius: 2px;
+              }
+
+              .bar:nth-child(1) {
+                width: 12px;
+                height: 2px;
+              }
+
+              .bar:nth-child(2) {
+                width: 2px;
+                height: 12px;
+              }
+            }
+          }
+
+          .toggle-content {
+            display: none;
+            padding: 0 0 20px;
+            color: var(--color-darkblue);
+
+            p {
+              margin: 0 0 10px;
+              last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+
+          &.active {
+            .toggle-content {
+              display: block;
+            }
+
+            .toggle-icon {
+              transform: rotate(180deg);
+            }
+
+            .toggle-icon .bar:nth-child(2) {
+              opacity: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .link-wrapper {
+      margin-top: 45px;
+    }
+
+    img.floating-image {
+      position: absolute;
+      top: -85px;
+      right: -25px;
+      height: auto;
+      width: 450px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @media (max-width: 1600px) {
+      .content-wrapper {
+        .faq-wrapper {
+          width: 65%;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+      .content-wrapper {
+        .faq-wrapper {
+          width: 65%;
+        }
+      }
+
+      img.floating-image {
+        width: 350px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 20px;
+      .content-wrapper {
+        h2 {
+          margin-bottom: 15px;
+        }
+        .faq-wrapper {
+          width: 100%;
+
+          .faq-single {
+            .faq-toggle {
+              padding: 15px 0;
+            }
+          }
+        }
+      }
+
+      .link-wrapper {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+      }
+
+      img.floating-image {
+        display: none;
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.hp-faqs .faq-single');
+
+    faqItems.forEach(function(item) {
+      const toggle = item.querySelector('.faq-toggle');
+      if (!toggle) return;
+
+      toggle.addEventListener('click', function() {
+        item.classList.toggle('active');
+      });
+    });
+  });
+{% endjavascript %}

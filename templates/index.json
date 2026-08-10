@@ -1,0 +1,794 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "lai_navitas_hero_banner_MQBgyt": {
+      "type": "lai-navitas-hero-banner",
+      "disabled": true,
+      "name": "LAI x Navitas Hero Banner",
+      "settings": {
+        "heading": "Navitas Organics is joining the Laird Superfood family!",
+        "subheading": "To celebrate, TAKE 25% OFF SITEWIDE on both sites!",
+        "laird_logo": "shopify://shop_images/Logo.svg",
+        "laird_logo_alt": "Laird Superfood",
+        "navitas_logo": "shopify://shop_images/Navitas_logo_1.png",
+        "navitas_logo_alt": "Navitas Organics",
+        "btn1_label": "Shop Laird Superfood",
+        "btn1_url": "https://lairdsuperfood.com/collections/all",
+        "btn2_label": "Shop Navitas Organics",
+        "btn2_url": "https://navitasorganics.com/",
+        "product_img_cacao": "shopify://shop_images/1-Navitas-Cacao-Powder-8oz-FOP_61f77ce0-3cc7-44e5-abd5-02761edee18c_324x324_crop_center_1.png",
+        "product_img_greens": "shopify://shop_images/daily_greens.png",
+        "product_img_hydrate": "shopify://shop_images/hydrate_83d44f4c-2229-442f-ae7d-93419396ddef.png",
+        "product_img_hemp": "shopify://shop_images/1-Navitas-Hemp-Seeds-8oz-FOP_bd28953f-2bf6-4afa-8866-222d86cbbce2_324x324_crop_center_1.png",
+        "bg_color": "#003349",
+        "accent_color": "#ea0044"
+      }
+    },
+    "178226092420676bd3": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_74b89dc_GfyKhx": {
+          "type": "ai_gen_block_74b89dc",
+          "disabled": true,
+          "settings": {
+            "desktop_image": "shopify://shop_images/LSF_-_Big_Summer_Sale_-_Homepage_Banner_-_2000x1080-v2_1.png",
+            "mobile_image": "shopify://shop_images/LSF_-_Big_Summer_Sale_-_Homepage_Banner_-_mobile_-_800x1200_1.png",
+            "image_link": "shopify://collections/all",
+            "image_position": "top",
+            "desktop_height": 750,
+            "mobile_height": 600,
+            "show_overlay": false,
+            "overlay_color": "#000000",
+            "overlay_opacity": 30,
+            "heading": "",
+            "heading_size": 48,
+            "heading_color": "#ffffff",
+            "subheading": "",
+            "subheading_size": 18,
+            "subheading_color": "#ffffff",
+            "text_shadow_x": 0,
+            "text_shadow_y": 2,
+            "text_shadow_blur": 4,
+            "text_shadow_color": "#000000",
+            "button_font_size": 16,
+            "button_border_radius": 14,
+            "button_1_text": "",
+            "button_1_link": "",
+            "button_1_bg_color": "#003349",
+            "button_1_text_color": "#ffffff",
+            "button_1_hover_bg_color": "#3a758a",
+            "button_1_hover_text_color": "#ffffff",
+            "button_2_text": "",
+            "button_2_link": "",
+            "button_2_bg_color": "#ffffff",
+            "button_2_text_color": "#003349",
+            "button_2_hover_bg_color": "#f5f5f5",
+            "button_2_hover_text_color": "#003349"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_74b89dc_GfyKhx"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "ebd_hp_hero_ppmmBF": {
+      "type": "ebd-hp-hero",
+      "blocks": {
+        "text_NRJVe4": {
+          "type": "text",
+          "settings": {
+            "icon": "shopify://shop_images/Group_937.svg",
+            "title": "44k+ Five Star Reviews"
+          }
+        },
+        "text_Ga6zUD": {
+          "type": "text",
+          "settings": {
+            "icon": "shopify://shop_images/Layer_1.svg",
+            "title": "Real Ingredients"
+          }
+        },
+        "text_N3gtya": {
+          "type": "text",
+          "settings": {
+            "icon": "shopify://shop_images/2234.svg",
+            "title": "No Artificial Fillers"
+          }
+        }
+      },
+      "block_order": [
+        "text_NRJVe4",
+        "text_Ga6zUD",
+        "text_N3gtya"
+      ],
+      "name": "HP Hero",
+      "settings": {
+        "video_background": "shopify://files/videos/HERO_Video_Oct.mov",
+        "heading": "<h1>CLEAN ENERGY, EVERY DAY.</h1>",
+        "subheading": "<h3>From sunrise to surf — clean, sustained energy made from real food.</h3>",
+        "button_1_url": "shopify://collections/all",
+        "button_1_label": "SHOP ALL",
+        "button_2_url": "shopify://collections/protein-coffee-latte-mixes",
+        "button_2_label": "NEW - PROTEIN MATCHA"
+      }
+    },
+    "ebd_hp_new_to_laird_HaqQeG": {
+      "type": "ebd-hp-new-to-laird",
+      "name": "HP New To Laird",
+      "settings": {
+        "heading": "New to Laird Superfood?",
+        "text": "Kick things off with one of our Starter Bundles!",
+        "link_1_url": "shopify://collections/new-customer-starter-bundles",
+        "link_1_label": "SHOP NEW CUSTOMER BUNDLES",
+        "link_2_url": "",
+        "link_2_label": ""
+      }
+    },
+    "ebd_hp_product_cards_KTt76Y": {
+      "type": "ebd-hp-product-cards",
+      "blocks": {
+        "product_mw9Ln6": {
+          "type": "Product",
+          "settings": {
+            "product": "sweet-and-creamy-instant-latte-with-adaptogens",
+            "best_seller": true,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "product_KpxzLc": {
+          "type": "Product",
+          "settings": {
+            "product": "perform-medium-roast-ground-mushroom-coffee",
+            "best_seller": true,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "product_mFfqfU": {
+          "type": "Product",
+          "settings": {
+            "product": "superfood-creamer-sweet-and-creamy-with-adaptogens",
+            "best_seller": true,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "product_fKyXUR": {
+          "type": "Product",
+          "settings": {
+            "product": "organic-prebiotic-daily-greens-14-8oz",
+            "best_seller": true,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        }
+      },
+      "block_order": [
+        "product_mw9Ln6",
+        "product_KpxzLc",
+        "product_mFfqfU",
+        "product_fKyXUR"
+      ],
+      "name": "HP Product Cards",
+      "settings": {
+        "heading": "Laird's Favorites"
+      }
+    },
+    "ebd_hp_marquee_GFExdj": {
+      "type": "ebd-hp-marquee",
+      "blocks": {
+        "text_qH4VwJ": {
+          "type": "text",
+          "settings": {
+            "text": "COGNITIVE PERFORMANCE"
+          }
+        },
+        "text_WdDF4T": {
+          "type": "text",
+          "settings": {
+            "text": "FOCUS"
+          }
+        },
+        "text_tPNBmL": {
+          "type": "text",
+          "settings": {
+            "text": "SUSTAINED ENERGY"
+          }
+        },
+        "text_eBN99q": {
+          "type": "text",
+          "settings": {
+            "text": "IMMUNE SUPPORT"
+          }
+        },
+        "text_jdzcpc": {
+          "type": "text",
+          "settings": {
+            "text": "BIOAVAILABILITY"
+          }
+        },
+        "text_tyrcKW": {
+          "type": "text",
+          "settings": {
+            "text": "MOOD BALANCING"
+          }
+        },
+        "text_DkgR7Q": {
+          "type": "text",
+          "settings": {
+            "text": "COGNITIVE PERFORMANCE"
+          }
+        },
+        "text_VHV8CW": {
+          "type": "text",
+          "settings": {
+            "text": "FOCUS"
+          }
+        },
+        "text_bQbUWd": {
+          "type": "text",
+          "settings": {
+            "text": "SUSTAINED ENERGY"
+          }
+        },
+        "text_hwUFh6": {
+          "type": "text",
+          "settings": {
+            "text": "IMMUNE SUPPORT"
+          }
+        },
+        "text_CmRJ8G": {
+          "type": "text",
+          "settings": {
+            "text": "BIOAVAILABILITY"
+          }
+        },
+        "text_apBmmF": {
+          "type": "text",
+          "settings": {
+            "text": "MOOD BALANCING"
+          }
+        }
+      },
+      "block_order": [
+        "text_qH4VwJ",
+        "text_WdDF4T",
+        "text_tPNBmL",
+        "text_eBN99q",
+        "text_jdzcpc",
+        "text_tyrcKW",
+        "text_DkgR7Q",
+        "text_VHV8CW",
+        "text_bQbUWd",
+        "text_hwUFh6",
+        "text_CmRJ8G",
+        "text_apBmmF"
+      ],
+      "name": "HP Marquee",
+      "settings": {}
+    },
+    "ebd_hp_video_collection_grid_An8GRa": {
+      "type": "ebd-hp-video-collection-grid",
+      "blocks": {
+        "text_RXyDdh": {
+          "type": "text",
+          "settings": {
+            "image": "shopify://shop_images/download.jpg",
+            "video": "shopify://files/videos/coffees.mp4",
+            "link_url": "shopify://collections/coffees",
+            "link_text": "Coffees"
+          }
+        },
+        "text_3m4iFe": {
+          "type": "text",
+          "settings": {
+            "image": "shopify://shop_images/creamers_fd40eb3f-efcf-4958-8771-7047cca44d7f.jpg",
+            "video": "shopify://files/videos/creamers.mp4",
+            "link_url": "shopify://collections/laird-superfood-creamers",
+            "link_text": "Creamers"
+          }
+        },
+        "text_7dtqQ4": {
+          "type": "text",
+          "settings": {
+            "image": "shopify://shop_images/IL_0b442b3d-4fd3-4312-962b-532156178d75.webp",
+            "video": "shopify://files/videos/instant-lattes.mp4",
+            "link_url": "shopify://collections/instant-lattes",
+            "link_text": "Instant Lattes"
+          }
+        },
+        "text_twPPeW": {
+          "type": "text",
+          "settings": {
+            "image": "shopify://shop_images/functional.webp",
+            "video": "shopify://files/videos/functional-drinks.mp4",
+            "link_url": "shopify://collections/drink-mixes-blends",
+            "link_text": "Functional"
+          }
+        },
+        "text_QtRM9M": {
+          "type": "text",
+          "settings": {
+            "image": "shopify://shop_images/hydrate_9a254808-f5d7-4968-a438-76ac9b6413b0.webp",
+            "video": "shopify://files/videos/hydration.mp4",
+            "link_url": "shopify://collections/hydration",
+            "link_text": "Hydration"
+          }
+        }
+      },
+      "block_order": [
+        "text_RXyDdh",
+        "text_3m4iFe",
+        "text_7dtqQ4",
+        "text_twPPeW",
+        "text_QtRM9M"
+      ],
+      "custom_css": [
+        ".ebd-video-collection-grid .swiper-wrapper {display: flex; justify-content: center;}",
+        "@media (min-width: 1400px) {.ebd-video-collection-grid .swiper {margin: 0 auto; }}"
+      ],
+      "name": "HP Video Collection Grid",
+      "settings": {
+        "heading": "We have a lot to offer"
+      }
+    },
+    "ebd_hp_about_ejtYDF": {
+      "type": "ebd-hp-about",
+      "settings": {
+        "heading": "It all started with a cup of coffee",
+        "link_url": "shopify://pages/about",
+        "link_label": "LEARN MORE",
+        "text": "<p>We believe that nourishing, plant-based foods can help fuel you from sunrise to sunset, even if you don’t drink coffee. Although we wouldn’t recommend that. </p><p>We were founded by prolific big wave surfer Laird Hamilton. Laird started adding different plant-based fats to his morning coffee to increase his performance on the giant waves he was surfing. Not only did his coffee taste amazing, it kept him full and energized for hours. </p>",
+        "image": "shopify://shop_images/hp-about-image.jpg",
+        "image_mobile": "shopify://shop_images/our_story_56a969c5-420c-48f1-a089-7c74168a19e3.jpg",
+        "video": "shopify://files/videos/Amazon_STV_AD_Salem.mov",
+        "product_image": "shopify://shop_images/hp-video-product-image.png",
+        "product_url": "shopify://collections/instant-lattes"
+      }
+    },
+    "ebd_hp_benefits_LCVJ3W": {
+      "type": "ebd-hp-benefits",
+      "blocks": {
+        "text_bWrCij": {
+          "type": "text",
+          "settings": {
+            "title": "SUSTAINED ENERGY",
+            "text": "<p>We love coconuts for their natural MCTs. Medium Chain Triglycerides are quickly absorbed and used as instant energy or converted into ketones. Paired with caffeine, they help create steady energy without a midday crash. We also use coconut sugar in many products as a better sweetener option. It contains inulin, a prebiotic fiber from plants.</p>",
+            "background_image": "shopify://shop_images/sustained-energy_2476b8e9-eb64-4abe-83c3-2839f88134bb.webp"
+          }
+        },
+        "text_i84wUy": {
+          "type": "text",
+          "settings": {
+            "title": "IMMUNE SUPPORT",
+            "text": "<p>Many of our products include maitake and chaga. Maitake is rich in beta glucans that help support immune function. Chaga is packed with antioxidants and also supports overall immune health.</p>",
+            "background_image": "shopify://shop_images/immune-support.webp"
+          }
+        },
+        "text_PAP9Pf": {
+          "type": "text",
+          "settings": {
+            "title": "BIOAVAILABILITY",
+            "text": "<p>We focus on real whole ingredients and avoid anything artificial. Bioavailability refers to how well your body can digest and absorb nutrients. Using bioavailable ingredients ensures you actually benefit from what you’re paying for. We rely on functional ingredients like coconut, adaptogenic mushrooms, and prebiotic fibers from blueberries and carrots to deliver both function and taste.</p>",
+            "background_image": "shopify://shop_images/bioavailability.webp"
+          }
+        },
+        "text_NraBKc": {
+          "type": "text",
+          "settings": {
+            "title": "BALANCE",
+            "text": "<p>Laird Hamilton includes adaptogens and functional mushrooms in his routine to help stay balanced under stress. Lion’s Mane supports cognitive function and has been used in Japanese medicine for centuries to support the mind and body. It can help you better handle daily stress.</p>",
+            "background_image": "shopify://shop_images/balance_6b1f4162-a56a-454d-8de5-0570e96c8f8d.webp"
+          }
+        }
+      },
+      "block_order": [
+        "text_bWrCij",
+        "text_i84wUy",
+        "text_PAP9Pf",
+        "text_NraBKc"
+      ],
+      "name": "HP Benefits",
+      "settings": {
+        "heading": "Benefits you shouldn’t have to live without"
+      }
+    },
+    "ebd_hp_faqs_yy3zTa": {
+      "type": "ebd-hp-faqs",
+      "blocks": {
+        "text_HMMieD": {
+          "type": "text",
+          "settings": {
+            "title": "What is Superfood?",
+            "faq_content": "<p>Laird Superfood, Inc. creates award-winning, plant-based superfood products that are both delicious and functional. Our Company's products are designed to enhance your daily ritual and keep consumers fueled throughout the day. Our Company was co-founded in 2015 by the world's most prolific big-wave surfer, Laird Hamilton, and our former CEO Paul Hodge. Laird Superfood's offerings are environmentally conscientious, responsibly tested, and made with real food ingredients.</p>"
+          }
+        },
+        "text_zTwc3z": {
+          "type": "text",
+          "settings": {
+            "title": "How long will my product remain fresh after opening?",
+            "faq_content": "<p>We recommend sealing the bag and placing in a cool, dry area (like a cabinet or pantry) out of direct sunlight after each use. Under these conditions, our products should remain perfectly fresh until the best-by date found on the bag of the package! We do not recommend storing our powdered products in the fridge or freezer, or consuming any of our products after the recommended best-by date.</p>"
+          }
+        },
+        "text_Yi36Pb": {
+          "type": "text",
+          "settings": {
+            "title": "Where can I find the nutrition information for each product?",
+            "faq_content": "<p>You can find the full nutrition information for each of our products listed on our website!</p>"
+          }
+        },
+        "text_QqtBft": {
+          "type": "text",
+          "settings": {
+            "title": "What are functional mushrooms?",
+            "faq_content": "<p>Here at Laird Superfood, we believe that food is fuel. We define \"Functional Foods\" as foods that may provide a positive contribution to health, beyond just the basic nutritive value. It is widely known that groups of foods, in addition to their nutritional properties, offer additional potential benefits for overall health. For example, the Omega 3 to Omega 6 ratios found in fatty fish have further positive health implications than adding just any fat to our dietary intake. We consider our adaptogen formulas to be functional food, meaning that these mushrooms are nutritious superfoods that have been shown to offer additional benefits when consumed on a regular basis. The core 4 mushrooms you can find in our Adaptogen products: Organic Chaga Mushroom - This highly desired mushroom, sometimes referred to as “Chaga Gold” and considered the “King of Mushrooms,'' grows on hardwood trees, primarily Birch trees, and is found in the colder, northern climates. Studied for its support of the immune system, Chaga is a “go-to” for overall well-being. Organic Cordyceps Mushroom - Cordyceps mushrooms were traditionally native high in the mountains of China, but are now found all over, most commonly in Asia. A definite in your daily ritual, this functional mushroom is loved by high-endurance performers. Organic Lions Mane Mushroom - Lion’s Mane is an edible mushroom native to North America, Europe, and Asia and is also known as the bearded tooth or pom pom mushroom. Lion’s Mane is easily identified by its bearded look. Used for its properties, you won’t taste the lion’s mane flavor in any of our blends. Organic Maitake Mushroom - Maitake has been used for hundreds of years in traditional Eastern cuisine and medicine for its support of overall health and vitality. Maitake’ means “Dancing Mushroom” in Japanese.</p>"
+          }
+        },
+        "text_zTAnTz": {
+          "type": "text",
+          "settings": {
+            "title": "What are MCTs?",
+            "faq_content": "<p>MCTs can be found in any of our products containing Coconut like our Creamers, Hydrate, and Instant Lattes. Coconut naturally contains the full range of MCTs (C6, C8, C10, C12). MCTs are Medium-Chain Triglycerides or medium-chain fatty acids. MCTs may be easier to digest and more rapidly absorbed than Long Chain Triglycerides (LCTs), this is due to their smaller chain length. MCTs are quickly metabolized (burned as fuel) and therefore more efficiently converted for immediate use in the body, they’re also minimally stored as fat, as compared to LCTs. Our fresh coconuts are shelled and pared; then, the white meat is ground and oven-dried. The dried meat is pressed to physically extract the oil without the use of solvents. The oil is then filtered and packaged We work closely with all of our coconut providers to ensure that we’re receiving the best ingredients available while responsibly sourcing from local farms and co-ops. None of our providers use monkey labor</p>"
+          }
+        },
+        "text_8whjkB": {
+          "type": "text",
+          "settings": {
+            "title": "What shipping carrier will my order ship with?",
+            "faq_content": "<p>Here at Laird Superfood, we ship most of our orders via USPS. At this time, we are unable to guarantee alternate shipping carriers for any orders placed on lairdsuperfood.com If selecting our standard shipping option, orders may take up to 7 days to process and ship after purchase. Please allow our shipping partners 48 hours after your order has been delivered if it has not been found. After this time, please reach out to our team via our Request Form or directly at aloha@lairdsuperfood.com.</p>"
+          }
+        },
+        "text_GhbKDY": {
+          "type": "text",
+          "settings": {
+            "title": "Does your creamer mix well?",
+            "faq_content": "<p>Our Superfood Creamers are designed to mix seamlessly with your favorite hot beverages. Here is a step-by-step guide to ensure the perfect cup every time: Prepare your cup: Start with a clean, dry, and empty cup or mug. Add creamer: Pour two tablespoons of our creamer into your cup for the best recipe. Gradually add hot liquid:Add in 8-12 ounces of hot coffee or tea to your cup. The temperature should be hot enough to help the powder mix in. Stir well: Use a spoon or frother to thoroughly mix the creamer with your beverage of choice until smooth. With these steps, you'll achieve a smoothly mixed and delicious cup every time.</p>"
+          }
+        },
+        "text_YcCyVe": {
+          "type": "text",
+          "settings": {
+            "title": "What are the serving sizes and how do you measure?",
+            "faq_content": "<p>Below is a list of the serving and or recipe size of our powdered products.<br/><br/>Creamers: Serving size 1 tsp (per FDA guidelines) 2g. | Recommended recipe: 2 tbsp (14g).<br/><br/>Instant Lattes: Serving and recipe size 1/3 cup (33g)<br/><br/>Coffees: Recommended recipe: 2 tbsp (10g) per 12 oz of water.<br/><br/>Hydrate Coconut Water: Serving size: 1 tbsp (12g)<br/><br/>Prebiotic Daily Greens and Antioxidant Daily Reds: Serving size: 2 tbsp (14g) Check out this FAQ to get the best use of our daily mixes!<br/><br/>Organic Performance Mushrooms: Serving size: 1 tsp (4g)<br/><br/>Morning Jumpstart: Serving size: 2 tsp (4g)<br/><br/>Hot Chocolate with Adaptogens: Serving size: 1/4 cup (29g)<br/><br/>Protein Powders: Serving size 1/2 cup (50g)<br/><br/>Measuring our products: At Laird Superfood, our products are regulated based on average fill weight. We include an approximate household measurement on our labeling to assist in the serving portion of each product for customers, but weight by grams, as listed on the package, is still the best way to precisely measure the serving size for all of our products. This is best measured by using a kitchen scale. All gram measurements are based on the density of the product.<br/><br/>With all supplement products, we recommend following the serving size as a daily guideline. With other items, you can adjust the recipe size to your personal preference and dietary needs. </p>"
+          }
+        },
+        "text_Lka6XD": {
+          "type": "text",
+          "settings": {
+            "title": "Do you test your products for heavy metals?",
+            "faq_content": "<p>All of our ingredients and suppliers undergo a strict vetting process where we compare their specifications and facilities against our strict standards and run tests to detect any heavy metal content; which checks for the presence of lead, arsenic, cadmium, and mercury. Additionally, we do continued testing on all of our products to check for any heavy metal content to guarantee that we are supplying the very best products for our LSF family while following the guidelines set forth by The Safe Drinking Water and Toxic Enforcement Act of 1986 (Prop 65), the Federal Drug Administration (FDA), the Environmental Protection Agency (EPA), and the World Health Organization (WHO).</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_HMMieD",
+        "text_zTwc3z",
+        "text_Yi36Pb",
+        "text_QqtBft",
+        "text_zTAnTz",
+        "text_8whjkB",
+        "text_GhbKDY",
+        "text_YcCyVe",
+        "text_Lka6XD"
+      ],
+      "name": "HP FAQ",
+      "settings": {
+        "heading": "Got a Q , we gotchu",
+        "background_image": "shopify://shop_images/latte_for_faq_optimized_63edf3bc-4c01-4809-a19c-5ce98b963471.webp",
+        "link_url": "https://support.lairdsuperfood.com/hc/en-us",
+        "link_label": "VIEW ALL FAQS"
+      }
+    },
+    "tbx_hp_video_testimonials_QCPhhk": {
+      "type": "tbx-hp-video-testimonials",
+      "blocks": {
+        "testimonial_wYjnzK": {
+          "type": "Testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Laird HP - Video 1.mp4",
+            "video_poster": "shopify://shop_images/LSF_-_Video_1_Poster_A.png",
+            "product": "all-around-athlete-bundle"
+          }
+        },
+        "testimonial_gtcmin": {
+          "type": "Testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Greens Social Video.mp4",
+            "video_poster": "shopify://shop_images/unnamed.png",
+            "product": ""
+          }
+        },
+        "testimonial_6h8CVz": {
+          "type": "Testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Laird HP - Video 2.mp4",
+            "video_poster": "shopify://shop_images/LSF_-_Video_2_Poster_A.png",
+            "product": ""
+          }
+        },
+        "testimonial_aTdTqH": {
+          "type": "Testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Laird HP - Video 4.mp4",
+            "video_poster": "shopify://shop_images/unnamed1.png",
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_wYjnzK",
+        "testimonial_gtcmin",
+        "testimonial_6h8CVz",
+        "testimonial_aTdTqH"
+      ],
+      "name": "HP Video Testimonials",
+      "settings": {}
+    },
+    "ebd_hp_instructions_TBqGwV": {
+      "type": "ebd-hp-instructions",
+      "blocks": {
+        "text_BHXM8z": {
+          "type": "text",
+          "settings": {
+            "title": "Daily Greens",
+            "image_1": "shopify://shop_images/1_2a210cd0-ee67-415c-a06b-8e8c51ab5412.webp",
+            "content_1": "<h4>1. Mix 2 tbsp of powder</h4>",
+            "image_2": "shopify://shop_images/2_d92b6d8b-00c0-4041-ad72-eb7dc96d1fc4.webp",
+            "content_2": "<h4>2. With 8 - 10oz of water</h4>",
+            "image_3": "shopify://shop_images/3_ac5c4d4f-4b2d-46aa-ab6d-0b67862cdf0a.webp",
+            "content_3": "<h4>3. Froth or stir</h4><p>*We use real ingredients so sometimes there will be sediment, just stir as you drink. </p>",
+            "image_4": "shopify://shop_images/4_f4a07fa4-c94b-4fea-a40f-108fc38dff9c.webp",
+            "content_4": "<h4>4. Enjoy your super cup of happiness.</h4>"
+          }
+        },
+        "text_hHGpJi": {
+          "type": "text",
+          "settings": {
+            "title": "Superfood Creamer",
+            "image_1": "shopify://shop_images/1_0dea2c37-bcc6-47b8-bc60-ea1d9c61d019.webp",
+            "content_1": "<h4>1. Mix 2 tbsp of powder</h4>",
+            "image_2": "shopify://shop_images/2_62324458-1be5-4116-99c2-7f617763d81e.webp",
+            "content_2": "<h4>2. With 8-12oz of coffee or tea</h4>",
+            "image_3": "shopify://shop_images/3_14334a23-8d55-4026-86f7-3cd3043ba15f.webp",
+            "content_3": "<h4>3. Froth or stir</h4><p>*We use real ingredients so sometimes there will be sediment, just stir as you drink. </p>",
+            "image_4": "shopify://shop_images/4_299a7740-3c28-417e-a4ef-3304b345b0a8.webp",
+            "content_4": "<h4>4. Enjoy your super cup of happiness.</h4>"
+          }
+        },
+        "text_bjRjez": {
+          "type": "text",
+          "settings": {
+            "title": "Performance Mushrooms",
+            "image_1": "shopify://shop_images/1_75830b8d-2828-4b62-a1c8-6b26f886d39d.webp",
+            "content_1": "<h4>1. Mix 3/4 tsp of powder</h4>",
+            "image_2": "shopify://shop_images/2_c40e1847-c89b-47d8-89a5-269ac2549fab.webp",
+            "content_2": "<h4>2. With 12oz of coffee or smoothie</h4>",
+            "image_3": "shopify://shop_images/3_0bf92300-2261-4bfa-890a-8dc091ea36ee.webp",
+            "content_3": "<h4>3. Froth or stir</h4><p>*We use real ingredients so sometimes there will be sediment, just stir as you drink. </p>",
+            "image_4": "shopify://shop_images/4_bf7a07a1-be73-44da-8446-aea11304c600.webp",
+            "content_4": "<h4>4. Enjoy your super cup of happiness.</h4>"
+          }
+        }
+      },
+      "block_order": [
+        "text_BHXM8z",
+        "text_hHGpJi",
+        "text_bjRjez"
+      ],
+      "name": "HP Instructions",
+      "settings": {
+        "heading": "One week to a better habit"
+      }
+    },
+    "ebd_hp_find_us_QVafT7": {
+      "type": "ebd-hp-find-us",
+      "blocks": {
+        "text_9TTNwf": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/amazon-logo.png",
+            "title": "Amazon"
+          }
+        },
+        "text_7GYfpc": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Erewhon-logo.png",
+            "title": "Erewhon"
+          }
+        },
+        "text_VjfWd6": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Kroger-Logo.png",
+            "title": "Kroger"
+          }
+        },
+        "text_nGfktK": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Target-logo.png",
+            "title": "Target"
+          }
+        },
+        "text_R6bBKy": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Sprouts-Logo.png",
+            "title": "Sprouts"
+          }
+        },
+        "text_jfCGxa": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Whole-foods-logo.png",
+            "title": "Whole Foods"
+          }
+        }
+      },
+      "block_order": [
+        "text_9TTNwf",
+        "text_7GYfpc",
+        "text_VjfWd6",
+        "text_nGfktK",
+        "text_R6bBKy",
+        "text_jfCGxa"
+      ],
+      "name": "HP Find Us",
+      "settings": {
+        "heading": "Find us near you"
+      }
+    },
+    "ebd_hp_instafeed_heading_RYVkwV": {
+      "type": "ebd-hp-instafeed-heading",
+      "blocks": {
+        "text_xVc7rM": {
+          "type": "text",
+          "settings": {
+            "title": "Instagram",
+            "social_url": "https://www.instagram.com/lairdsuperfood/",
+            "social_icon": "shopify://shop_images/insta_60b2bf09-c3f8-4bf0-b7b8-c09b3cf4e819.svg"
+          }
+        },
+        "text_hdznh4": {
+          "type": "text",
+          "settings": {
+            "title": "TikTok",
+            "social_url": "https://www.tiktok.com/@lairdsuperfood",
+            "social_icon": "shopify://shop_images/tiktok_ebb9e54c-d9a0-4dd5-bf2e-99797bbfa0dc.svg"
+          }
+        },
+        "text_PjgYgz": {
+          "type": "text",
+          "settings": {
+            "title": "YouTube",
+            "social_url": "https://www.youtube.com/channel/UCgyh_oULdoxeVFfizDt9BQQ",
+            "social_icon": "shopify://shop_images/yt_f4b49231-5e8d-4c4f-a017-4eab63ae3e76.svg"
+          }
+        }
+      },
+      "block_order": [
+        "text_xVc7rM",
+        "text_hdznh4",
+        "text_PjgYgz"
+      ],
+      "name": "HP Instafeed Heading",
+      "settings": {
+        "subheading": "Optimize Your Ritual",
+        "heading": "#DrinkLSF",
+        "handle": "@LairdSuperfood"
+      }
+    },
+    "1763535472c606350a": {
+      "type": "_blocks",
+      "blocks": {
+        "instafeed_app_block_MhxcjY": {
+          "type": "shopify://apps/instafeed/blocks/app-block/c447db20-095d-4a10-9725-b5977662c9d5",
+          "settings": {
+            "title": "",
+            "title_color": "",
+            "title_size_v2": 0,
+            "alignment": "center",
+            "instafeed_margin_top": 0,
+            "instafeed_margin_bottom": 0,
+            "instafeed_margin_sides": 0,
+            "show_instagram_link": false,
+            "link_alignment": "left",
+            "link_color": "#000000",
+            "background_color": "",
+            "feed_id": "",
+            "html_area": ""
+          }
+        }
+      },
+      "block_order": [
+        "instafeed_app_block_MhxcjY"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "lai_navitas_hero_banner_MQBgyt",
+    "178226092420676bd3",
+    "ebd_hp_hero_ppmmBF",
+    "ebd_hp_new_to_laird_HaqQeG",
+    "ebd_hp_product_cards_KTt76Y",
+    "ebd_hp_marquee_GFExdj",
+    "ebd_hp_video_collection_grid_An8GRa",
+    "ebd_hp_about_ejtYDF",
+    "ebd_hp_benefits_LCVJ3W",
+    "ebd_hp_faqs_yy3zTa",
+    "tbx_hp_video_testimonials_QCPhhk",
+    "ebd_hp_instructions_TBqGwV",
+    "ebd_hp_find_us_QVafT7",
+    "ebd_hp_instafeed_heading_RYVkwV",
+    "1763535472c606350a"
+  ]
+}

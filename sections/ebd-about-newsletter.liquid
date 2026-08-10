@@ -1,0 +1,98 @@
+<section class="ebd-about-newsletter" style="background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}')">
+  <img src="{{ section.settings.graphic | image_url: width: 500 }}" alt="{{ section.settings.graphic.alt }}" class="graphic">
+  <div class="content-wrapper">
+    <h2>{{ section.settings.heading }}</h2>
+    <h4>{{ section.settings.subheading }}</h4>
+    <div class="klaviyo-wrapper">
+      <div class="klaviyo-form-UCR5iv !mt-6"></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Newsletter",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "graphic",
+        "type": "image_picker",
+        "label": "Graphic"
+      },
+      {
+        "id": "background_image",
+        "type": "image_picker",
+        "label": "Background Image"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Newsletter",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-about-newsletter {
+    padding: 85px 65px;
+    position: relative;
+    background-size: cover;
+    height: 600px;
+
+    img.graphic {
+      position: absolute;
+      top: -65px;
+      left: -125px;
+      width: 400px;
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      max-width: 550px;
+      height: 100%;
+      h2 {
+        color: white;
+        text-align: center;
+      }
+
+      h4 {
+        color: white;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+      height: 550px;
+
+      img.graphic {
+        width: 300px;
+        left: -85px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+      height: 450px;
+
+      img.graphic {
+        width: 200px;
+      }
+    }
+  }
+{% endstylesheet %}

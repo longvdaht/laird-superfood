@@ -1,0 +1,647 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ebd_product_main_ajKcRY": {
+      "type": "ebd-product-main",
+      "blocks": {
+        "ebd_product_title_U9d37a": {
+          "type": "ebd-product-title",
+          "name": "EBD Product Title",
+          "settings": {},
+          "blocks": {}
+        },
+        "ebd_product_review_count_hydrate_TLAGJd": {
+          "type": "ebd-product-review-count-hydrate",
+          "name": "EBD Review Count Hydrate",
+          "settings": {},
+          "blocks": {}
+        },
+        "text_CtnLJj": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p>Fuel your best performance with freeze-dried coconut water, Aquamin minerals, and real fruit flavors — no artificial anything.</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 14,
+            "padding-block-end": 14,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "variant_picker_hydration_4pt8G7": {
+          "type": "variant-picker-hydration",
+          "name": "Hydration Variant Pick",
+          "settings": {
+            "variant_style": "buttons",
+            "show_swatches": true,
+            "alignment": "left",
+            "padding-block-start": 0,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "recharge_subscriptions_subscription_widget_v2_eyTckV": {
+          "type": "shopify://apps/recharge-subscriptions/blocks/subscription-widget-v2/371eed76-0b44-4869-9813-730372ea378e",
+          "settings": {}
+        },
+        "buy_buttons_dfKdHe": {
+          "type": "buy-buttons",
+          "name": "t:names.product_buy_buttons",
+          "settings": {
+            "stacking": false,
+            "show_pickup_availability": true,
+            "gift_card_form": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "quantity": {
+              "type": "quantity",
+              "disabled": true,
+              "static": true,
+              "settings": {},
+              "blocks": {}
+            },
+            "add-to-cart": {
+              "type": "add-to-cart",
+              "static": true,
+              "settings": {
+                "style_class": "button"
+              },
+              "blocks": {}
+            },
+            "accelerated-checkout": {
+              "type": "accelerated-checkout",
+              "disabled": true,
+              "static": true,
+              "settings": {},
+              "blocks": {}
+            }
+          },
+          "block_order": []
+        },
+        "custom_liquid_Vf7jjw": {
+          "type": "custom-liquid",
+          "name": "One Time BTN",
+          "settings": {
+            "custom_liquid": "<div class=\"rc-onetime-button-wrap\">\n  <button type=\"button\" class=\"rc-onetime-button\">\n    Buy once for {{ product.selected_or_first_available_variant.price | money }} + $8.95 shipping\n  </button>\n</div>\n\n<style>\n  .rc-onetime-button-wrap {\n    text-align: center;\n    margin-top: 8px;\n  }\n  .rc-onetime-button {\n    background: none;\n    border: none;\n    padding: 0;\n    font-size: 15px;\n    font-weight: 400;\n    color: #003349;\n    text-decoration: underline;\n    cursor: pointer;\nmargin-bottom: 12px;\n  }\n</style>\n\n<script>\n  (function () {\n    const btn = document.querySelector('.rc-onetime-button');\n    if (!btn) return;\n\n    function getVariantId() {\n      const card = document.querySelector('.hydration-flavor-card.is-selected');\n      if (card?.dataset.variantId) return card.dataset.variantId;\n      const input = document.querySelector(\n        'form.shopify-product-form input[name=\"id\"], ' +\n        'form[data-type=\"add-to-cart-form\"] input[name=\"id\"]'\n      );\n      return input?.value || null;\n    }\n\n    btn.addEventListener('click', async function () {\n      const variantId = getVariantId();\n      if (!variantId) return;\n\n      const r = await fetch('/cart/add.js', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ items: [{ id: parseInt(variantId), quantity: 1 }] })\n      });\n\n      if (r.ok) {\n        const url = new URL(window.location.href);\n        url.searchParams.set('viewcart', 'true');\n        window.location.href = url.toString();\n      }\n    });\n  })();\n</script>"
+          },
+          "blocks": {}
+        },
+        "custom_liquid_JgHfA6": {
+          "type": "custom-liquid",
+          "name": "t:names.custom_liquid",
+          "settings": {
+            "custom_liquid": "<div class=\"badges-container\">\n  <div class=\"badges-row\">\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Non-GMO</span>\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Vegan</span>\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Gluten-Free</span>\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Paleo</span>\n  </div>\n  <div class=\"badges-row\">\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Dairy-Free</span>\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Soy-Free</span>\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> No Artificial Flavors</span>\n  </div>\n  <div class=\"badges-row\">\n    <span class=\"badge\"><svg class=\"badge__check\" viewBox=\"0 0 20 20\"><path d=\"M16.7 5.3a1 1 0 0 0-1.4 0L8 12.6 4.7 9.3a1 1 0 1 0-1.4 1.4l4 4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4z\"></path></svg> Aquamin Minerals</span>\n  </div>\n</div>\n\n<style>\n  .badges-container {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: 12px;\n    padding: 24px;\n  }\n\n  .badges-row {\n    display: flex;\n    flex-wrap: wrap;\n    justify-content: center;\n    gap: 12px;\n  }\n\n  .badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    padding: 10px 18px;\n    background-color: #eef0eb;\n    border-radius: 999px;\n    font-family: sans-serif;\n    font-size: 14px;\n    font-weight: 700;\n    color: #1a2e2a;\n    white-space: nowrap;\n  }\n\n  .badge__check {\n    width: 14px;\n    height: 14px;\n    fill: #2d7a5f;\n    flex-shrink: 0;\n  }\n</style>"
+          },
+          "blocks": {}
+        },
+        "ebd_product_dropdowns_hwRjzU": {
+          "type": "ebd-product-dropdowns",
+          "name": "EBD Product Dropdowns",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ebd_product_title_U9d37a",
+        "ebd_product_review_count_hydrate_TLAGJd",
+        "text_CtnLJj",
+        "variant_picker_hydration_4pt8G7",
+        "recharge_subscriptions_subscription_widget_v2_eyTckV",
+        "buy_buttons_dfKdHe",
+        "custom_liquid_Vf7jjw",
+        "custom_liquid_JgHfA6",
+        "ebd_product_dropdowns_hwRjzU"
+      ],
+      "custom_css": [
+        "section.ebd-product-main .content-wrapper .product-media-column img:not(.w-32) {background: transparent;}",
+        ".button:not(.button-secondary, .button-unstyled) {background: #c83049 !important;}"
+      ],
+      "name": "EBD Product Main",
+      "settings": {}
+    },
+    "ebd_product_tabs_9ppdNh": {
+      "type": "ebd-product-tabs",
+      "name": "EBD Product Tabs",
+      "settings": {}
+    },
+    "ebd_product_ingredients_Qd4pCp": {
+      "type": "ebd-product-ingredients",
+      "name": "EBD Product Ingredients",
+      "settings": {
+        "heading": "Ingredients"
+      }
+    },
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "disabled": true,
+          "static": true,
+          "settings": {
+            "media_presentation": "grid",
+            "media_columns": "one",
+            "image_gap": 15,
+            "large_first_image": false,
+            "icons_style": "arrow",
+            "slideshow_controls_style": "counter",
+            "slideshow_mobile_controls_style": "dots",
+            "thumbnail_position": "right",
+            "thumbnail_width": 44,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": true,
+            "media_fit": "contain",
+            "media_radius": 0,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "inherit_color_scheme": true,
+            "color_scheme": "scheme-1",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "group_icgrde": {
+              "type": "group",
+              "name": "Header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "background_media": "none",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "text_xpVMaM": {
+                  "type": "text",
+                  "name": "t:names.title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "review_qDTdht": {
+                  "type": "review",
+                  "name": "t:names.product_review_stars",
+                  "settings": {
+                    "stars_style": "shaded",
+                    "show_number": true,
+                    "rating_color": "primary",
+                    "type_preset": "paragraph",
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_xpVMaM",
+                "review_qDTdht"
+              ]
+            },
+            "divider_VJhene": {
+              "type": "_divider",
+              "name": "t:names.divider",
+              "settings": {
+                "thickness": 1,
+                "corner_radius": "square",
+                "width_percent": 100,
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "text_aEtTtq": {
+              "type": "text",
+              "name": "Product description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-primary--family)",
+                "font_size": "",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_picker_R3rGDr": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": false,
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "buy_buttons_eYQEYi": {
+              "type": "buy-buttons",
+              "disabled": true,
+              "settings": {
+                "stacking": true,
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "disabled": true,
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "disabled": true,
+                  "static": true,
+                  "settings": {
+                    "style_class": "button"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "disabled": true,
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "group_icgrde",
+            "divider_VJhene",
+            "text_aEtTtq",
+            "variant_picker_R3rGDr",
+            "buy_buttons_eYQEYi"
+          ]
+        }
+      },
+      "disabled": true,
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": false,
+        "limit_details_width": false,
+        "gap": 48,
+        "color_scheme": "",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "product_recommendations_qggXJq": {
+      "type": "product-recommendations",
+      "blocks": {
+        "text_cbcgyb": {
+          "type": "text",
+          "name": "t:names.header",
+          "settings": {
+            "text": "<h2>Shop Similar Products</h2>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h4",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "t:names.product_card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 8,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_card_gallery_DNizbJ": {
+              "type": "_product-card-gallery",
+              "name": "t:names.product_card_media",
+              "settings": {
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_title_M7MJkb": {
+              "type": "product-title",
+              "name": "t:names.product_title",
+              "settings": {
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_gLWgA6": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "product_card_gallery_DNizbJ",
+            "product_title_M7MJkb",
+            "price_gLWgA6"
+          ]
+        }
+      },
+      "block_order": [
+        "text_cbcgyb"
+      ],
+      "name": "t:names.product_recommendations",
+      "settings": {
+        "product": "hydrate-variety-pack",
+        "recommendation_type": "related",
+        "layout_type": "carousel",
+        "carousel_on_mobile": false,
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 12,
+        "rows_gap": 24,
+        "icons_style": "arrow",
+        "icons_shape": "none",
+        "section_width": "page-width",
+        "gap": 28,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "ebd_global_separator_dEgz4x": {
+      "type": "ebd-global-separator",
+      "name": "EBD Global Separator",
+      "settings": {
+        "separator_type": "wave_1",
+        "color_1": "#ffffff",
+        "color_2": "#72c3d7"
+      }
+    },
+    "ebd_pdp_competitor_comparison_FwLPzz": {
+      "type": "ebd-pdp-competitor-comparison",
+      "name": "EBD PDP Competitor Chart",
+      "settings": {}
+    },
+    "ebd_global_separator_WkGQzn": {
+      "type": "ebd-global-separator",
+      "name": "EBD Global Separator",
+      "settings": {
+        "separator_type": "wave_2",
+        "color_1": "#72c3d7",
+        "color_2": "#3a758a"
+      }
+    },
+    "ebd_pdp_faqs_fzmnPE": {
+      "type": "ebd-pdp-faqs",
+      "name": "EBD PDP FAQs",
+      "settings": {
+        "heading": "FAQs",
+        "button_text": "Learn More",
+        "button_link": ""
+      }
+    },
+    "176878726635668cda": {
+      "type": "_blocks",
+      "blocks": {
+        "yotpo_product_reviews_reviews_LhNQaa": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/reviews/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": "hydrate-variety-pack"
+          }
+        }
+      },
+      "block_order": [
+        "yotpo_product_reviews_reviews_LhNQaa"
+      ],
+      "custom_css": [
+        ".shopify-app-block {width: 100%;}"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "ebd_product_main_ajKcRY",
+    "ebd_product_tabs_9ppdNh",
+    "ebd_product_ingredients_Qd4pCp",
+    "main",
+    "product_recommendations_qggXJq",
+    "ebd_global_separator_dEgz4x",
+    "ebd_pdp_competitor_comparison_FwLPzz",
+    "ebd_global_separator_WkGQzn",
+    "ebd_pdp_faqs_fzmnPE",
+    "176878726635668cda"
+  ]
+}

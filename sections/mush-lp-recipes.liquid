@@ -1,0 +1,259 @@
+<section class="mushroom-lp-recipes">
+  <div class="content-wrapper">
+    <div class="recipes">
+      <h2>{{ section.settings.heading }}</h2>
+      <div class="toggles">
+        {% for block in section.blocks %}
+          <div id="{{ block.settings.title | handleize }}" class="toggle {% if forloop.index == 1 %}active{% endif %}">
+            <h5>{{ block.settings.title }}</h5>
+            <h4>{{ block.settings.recipe_name }}</h4>
+          </div>
+        {% endfor %}
+      </div>
+      {% for block in section.blocks %}
+        <div class="recipe {{ block.settings.title | handleize }} {% if forloop.index == 1 %}active{% endif %}">
+          <h4>Ingredients</h4>
+          <div class="ingredients">
+            {{ block.settings.ingredients }}
+          </div>
+          <h4>Directions</h4>
+          <div class="directions">
+            {{ block.settings.directions }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="image">
+      <img src="{{ section.settings.image | img_url: '1500x' }}" alt="{{ section.settings.image.alt }}">
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Mush LP Recipes",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Recipe",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "recipe_name",
+            "type": "text",
+            "label": "Recipe Name"
+          },
+          {
+            "id": "ingredients",
+            "type": "richtext",
+            "label": "Ingredients"
+          },
+          {
+            "id": "directions",
+            "type": "richtext",
+            "label": "Directions"
+          }
+        ]
+      }
+    ],
+    "max_blocks": 2,
+    "presets": [
+      {
+        "name": "Mush LP Recipes"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.mushroom-lp-recipes {
+    background-color: #f4eee7;
+    padding: 65px 25px;
+    .content-wrapper {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 25px;
+
+      h2 {
+        border-bottom: solid 1px #6E5238;
+        padding-bottom: 20px;
+      }
+
+      .toggles {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        .toggle {
+          background-color: #b59d93;
+          border-radius: 12px;
+          border: solid 1px white;
+          padding: 25px;
+          cursor: pointer;
+
+          h5 {
+            font-size: 18px;
+            font-weight: 400;
+            color: white;
+            margin-bottom: 15px;
+          }
+
+          h4 {
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+          }
+
+          &.active {
+            background-color: #6E5238;
+            box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+          }
+
+          
+        }
+      }
+
+      .recipes {
+        width: 50%;
+        background-color: white;
+        padding: 65px 45px;
+        .recipe {
+          display: none;
+
+          h4 {
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: solid 1px #6E5238;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+          }
+
+          ul {
+            margin-bottom: 25px;
+            margin-left: 20px;
+            li {
+              color: #6E5238;
+              font-weight: 600;
+              font-family: 'Poppins', sans-serif;
+              margin-bottom: 3px;
+              text-index: 2px;
+            }
+          }
+
+          ol {
+            margin-bottom: 25px;
+            margin-left: 20px;
+            li {
+              color: #6E5238;
+              font-weight: 600;
+              font-family: 'Poppins', sans-serif;
+              list-style: decimal;
+              margin-bottom: 3px;
+              text-index: 2px;
+            }
+          }
+
+          &.active {
+            display: block;
+          }
+        }
+      }
+
+      .image {
+        width: 50%;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    @media (max-width: 1400px) {
+      .content-wrapper {
+        .toggles {
+          .toggle {
+            padding: 15px;
+          }
+        }
+        .recipes {
+          padding: 45px 25px;          
+        }
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .content-wrapper {
+        flex-direction: column-reverse;
+        .image {
+          width: 100%;
+          aspect-ratio: 1;
+        }
+
+        .recipes {
+          width: 100%;
+        }
+      }
+    }
+
+    @media (max-width: 800px) {
+      .content-wrapper {
+        h2 {
+          font-size: 28px;
+        }
+
+        .toggles {
+          .toggle {
+            h5 {
+              font-size: 14px;
+              margin-bottom: 6px;
+            }
+
+            h4 {
+              font-size: 16px;
+            }
+          }
+        }
+
+        .recipes {
+          padding: 35px 15px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggles = document.querySelectorAll('.mushroom-lp-recipes .toggle');
+    const recipes = document.querySelectorAll('.mushroom-lp-recipes .recipe');
+
+    toggles.forEach((toggle, index) => {
+      toggle.addEventListener('click', function() {
+        // Remove active class from all toggles and recipes
+        toggles.forEach(t => t.classList.remove('active'));
+        recipes.forEach(r => r.classList.remove('active'));
+
+        // Add active class to the clicked toggle and corresponding recipe
+        toggle.classList.add('active');
+        recipes[index].classList.add('active');
+      });
+    });
+  });
+{% endjavascript %}

@@ -1,0 +1,21 @@
+<div class="ebd-product-media-quote">
+  <div class="">
+    <img
+      src="https://cdn.shopify.com/s/files/1/1308/3049/files/5-stars.svg?v=1728073011"
+      class="w-32"
+      alt="Customer rating stars"
+      width="128"
+      height="24">
+  </div>
+  {% if product.metafields.custom.customer_quote and product.metafields.custom.customer_quote_name %}
+    <p class="text-base font-normal text-black py-3">
+      "{{ product.metafields.custom.customer_quote | metafield_tag }}"
+    </p>
+    <p class="text-base text-black font-medium uppercase">
+      - {{ product.metafields.custom.customer_quote_name | metafield_tag }}
+    </p>
+  {% else %}
+    <p class="text-base font-normal text-black py-3">"Great product! Highly recommended."</p>
+    <p class="text-base text-black font-medium uppercase">- Valued Customer</p>
+  {% endif %}
+</div>

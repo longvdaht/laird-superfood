@@ -1,0 +1,177 @@
+{%- liquid
+  assign pov_product  = product
+  assign pov_variant  = pov_product.selected_or_first_available_variant
+  assign pov_first_group = pov_product.selling_plan_groups | first
+
+  assign pov_discount_pct = 0
+  assign pov_sub_price    = nil
+
+  unless pov_first_group == blank
+    assign pov_first_plan = pov_first_group.selling_plans | first
+    unless pov_first_plan == blank
+      for pov_adj in pov_first_plan.price_adjustments
+        if pov_adj.value_type == 'percentage'
+          assign pov_discount_pct = pov_adj.value | round
+        endif
+      endfor
+    endunless
+
+    unless pov_variant == blank
+      for pov_alloc in pov_variant.selling_plan_allocations
+        unless pov_first_plan == blank
+          if pov_alloc.selling_plan_id == pov_first_plan.id
+            assign pov_sub_price = pov_alloc.price
+          endif
+        endunless
+      endfor
+      if pov_sub_price == nil and pov_variant.selling_plan_allocations.size > 0
+        assign pov_sub_price = pov_variant.selling_plan_allocations.first.price
+      endif
+    endunless
+  endunless
+-%}
+
+{%- unless pov_product.selling_plan_groups == empty -%}
+
+{%- capture check_svg -%}
+<svg class="new-po-check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3632 3.32241C13.426 3.37012 13.4788 3.42974 13.5186 3.49788C13.5584 3.56601 13.5843 3.64132 13.5949 3.71949C13.6056 3.79766 13.6007 3.87716 13.5805 3.95344C13.5604 4.02971 13.5254 4.10127 13.4776 4.16401L7.0776 12.564C7.02568 12.6321 6.95981 12.6882 6.88441 12.7287C6.80901 12.7692 6.72582 12.7931 6.64042 12.7987C6.55503 12.8044 6.4694 12.7918 6.3893 12.7616C6.3092 12.7315 6.23647 12.6846 6.176 12.624L2.576 9.02401C2.47001 8.91027 2.41231 8.75984 2.41506 8.6044C2.4178 8.44896 2.48077 8.30065 2.5907 8.19072C2.70063 8.08079 2.84894 8.01782 3.00438 8.01507C3.15982 8.01233 3.31026 8.07003 3.424 8.17602L6.5392 11.2904L12.5232 3.43681C12.6195 3.31038 12.762 3.22732 12.9195 3.20587C13.077 3.18442 13.2366 3.22634 13.3632 3.32241Z" fill="#003349"/>
+</svg>
+{%- endcapture -%}
+
+<fieldset
+  class="new-purchase-options"
+  data-section-id="{{ section.id }}"
+  style="display:none"
+>
+
+  <legend class="new-po-legend">Frequency</legend>
+
+  <div class="new-po-option new-po-option--subscribe" data-option="subscription">
+    <label class="new-po-option__row">
+      <input
+        type="radio"
+        class="new-po-radio-input"
+        name="new-po-{{ section.id }}"
+        value="subscription"
+        checked
+      >
+      <span class="new-po-radio-indicator" aria-hidden="true"></span>
+      <span class="new-po-option__title">
+        Subscribe &amp; Save
+        <span class="new-po-discount-badge" data-po-discount-badge>Additional {{ pov_discount_pct }}% Off</span>
+      </span>
+      <span class="new-po-prices">
+        <span class="new-po-price new-po-price--compare" data-po-compare-price>
+          {{- pov_variant.price | money -}}
+        </span>
+        <span class="new-po-price new-po-price--sub" data-po-sub-price>
+          {{- pov_sub_price | default: pov_variant.price | money -}}
+        </span>
+      </span>
+    </label>
+
+    <div class="new-po-option__body">
+      <ul class="new-po-benefits-list">
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>{{ pov_discount_pct }}% off forever</span>
+        </li>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>Free shipping on orders over $35</span>
+        </li>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>Easy to manage, cancel anytime</span>
+        </li>
+      </ul>
+
+      <button type="button" class="new-po-see-more" aria-expanded="false">
+        See more subscription benefits +
+      </button>
+
+      <ul class="new-po-benefits-extra" hidden>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>Additional 10% off third subscription</span>
+        </li>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>Low inventory? We hold stock for subscribers first</span>
+        </li>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>Exclusive subscriber-only access to new products</span>
+        </li>
+        <li class="new-po-benefit">
+          {{ check_svg }}
+          <span>20% off every order, forever</span>
+        </li>
+      </ul>
+
+      <div class="new-po-frequency">
+        <label class="new-po-frequency__label" for="new-po-freq-{{ section.id }}">Frequency:</label>
+        <div class="new-po-select-wrapper">
+          <select class="new-po-frequency-select" id="new-po-freq-{{ section.id }}">
+            {%- for grp in pov_product.selling_plan_groups -%}
+              {%- for pln in grp.selling_plans -%}
+                <option value="{{ pln.id }}">{{ pln.name }}</option>
+              {%- endfor -%}
+            {%- endfor -%}
+          </select>
+          <span class="new-po-select-arrow" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <path d="M11 5.5L7 9.5L3 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="new-po-option new-po-option--onetime" data-option="onetime">
+    <label class="new-po-option__row">
+      <input
+        type="radio"
+        class="new-po-radio-input"
+        name="new-po-{{ section.id }}"
+        value="onetime"
+      >
+      <span class="new-po-radio-indicator" aria-hidden="true"></span>
+      <span class="new-po-option__title">One-Time Purchase</span>
+      <span class="new-po-prices">
+        {%- liquid
+          assign onetime_compare_value = nil
+          if pov_variant.compare_at_price > pov_variant.price
+            assign onetime_compare_value = pov_variant.compare_at_price
+          elsif pov_variant.title == '1 - 16oz'
+            assign onetime_compare_value = 3400
+          elsif pov_variant.title == '3 Pack - 16oz'
+            assign onetime_compare_value = 10200
+          endif
+        -%}
+        <span
+          class="new-po-price new-po-price--compare"
+          data-po-onetime-compare-price
+          {%- unless onetime_compare_value %} style="display:none"{% endunless %}
+        >
+          {%- if onetime_compare_value -%}
+            {%- assign compare_dollars = onetime_compare_value | divided_by: 100 -%}
+            {%- assign compare_cents = onetime_compare_value | modulo: 100 -%}
+            {%- if compare_cents == 0 -%}
+              ${{ compare_dollars }}
+            {%- else -%}
+              {{- onetime_compare_value | money -}}
+            {%- endif -%}
+          {%- endif -%}
+        </span>
+        <span class="new-po-price new-po-price--regular" data-po-onetime-price>
+          {{- pov_variant.price | money -}}
+        </span>
+      </span>
+    </label>
+  </div>
+
+</fieldset>
+{%- endunless -%}

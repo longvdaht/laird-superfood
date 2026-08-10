@@ -1,0 +1,420 @@
+<div class="hp-about">
+  <div class="content-wrapper">
+    <div class="image">
+      <picture>
+        <source
+          media="(max-width: 768px)"
+          srcset="{{ section.settings.image_mobile | img_url: 'master' }}"
+        >
+        <source
+          media="(min-width: 769px)"
+          srcset="{{ section.settings.image | img_url: 'master' }}"
+        >
+        <img
+          src="{{ section.settings.image | img_url: 'master' }}"
+          alt="About Us"
+          class="w-full h-full object-cover"
+        >
+      </picture>
+    </div>
+    <div class="content">
+      <div class="heading">
+        <h2 class="darkblue">{{ section.settings.heading }}</h2>
+        {% if section.settings.link_url %}
+          <a href="{{ section.settings.link_url }}" class="btn btn-outline">{{ section.settings.link_label }}</a>
+        {% endif %}
+      </div>
+      <div class="text">
+        {{ section.settings.text }}
+        {% if section.settings.link_url %}
+          <div class="link-wrapper">
+            <a href="{{ section.settings.link_url }}" class="btn btn-outline">{{ section.settings.link_label }}</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="video-wrapper">
+      <div class="graphic-left">
+        {% render 'graphic-floral' %}
+      </div>
+      <video id="aboutVideo" src="{{ section.settings.video.sources[1].url }}" muted autoplay loop playsinline></video>
+        <button class="video-toggle" id="videoToggle" aria-label="Video Play Button">
+          <span class="icon icon-play">{% render 'icon-play' %}</span>
+          <span class="icon icon-pause hidden">{% render 'icon-pause' %}</span>
+        </button>
+      <div class="graphic-right">
+        {% render 'graphic-floral' %}
+      </div>
+      <a href="{{ section.settings.product_url }}" title="Laird Superfood Instant Lattes">
+        <img class="product-image" src="{{ section.settings.product_image | img_url: '750x' }}" alt="{{ section.settings.product_image.alt }}">
+      </a>
+    </div>
+  </div>
+
+  <style></style>
+</div>
+
+
+{% schema %}
+{
+  "name": "HP About",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading"
+    },
+    {
+      "id": "link_url",
+      "type": "url",
+      "label": "Link URL"
+    },
+    {
+      "id": "link_label",
+      "type": "text",
+      "label": "Link Label"
+    },
+    {
+      "id": "text",
+      "type": "richtext",
+      "label": "Text"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image"
+    },
+    {
+      "id": "image_mobile",
+      "type": "image_picker",
+      "label": "Image Mobile"
+    },
+    {
+      "id": "video",
+      "type": "video",
+      "label": "Video"
+    },
+    {
+      "id": "product_image",
+      "type": "image_picker",
+      "label": "Product Image"
+    },
+    {
+      "id": "product_url",
+      "type": "url",
+      "label": "Product URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "HP About",
+      "category": "Home Page"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .hp-about {
+    padding: 65px 45px;
+    overflow: hidden;
+
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+
+      .content {
+        margin-top: 25px;
+        display: flex;
+        gap: 65px;
+
+        .heading {
+          width: 35%;
+          h2 {
+            max-width: 375px;
+          }
+        }
+
+        .text {
+          width: 65%;
+          p {
+            color: var(--color-darkblue);
+          }
+
+          a.btn {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .video-wrapper {
+      position: relative;
+      margin: 125px auto 85px;
+      max-width: 1200px;
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+        z-index: 1;
+      }
+
+      img.product-image {
+        position: absolute;
+        bottom: -65px;
+        left: -125px;
+        z-index: 1;
+        width: 400px;
+        transition: 1s;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      .graphic-left {
+        position: absolute;
+        z-index: 0;
+        top: -40px;
+        width: 280px;
+        left: -80px;
+        animation: floralMove 10s infinite;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .graphic-right {
+        position: absolute;
+        z-index: 0;
+        bottom: -45px;
+        width: 400px;
+        right: -90px;
+        animation: floralMove 10s 2s infinite;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          transform: rotate(15deg);
+        }
+      }
+    }
+
+    .video-toggle {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      z-index: 2;
+      background: none;
+      border: solid 2px white;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      cursor: pointer;
+    }
+
+    .icon {
+      display: inline-block;
+      &.icon-play {
+        svg {
+          width: 26px;
+          position: relative;
+          top: 1px;
+          left: 1px;
+
+          path {
+            fill: white;
+          }
+        }
+      }
+
+      &.icon-pause {
+        position: relative;
+        top: -1px;
+        left: 1px;
+        svg {
+          width: 30px;
+          position: relative;
+          top: 6px;
+          left: 2px;
+        
+        }
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1200px) {
+      .video-wrapper {
+        max-width: 700px;
+        margin: 105px auto 45px;
+
+        .graphic-left {
+          width: 170px;
+          left: -50px;
+        }
+
+        .graphic-right {
+          width: 250px;
+          right: -60px;
+        }
+
+        img.product-image {
+          width: 300px;
+          bottom: -45px;
+          left: -85px;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      max-width: 100%;
+      padding: 25px 45px;
+
+      .content-wrapper {
+        gap: 0;
+
+        h3 {
+          max-width: 100%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 0 20px;
+
+      .content-wrapper {
+        .content {
+          flex-direction: column;
+          gap: 0;
+
+          .heading {
+            width: 100%;
+
+            h2 {
+              max-width: none;
+            }
+          }
+
+          a.btn {
+            display: none;
+          }
+
+          .text {
+            width: 100%;
+
+            .link-wrapper {
+              margin-top: 25px;
+              a.btn {
+                display: inline-block;
+              }
+            }
+
+
+          }
+        }
+      }
+
+      .video-wrapper {
+        margin: 85px auto; 
+        img.product-image {
+          left: -35px;
+          width: 215px;
+          bottom: -50px;
+        }
+      }
+
+      .video-toggle {
+        width: 45px;
+        height: 45px;
+        top: 20px;
+        right: 20px;        
+      }
+
+      .icon {
+        &.icon-play {
+          svg {
+            width: 24px;  
+            top: 1px;
+          }          
+        } 
+        
+        &.icon-pause {
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      .video-wrapper {
+        .graphic-right {
+          width: 180px;
+        }
+
+        img.product-image {
+          width: 175px;
+          bottom: -60px;
+          left: -25px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', () => {
+  const video  = document.getElementById('aboutVideo');
+  const toggle = document.getElementById('videoToggle');
+  if (!video || !toggle) return;
+
+  const playIcon  = toggle.querySelector('.icon-play');
+  const pauseIcon = toggle.querySelector('.icon-pause');
+
+  let firstClickDone = false;
+
+  const setIcons = (isPlaying) => {
+    if (isPlaying) {
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+      toggle.setAttribute('aria-label','Pause video');
+    } else {
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      toggle.setAttribute('aria-label','Play video');
+    }
+  };
+
+  // Ensure initial state
+  video.muted = true;
+
+  toggle.addEventListener('click', () => {
+    // FIRST CLICK: restart from beginning and unmute (even though it's already playing muted)
+    if (!firstClickDone) {
+      video.pause();               // ensure we can safely jump to 0
+      video.currentTime = 0;       // restart
+      video.muted = false;         // unmute on user gesture
+      video.play();
+      firstClickDone = true;
+      setIcons(true);
+      return;
+    }
+
+    // AFTER FIRST CLICK: normal pause/mute ↔ play/unmute behavior
+    if (video.paused) {
+      video.muted = false;         // resume unmuted
+      video.play();
+      setIcons(true);
+    } else {
+      video.pause();
+      video.muted = true;          // pause and mute
+      setIcons(false);
+    }
+  });
+});
+{% endjavascript %}

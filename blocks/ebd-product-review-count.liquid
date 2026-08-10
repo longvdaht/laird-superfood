@@ -1,0 +1,36 @@
+
+<div class="product-review-count">
+  <div
+    class="yotpo bottomLine"
+    data-product-id="{{ product.id }}"
+    data-url="{{ shop.url }}{{ product.url }}"
+  ></div>
+  <span class="yotpo-review-count"></span>
+  <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
+</div>
+
+{% schema %}
+{
+  "name": "EBD Product Review Count",
+  "presets": [
+    {
+      "name": "EBD Product Review Count",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .product-review-count {
+    display: flex;
+    align-items: center;
+
+    a.reviews-link {
+      position: relative;
+      bottom: 2px;
+      margin-left: 10px;
+      font-weight: 400;
+    }
+  }
+{% endstylesheet %}

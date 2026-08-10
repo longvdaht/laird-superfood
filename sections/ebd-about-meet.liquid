@@ -1,0 +1,195 @@
+<section class="ebd-about-meet">
+  <div class="content-wrapper">
+    <div class="content">
+      <h2 class="white">{{ section.settings.heading }}</h2>
+      {% for block in section.blocks %}
+        <div class="single-bio">
+          <h4>{{ block.settings.title }}</h4>
+          <p>{{ block.settings.bio }}</p>
+          <div class="socials">
+            <a href="{{ block.settings.facebook_url }}" target="_blank" rel="noopener">
+              <img src="{{ section.settings.facebook_icon | image_url: width: 300 }}">
+            </a>
+
+            <a href="{{ block.settings.instagram_url }}" target="_blank" rel="noopener">
+              <img src="{{ section.settings.instagram_icon | image_url: width: 300 }}">
+            </a>
+
+            <a href="{{ block.settings.x_url }}" target="_blank" rel="noopener">
+              <img src="{{ section.settings.x_icon | image_url: width: 300 }}">
+            </a>
+
+            <a href="{{ block.settings.tiktok_url }}" target="_blank" rel="noopener">
+              <img src="{{ section.settings.tiktok_icon | image_url: width: 300 }}">
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="image">
+      <img src="{{ section.settings.image | image_url: width: 1000 }}" alt="{{ section.settings.image.alt }}">
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Meet",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      },
+      {
+        "id": "facebook_icon",
+        "type": "image_picker",
+        "label": "Facebook Icon"
+      }
+    ,
+    {
+      "id": "instagram_icon",
+      "type": "image_picker",
+      "label": "Instagram Icon"
+    },
+    {
+      "id": "x_icon",
+      "type": "image_picker",
+      "label": "X Icon"
+    },
+    {
+      "id": "tiktok_icon",
+      "type": "image_picker",
+      "label": "TikTok Icon"
+    }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Bios",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "bio",
+            "type": "textarea",
+            "label": "Bio"
+          },
+          {
+            "id": "facebook_url",
+            "type": "text",
+            "label": "Facebook URL"
+          },
+          {
+            "id": "instagram_url",
+            "type": "text",
+            "label": "Instagram URL"
+          },
+          {
+            "id": "x_url",
+            "type": "text",
+            "label": "X URL"
+          },
+          {
+            "id": "tiktok_url",
+            "type": "text",
+            "label": "TikTok URL"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Meet",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-about-meet {
+    padding: 85px 65px;
+    background-color: #003349;
+    .content-wrapper {
+      display: flex;
+      align-items: center;
+      max-width: 1600px;
+      margin: 0 auto;
+      gap: 65px;
+
+      .content {
+        width: 50%;
+        
+        .single-bio {
+          margin-top: 45px;
+          h4 {
+            color: white;
+          }
+          p {
+            color: white;
+          }
+          .socials {
+            display: flex;
+            gap: 25px;
+            margin-top: 20px;
+            a {
+              img {
+                height: 30px;
+                width: auto;
+              }
+            }
+          }
+        }
+      }
+
+      .image {
+        width: 50%;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+
+      .content-wrapper {
+        flex-direction: column;
+        gap: 25px;
+
+        .content {
+          width: 100%;
+        }
+
+        .image {
+          width: 100%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+
+      .content-wrapper {
+        gap: 0;
+        .content {
+          .single-bio {
+            margin-top: 25px;
+
+            .socials {
+              margin-bottom: 45px;
+            }
+          }
+
+        }
+      }
+
+    }
+  }
+{% endstylesheet %}

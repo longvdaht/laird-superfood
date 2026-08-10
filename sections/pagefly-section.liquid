@@ -1,0 +1,118 @@
+
+{% if section.settings.section_id.size > 0 %}
+  <!-- PageFlyGlobalSection -->
+  {% render 'pagefly-main-js' %}
+  {% render 'pagefly-main-css' %}
+  {% include section.settings.section_id %}
+{% else %}
+  
+    {% if request.design_mode %}
+      <style>.pf-ph{font-size:14px!important;background:#fafafa;padding:20px;text-align:center;border:1px solid #f0f0f0;border-radius:4px;margin:15px}.pf-ph span{display:block;background:#e6f7ff;padding:8px 15px;border:1px solid #91d5ff}</style>
+      <div class="pf-ph">
+        <h3>PageFly Section</h3>
+        <span>No section selected. Please select your section from the list</span>
+      </div>
+    {% endif %}
+  
+{% endif %}
+
+{% schema %}
+{
+  "name": "PageFly Section",
+  "settings": [
+    {
+      "id": "section_id",
+      "type": "select",
+      "label": "Sections",
+      "options": [
+        {
+          "label": "Select section",
+          "value": ""
+        },
+        {
+          "label": "HP - mission banner",
+          "value": "pf-3c23c283"
+        },
+        {
+          "label": "HP Hero - NYE Promo",
+          "value": "pf-7eb7cfa9"
+        },
+        {
+          "label": "PGP Hero - Red Tag Sale 2022",
+          "value": "pf-eedfa3aa"
+        },
+        {
+          "label": "BFCM PGP Hero",
+          "value": "pf-0d346428"
+        },
+        {
+          "label": "HP - nano banner - holiday gift ideas",
+          "value": "pf-32e836d6"
+        },
+        {
+          "label": "BFCM Banner Template 2022",
+          "value": "pf-0e8dfdec"
+        },
+        {
+          "label": "HP Hero - Beyond Big Sale",
+          "value": "pf-7ee845fd"
+        },
+        {
+          "label": "HP Hero - Super Adaptogen Blend",
+          "value": "pf-41b79560"
+        },
+        {
+          "label": "HP Hero - Slider",
+          "value": "pf-4df24f1b"
+        },
+        {
+          "label": "HP Hero - Pumpkin Spice",
+          "value": "pf-8c8ebd7a"
+        },
+        {
+          "label": "PGP - PS hero",
+          "value": "pf-c1e65e84"
+        },
+        {
+          "label": "PGP Hero",
+          "value": "pf-62342bf1"
+        },
+        {
+          "label": "PGP - FAQs",
+          "value": "pf-e38402a5"
+        },
+        {
+          "label": "HP Hero - Bright Cups",
+          "value": "pf-a2052945"
+        },
+        {
+          "label": "HP - MPI",
+          "value": "pf-edef7044"
+        },
+        {
+          "label": "Section - Image / Copy - 50/50",
+          "value": "pf-b6edeec1"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "Find and edit your section on the [section listing](https://laird-superfood.myshopify.com/admin/apps/pagefly/sections)"
+    },
+    {
+      "type": "paragraph",
+      "content": "To add block to a section, please use the App Block element on PageFly section editor."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "PageFly Section"
+    }
+  ]
+}
+{% endschema %}

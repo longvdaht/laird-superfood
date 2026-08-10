@@ -1,0 +1,127 @@
+<section class="contact-reviews">
+  <div class="large-leaf">
+    {% render 'graphic-large-leaf-darkblue' %}
+  </div>
+  <div class="content-wrapper">
+    <div class="stars">
+      {% render 'icon-stars-4-5-red' %}
+    </div>
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <h4 class="darkblue">{{ section.settings.subheading }}</h4>
+    <div class="links">
+      <a href="{{ section.settings.link_1_url }}" class="btn">{{ section.settings.link_1_label }}</a>
+      <a href="{{ section.settings.link_2_url }}" class="btn btn-outline-darkblue">{{ section.settings.link_2_label }}</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Contact Reviews",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "link_1_url",
+        "type": "url",
+        "label": "Link #1 URL"
+      },
+      {
+        "id": "link_1_label",
+        "type": "text",
+        "label": "Link #1 Label"
+      },
+      {
+        "id": "link_2_url",
+        "type": "url",
+        "label": "Link #2 URL"
+      },
+      {
+        "id": "link_2_label",
+        "type": "text",
+        "label": "Link #2 Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Contact Reviews",
+        "category": "Contact"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.contact-reviews {
+    background-color: #e3d9ca;
+    position: relative;
+
+    .large-leaf {
+      transform: scaleX(-1);
+      position: absolute;
+      top: -300px;
+      right: -200px;
+    }
+
+    .content-wrapper {
+      padding: 25px 65px 125px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+
+      .stars {
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      h4 {
+        text-align: center;
+      }
+
+      .links {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 1400px) {
+      .large-leaf {
+        width: 300px;
+        top: -400px;
+        right: -60px;
+      }
+
+      .content-wrapper {
+        padding: 0 65px 85px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .large-leaf {
+        display: none;
+      }
+
+      .content-wrapper {
+        padding: 0 25px 65px;
+      }
+    }
+  }
+{% endstylesheet %}

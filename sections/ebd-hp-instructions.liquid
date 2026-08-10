@@ -1,0 +1,317 @@
+<section class="hp-instructions">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      <div class="toggles">
+        {% for block in section.blocks %}
+          <button class="instructions-toggle" data-id="{{ block.settings.title | handleize }}">
+            {{ block.settings.title }}
+          </button>
+        {% endfor %}
+      </div>
+      <select class="instructions-select">
+        {% for block in section.blocks %}
+          <option value="{{ block.settings.title | handleize }}">
+            {{ block.settings.title }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {% for block in section.blocks %}
+      <div data-id="{{ block.settings.title | handleize }}" class="instruction-wrapper">
+
+        <div class="instruction-card">
+          <div class="image">
+            <img src="{{ block.settings.image_1 | img_url: '1000x' }}" alt="{{ block.settings.title }}">           
+          </div>
+          <div class="content">
+            {{ block.settings.content_1 }}
+          </div>
+        </div>
+
+        <div class="instruction-card">
+          <div class="image">
+            <img src="{{ block.settings.image_2 | img_url: '1000x' }}" alt="{{ block.settings.title }}">          
+          </div>
+          <div class="content">
+            {{ block.settings.content_2 }}
+          </div> 
+        </div>
+
+        <div class="instruction-card">
+          <div class="image">
+            <img src="{{ block.settings.image_3 | img_url: '1000x' }}" alt="{{ block.settings.title }}">           
+          </div>
+          <div class="content">
+            {{ block.settings.content_3 }}
+          </div>
+        </div>
+
+        <div class="instruction-card">
+          <div class="image">
+            <img src="{{ block.settings.image_4 | img_url: '1000x' }}" alt="{{ block.settings.title }}">           
+          </div>
+          <div class="content">
+            {{ block.settings.content_4 }}
+          </div>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP Instructions",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Instructions",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "image_1",
+            "type": "image_picker",
+            "label": "Image #1"
+          },
+          {
+            "id": "content_1",
+            "type": "richtext",
+            "label": "Content #1"
+          },
+          {
+            "id": "image_2",
+            "type": "image_picker",
+            "label": "Image #2"
+          },
+          {
+            "id": "content_2",
+            "type": "richtext",
+            "label": "Content #2"
+          },
+          {
+            "id": "image_3",
+            "type": "image_picker",
+            "label": "Image #3"
+          },
+          {
+            "id": "content_3",
+            "type": "richtext",
+            "label": "Content #3"
+          },
+          {
+            "id": "image_4",
+            "type": "image_picker",
+            "label": "Image #4"
+          },
+          {
+            "id": "content_4",
+            "type": "richtext",
+            "label": "Content #4"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP Instructions",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.hp-instructions {
+    padding: 65px 45px;
+
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+
+      .heading {
+        display: flex;
+        gap: 25px;
+        align-items: center;
+        margin-bottom: 25px;
+
+        h2 {
+          margin: 0;
+        }
+
+        .toggles {
+          display: flex;
+          gap: 10px;
+
+          button {
+            background-color: white;
+            color: var(--color-darkblue);
+            text-align: center;
+            display: block;
+            border: solid 2px var(--color-darkblue);
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: .4s;
+            width: auto;
+            white-space: nowrap;
+            cursor: pointer;
+            text-transform: uppercase;
+
+            &.active {
+              background-color: var(--color-darkblue);
+              color: white;
+            }
+          }
+
+        }
+
+        select {
+          display: none;
+        }
+
+
+      }
+
+      .instruction-wrapper {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+        gap: 20px;
+
+        .instruction-card {
+          .image {
+            margin-bottom: 15px;
+          }
+
+          .content {
+            p {
+              font-size: 14px;
+              line-height: 18px;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 45px;
+      .content-wrapper {
+        .heading {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+
+        .instruction-wrapper {
+          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 20px;
+      .content-wrapper {
+        .heading {
+          flex-direction: row;
+          align-items: center;
+          .toggles {
+            display: none;
+          }
+
+          select {
+            display: block;
+            border: solid 2px var(--color-darkblue);
+            padding: 12px 10px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            color: var(--color-darkblue);
+            border-radius: 0;
+          }
+
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      .content-wrapper {
+        .heading {
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const toggleButtons = document.querySelectorAll('.instructions-toggle');
+  const instructionWrappers = document.querySelectorAll('.instruction-wrapper');
+  const instructionSelect = document.querySelector('.instructions-select');
+
+  // Hide all instruction wrappers initially except the first one
+  instructionWrappers.forEach((wrapper, index) => {
+    if (index !== 0) {
+      wrapper.style.display = 'none';
+    }
+  });
+
+  // Set first button as active
+  if (toggleButtons.length > 0) {
+    toggleButtons[0].classList.add('active');
+  }
+
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const targetId = this.dataset.id;
+      
+      // Remove active class from all buttons
+      toggleButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Hide all instruction wrappers
+      instructionWrappers.forEach(wrapper => {
+        wrapper.style.display = 'none';
+      });
+      
+      // Show the target instruction wrapper
+      const targetWrapper = document.querySelector(`.instruction-wrapper[data-id="${targetId}"]`);
+      if (targetWrapper) {
+        targetWrapper.style.display = 'grid';
+      }
+    });
+  });
+
+  // Handle select change for mobile
+  if (instructionSelect) {
+    instructionSelect.addEventListener('change', function() {
+      const targetId = this.value;
+      
+      // Hide all instruction wrappers
+      instructionWrappers.forEach(wrapper => {
+        wrapper.style.display = 'none';
+      });
+      
+      // Show the target instruction wrapper
+      const targetWrapper = document.querySelector(`.instruction-wrapper[data-id="${targetId}"]`);
+      if (targetWrapper) {
+        targetWrapper.style.display = 'grid';
+      }
+    });
+  }
+{% endjavascript %}

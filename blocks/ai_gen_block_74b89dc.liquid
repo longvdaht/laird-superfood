@@ -1,0 +1,563 @@
+{% doc %}
+  @prompt
+    Update the existing Homepage banner block to support responsive asset switching — add a separate mobile image field so that when viewing on mobile, a different image is displayed instead of the desktop image. The block should show the desktop image on larger screens and the mobile image on smaller screens, with a clean responsive breakpoint between them., now remove the side padding so the background image becomes edge to edge, okay now give me 2 buttons , make the background image clickable so give me the option to add a link to the background image
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-homepage-banner-{{ ai_gen_id }} {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    display: block;
+  }
+
+  .ai-homepage-banner__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: {{ block.settings.desktop_height }}px;
+    overflow: hidden;
+  }
+
+  .ai-homepage-banner__image-link-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .ai-homepage-banner__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ block.settings.image_position }};
+  }
+
+  .ai-homepage-banner__image-desktop-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-homepage-banner__image-mobile-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .ai-homepage-banner__content-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 90%;
+    max-width: 800px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .ai-homepage-banner__heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 16px;
+    text-shadow: {{ block.settings.text_shadow_x }}px {{ block.settings.text_shadow_y }}px {{ block.settings.text_shadow_blur }}px {{ block.settings.text_shadow_color }};
+  }
+
+  .ai-homepage-banner__subheading-{{ ai_gen_id }} {
+    color: {{ block.settings.subheading_color }};
+    font-size: {{ block.settings.subheading_size }}px;
+    margin: 0 0 24px;
+    text-shadow: {{ block.settings.text_shadow_x }}px {{ block.settings.text_shadow_y }}px {{ block.settings.text_shadow_blur }}px {{ block.settings.text_shadow_color }};
+  }
+
+  .ai-homepage-banner__buttons-{{ ai_gen_id }} {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    pointer-events: auto;
+  }
+
+  .ai-homepage-banner__button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 14px 32px;
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    transition: all 0.3s ease;
+  }
+
+  .ai-homepage-banner__button-primary-{{ ai_gen_id }} {
+    background-color: {{ block.settings.button_1_bg_color }};
+    color: {{ block.settings.button_1_text_color }};
+  }
+
+  .ai-homepage-banner__button-primary-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_1_hover_bg_color }};
+    color: {{ block.settings.button_1_hover_text_color }};
+  }
+
+  .ai-homepage-banner__button-secondary-{{ ai_gen_id }} {
+    background-color: {{ block.settings.button_2_bg_color }};
+    color: {{ block.settings.button_2_text_color }};
+  }
+
+  .ai-homepage-banner__button-secondary-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_2_hover_bg_color }};
+    color: {{ block.settings.button_2_hover_text_color }};
+  }
+
+  .ai-homepage-banner__overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .ai-homepage-banner__placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-homepage-banner__placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+  }
+
+  .ai-homepage-banner__empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-homepage-banner__image-wrapper-{{ ai_gen_id }} {
+      height: {{ block.settings.mobile_height }}px;
+    }
+
+    .ai-homepage-banner__image-desktop-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-homepage-banner__image-mobile-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .ai-homepage-banner__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.6 }}px;
+    }
+
+    .ai-homepage-banner__subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.8 }}px;
+    }
+
+    .ai-homepage-banner__button-{{ ai_gen_id }} {
+      font-size: {{ block.settings.button_font_size | times: 0.9 }}px;
+      padding: 12px 24px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-homepage-banner-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-homepage-banner__image-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.desktop_image or block.settings.mobile_image %}
+      {% if block.settings.image_link != blank %}
+        <a href="{{ block.settings.image_link }}" class="ai-homepage-banner__image-link-{{ ai_gen_id }}">
+      {% else %}
+        <div class="ai-homepage-banner__image-link-{{ ai_gen_id }}">
+      {% endif %}
+
+        {% if block.settings.desktop_image %}
+          <img
+            src="{{ block.settings.desktop_image | image_url: width: 2000 }}"
+            alt="{{ block.settings.desktop_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.desktop_image.width }}"
+            height="{{ block.settings.desktop_image.height }}"
+            class="ai-homepage-banner__image-{{ ai_gen_id }} ai-homepage-banner__image-desktop-{{ ai_gen_id }}"
+          >
+        {% endif %}
+
+        {% if block.settings.mobile_image %}
+          <img
+            src="{{ block.settings.mobile_image | image_url: width: 1000 }}"
+            alt="{{ block.settings.mobile_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.mobile_image.width }}"
+            height="{{ block.settings.mobile_image.height }}"
+            class="ai-homepage-banner__image-{{ ai_gen_id }} ai-homepage-banner__image-mobile-{{ ai_gen_id }}"
+          >
+        {% elsif block.settings.desktop_image %}
+          <img
+            src="{{ block.settings.desktop_image | image_url: width: 1000 }}"
+            alt="{{ block.settings.desktop_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.desktop_image.width }}"
+            height="{{ block.settings.desktop_image.height }}"
+            class="ai-homepage-banner__image-{{ ai_gen_id }} ai-homepage-banner__image-mobile-{{ ai_gen_id }}"
+          >
+        {% endif %}
+
+        {% if block.settings.show_overlay %}
+          <div class="ai-homepage-banner__overlay-{{ ai_gen_id }}"></div>
+        {% endif %}
+
+      {% if block.settings.image_link != blank %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="ai-homepage-banner__placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        <div class="ai-homepage-banner__empty-state-{{ ai_gen_id }}">
+          Next, add desktop and mobile images
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.heading != blank or block.settings.subheading != blank or block.settings.button_1_text != blank or block.settings.button_2_text != blank %}
+      <div class="ai-homepage-banner__content-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-homepage-banner__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+
+        {% if block.settings.subheading != blank %}
+          <p class="ai-homepage-banner__subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+        {% endif %}
+
+        {% if block.settings.button_1_text != blank or block.settings.button_2_text != blank %}
+          <div class="ai-homepage-banner__buttons-{{ ai_gen_id }}">
+            {% if block.settings.button_1_text != blank and block.settings.button_1_link != blank %}
+              <a href="{{ block.settings.button_1_link }}" class="ai-homepage-banner__button-{{ ai_gen_id }} ai-homepage-banner__button-primary-{{ ai_gen_id }}">
+                {{ block.settings.button_1_text }}
+              </a>
+            {% endif %}
+
+            {% if block.settings.button_2_text != blank and block.settings.button_2_link != blank %}
+              <a href="{{ block.settings.button_2_link }}" class="ai-homepage-banner__button-{{ ai_gen_id }} ai-homepage-banner__button-secondary-{{ ai_gen_id }}">
+                {{ block.settings.button_2_text }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Homepage banner",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "Image link"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 200,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our latest collection"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Text shadow"
+    },
+    {
+      "type": "range",
+      "id": "text_shadow_x",
+      "label": "Horizontal offset",
+      "min": -10,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "text_shadow_y",
+      "label": "Vertical offset",
+      "min": -10,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "text_shadow_blur",
+      "label": "Blur radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "text_shadow_color",
+      "label": "Shadow color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Button 1"
+    },
+    {
+      "type": "text",
+      "id": "button_1_text",
+      "label": "Text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Link"
+    },
+    {
+      "type": "color",
+      "id": "button_1_bg_color",
+      "label": "Background",
+      "default": "#003349"
+    },
+    {
+      "type": "color",
+      "id": "button_1_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_1_hover_bg_color",
+      "label": "Hover background",
+      "default": "#3a758a"
+    },
+    {
+      "type": "color",
+      "id": "button_1_hover_text_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Button 2"
+    },
+    {
+      "type": "text",
+      "id": "button_2_text",
+      "label": "Text",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Link"
+    },
+    {
+      "type": "color",
+      "id": "button_2_bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_2_text_color",
+      "label": "Text",
+      "default": "#003349"
+    },
+    {
+      "type": "color",
+      "id": "button_2_hover_bg_color",
+      "label": "Hover background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "button_2_hover_text_color",
+      "label": "Hover text",
+      "default": "#003349"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Homepage banner"
+    }
+  ]
+}
+{% endschema %}

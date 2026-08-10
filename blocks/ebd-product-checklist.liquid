@@ -1,0 +1,117 @@
+<div class="ebd-product-checklist">
+  <p>
+    <img
+      src="https://cdn.shopify.com/s/files/1/1308/3049/files/checkmark.svg?v=1727968860"
+      alt="Check icon"
+      width="20"
+      height="20"
+    >
+    <span class="ebd-corso-toggle">
+      Free shipping for new customers and on one-time orders over $70 <span class="icon">i</span>
+    </span>
+  </p>
+  <p class="corso-notice">
+     Free shipping applies to standard shipping charges only and does not include Carbon Offsets or Premium Protection. Any fees associated with Carbon Offsets and or Premium Protection are optional add-ons and will be charged separately at checkout. 
+  </p>
+  <p>
+    <img
+      src="https://cdn.shopify.com/s/files/1/1308/3049/files/checkmark.svg?v=1727968860"
+      alt="Check icon"
+      width="20"
+      height="20"
+    >
+    <span>
+      30-day Money Back Guarantee
+    </span>
+  </p>
+  <p>
+    <img
+      src="https://cdn.shopify.com/s/files/1/1308/3049/files/checkmark.svg?v=1727968860"
+      alt="Check icon"
+      width="20"
+      height="20"
+    >
+    <span>
+      Fast shipping - normally sent out same day
+    </span>
+  </p>
+  <p>
+    <img
+      src="https://cdn.shopify.com/s/files/1/1308/3049/files/checkmark.svg?v=1727968860"
+      alt="Check icon"
+      width="20"
+      height="20"
+    >
+    <span>
+      Optional Carbon Offsets & Premium Shipping
+    </span>
+  </p>
+</div>
+
+
+
+  {% schema %}
+{
+  "name": "EBD Product Checklist",
+  "presets": [
+    {
+      "name": "EBD Product Checklist",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-product-checklist {
+    margin: 25px 0;
+    p {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0 0 5px;
+      font-size: 15px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .ebd-corso-toggle {
+        cursor: pointer;
+
+        span.icon {
+          border: solid 1px #003349;
+          border-radius: 50px;
+          padding: 0px 4px;
+          font-size: 9px;
+          position: relative;
+          top: -2px;
+        }
+      }
+    }
+
+    p.corso-notice {
+      padding-left: 27px;
+      display: none;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 19px;
+      margin-top: -5px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.querySelector('.ebd-corso-toggle')
+    var notice = document.querySelector('.corso-notice')
+
+    if (!toggle || !notice) return
+
+    toggle.addEventListener('click', function () {
+      notice.style.display = notice.style.display === 'block' ? 'none' : 'block'
+    })
+  })
+
+{% endjavascript %}

@@ -1,0 +1,304 @@
+{% comment %} Hydrate PDP code {% endcomment %}
+
+{% if product.handle contains 'hydrate-tropical'
+  or product.handle contains 'hydrate-wild-berry'
+  or product.handle contains 'hydrate-original-sticks'
+  or product.handle contains 'hydrate-pineapple-mango'
+  or product.handle contains 'hydrate-lemon'
+  or product.handle contains 'hydrate-variety-pack' %}
+
+  <style>
+    
+  </style>
+
+{% endif %}
+
+
+<section class="ebd-product-main">
+  <div class="content-wrapper">
+    <div class="product-media-column" style="background-color: {{ product.metafields.custom.background_color }}">
+      {% assign quote_rendered = false %}
+
+      {%- comment -%} DESKTOP GRID WRAPPER {%- endcomment -%}
+      <div class="ebd-media-desktop">
+        {% assign row_open = false %}
+      {% for media in product.media limit: 7 %}
+          {% assign i = forloop.index %}
+
+          {% if i == 1 or i == 4 %}
+            {% case media.media_type %}
+              {% when 'image' %}
+                {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
+              {% when 'video' %}
+                {{ media | video_tag: controls: true }}
+              {% when 'external_video' %}
+                {{ media | external_video_tag }}
+            {% endcase %}
+          {% endif %}
+
+          {% if i == 2 or i == 5 %}
+            <div class="ebd-media-row">
+            {% assign row_open = true %}
+          {% endif %}
+
+          {% if i == 2 or i == 3 or i == 5 or i == 6 %}
+            <div class="ebd-media-half">
+              {% case media.media_type %}
+                {% when 'image' %}
+                  {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
+                {% when 'video' %}
+                  {{ media | video_tag: controls: true }}
+                {% when 'external_video' %}
+                  {{ media | external_video_tag }}
+              {% endcase %}
+            </div>
+          {% endif %}
+
+          {% if i == 3 or i == 6 %}
+            </div>
+            {% assign row_open = false %}
+          {% endif %}
+
+          {% if i == 6 and quote_rendered == false %}
+            {% render 'ebd-product-media-quote' %}
+            {% assign quote_rendered = true %}
+          {% endif %}
+        {% endfor %}
+        {% if row_open %}</div>{% endif %}
+      </div>
+
+      {%- comment -%} MOBILE SWIPER WRAPPER {%- endcomment -%}
+      <div class="ebd-media-mobile">
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            {% assign quote_rendered_mobile = false %}
+
+            {% for media in product.media limit: 7 %}
+              <div class="swiper-slide">
+                {% case media.media_type %}
+                  {% when 'image' %}
+                    {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
+                  {% when 'video' %}
+                    {{ media | video_tag: controls: true }}
+                  {% when 'external_video' %}
+                    {{ media | external_video_tag }}
+                {% endcase %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="swiper-scrollbar"></div>
+      </div>
+    </div>
+
+    <div class="product-information-column">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when '@theme' %}
+            {% render block %}
+          {% when '@app' %}
+            {% render block %}
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+/* 1. Force the container to be a single row with no wrapping */
+.variant-option--buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important; 
+  justify-content: space-between !important;
+  gap: 4px !important; /* Minimal gap to save space */
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* 2. Make each button label flexible */
+.variant-option__button-label.pdp-variant {
+  flex: 1 1 0% !important; /* Grow and shrink equally */
+  min-width: 0 !important;   /* Allows the button to shrink below its content size */
+  margin: 0 !important;
+  padding: 8px 4px !important; /* Reduced side padding to fit text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc; /* Visual boundary */
+  border-radius: 4px;
+}
+
+/* 3. Handle the text specifically */
+.variant-option__button-label__text {
+  display: block;
+  white-space: nowrap;      /* Keep text on one line */
+  overflow: hidden;         /* Prevent messy overlaps */
+  text-overflow: ellipsis;  /* Adds "..." if it's literally impossible to fit */
+  text-align: center;
+  width: 100%;
+  /* Responsive font: tiny on mobile, normal on desktop */
+  font-size: clamp(9px, 2.5vw, 14px) !important; 
+  line-height: 1.2;
+}
+
+/* 4. Hide the radio circle to save more horizontal space */
+.variant-option__button-label input[type="radio"] {
+  display: none !important;
+}
+</style>
+
+
+{% schema %}
+{
+  "name": "EBD Product Main",
+  "templates": ["product"],
+  "settings": [],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "EBD Product Main",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+section.ebd-product-main {
+  .content-wrapper {
+    display: flex;
+    max-width: 1600px;
+
+    .product-media-column {
+      width: 50%;
+      padding: 25px 45px;
+
+      .ebd-media-mobile {
+        display: none;
+      }
+
+  img:not(.w-32) {
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 7px;
+    margin: 10px;
+  }
+img.w-32 {
+  width: auto !important;
+  max-width: 150px !important;
+  margin: 20px 0px !important;
+}
+
+      .ebd-media-row {
+        display: flex;
+        gap: 20px;
+      }
+
+      .ebd-media-half {
+        width: 50%;
+      }
+    }
+
+    .product-information-column {
+      width: 50%;
+      padding: 65px 45px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      .product-media-column {
+        width: 45%;
+        padding: 25px 15px;
+
+        img {
+          margin: 0 0 10px;
+        }
+
+        .ebd-media-row {
+          gap: 10px;
+        }
+      }
+
+      .product-information-column {
+        width: 55%;
+        padding: 65px 20px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-wrapper {
+      flex-direction: column;
+
+      .product-media-column {
+        width: 100%;
+        padding: 25px 15px 15px;
+
+        .ebd-media-desktop {
+          display: none;
+        }
+
+        .ebd-media-mobile {
+          display: block;
+
+          .swiper-slide {
+            aspect-ratio: 1;
+
+            video {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 7px;
+            }
+          }
+
+          .swiper-scrollbar {
+            position: relative;
+            background: white;
+            margin-top: 25px;
+            
+            .swiper-scrollbar-drag {
+              background-color: #003349;
+            }
+          }
+        }
+      }
+
+      .product-information-column {
+        width: 100%;
+      }
+    }
+  }
+}
+{% endstylesheet %}
+
+<style>
+  @media screen and (max-width:768px) {
+  .ebd-product-media-quote img {
+  background: transparent !important;
+  max-width: 150px !important;
+}
+}
+
+
+</style>
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const swiper = new Swiper('.ebd-media-mobile .swiper', {
+      slidesPerView: 1,
+      spaceBetween: 10,
+      loop: false,
+
+      scrollbar: {
+        el: '.ebd-media-mobile .swiper-scrollbar',
+        draggable: true,
+        clickable: true,
+      },
+    });
+  });
+{% endjavascript %}

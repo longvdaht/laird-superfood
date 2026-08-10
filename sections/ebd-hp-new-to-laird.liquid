@@ -1,0 +1,121 @@
+<section class="new-to-laird">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h3 class="white">{{ section.settings.heading }}</h3>
+      <p class="white">{{ section.settings.text }}</p>
+    </div>
+    <div class="link-wrapper">
+      <a href="{{ section.settings.link_1_url }}" class="btn">{{ section.settings.link_1_label }}</a>
+      {% if section.settings.link_2_url %}
+        <a href="{{ section.settings.link_2_url }}" class="btn">{{ section.settings.link_2_label }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP New To Laird",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "text",
+        "label": "Text"
+      },
+      {
+        "id": "link_1_url",
+        "type": "url",
+        "label": "Link #1 URL"
+      },
+      {
+        "id": "link_1_label",
+        "type": "text",
+        "label": "Link #1 Label"
+      },
+      {
+        "id": "link_2_url",
+        "type": "url",
+        "label": "Link #2 URL"
+      },
+      {
+        "id": "link_2_label",
+        "type": "text",
+        "label": "Link #2 Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP New To Laird",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.new-to-laird {
+    background-color: var(--color-mediumblue);
+    padding: 25px 45px;
+
+    .content-wrapper {
+      max-width: 1600px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 25px;
+
+      .heading {
+        width: 55%;
+
+        h3 {
+          margin-bottom: 10px;
+        }
+
+        p {
+          max-width: 550px;
+        }
+      }
+
+      .link-wrapper {
+        width: 45%;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 25px 20px;
+
+      .content-wrapper {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .heading {
+          width: 100%;
+          h3 {
+            text-align: center;
+          }
+
+          p {
+            text-align: center;
+            margin: 0 auto;
+          }
+        }
+
+        .link-wrapper {
+          width: 100%;
+          gap: 15px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

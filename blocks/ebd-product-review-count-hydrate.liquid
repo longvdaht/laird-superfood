@@ -1,0 +1,36 @@
+
+<div class="product-review-count">
+  <div
+    class="yotpo bottomLine"
+    data-product-id="7173361532963"
+    data-url="https://admin.shopify.com/store/laird-superfood/products/7173361532963"
+  ></div>
+  <span class="yotpo-review-count"></span>
+  <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
+</div>
+
+{% schema %}
+{
+  "name": "EBD Review Count Hydrate",
+  "presets": [
+    {
+      "name": "EBD Review Count Hydrate",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .product-review-count {
+    display: flex;
+    align-items: center;
+
+    a.reviews-link {
+      position: relative;
+      bottom: 2px;
+      margin-left: 10px;
+      font-weight: 400;
+    }
+  }
+{% endstylesheet %}

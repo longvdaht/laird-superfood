@@ -1,0 +1,98 @@
+<section class="ebd-about-intro">
+  <div class="content-wrapper">
+    <div class="image">
+      <img src="{{ section.settings.image | image_url: width: 1000 }}" alt="{{ section.settings.image.alt }}">
+    </div>
+     <div class="content">
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      <div class="text">
+        {{ section.settings.text }}
+      </div>
+    </div>
+  </div>
+  
+ 
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Intro",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Intro",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-about-intro {
+    padding: 85px 65px;
+    background-color: #f1ede7;
+    .content-wrapper {
+      display: flex;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 45px;
+
+      .image {
+        width: 50%;
+        img {
+          max-width: 500px;
+          margin: 0 auto;
+        }
+      }
+
+      .content {
+        width: 50%;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+
+      .content-wrapper {
+        flex-direction: column;
+        .image {
+          width: 100%;
+        }
+
+        .content {
+          width: 100%;
+
+          h2 {
+            text-align: center;
+          }
+
+          .text {
+            text-align: center;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+    }
+  }
+
+{% endstylesheet %}

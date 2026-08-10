@@ -1,0 +1,109 @@
+<section class="pdp-info-50-50">
+  <div class="content-wrapper">
+
+    {% if product.metafields.custom.description_title %}
+      <div class="row">
+        <div class="content">
+          <h2 class="mediumblue">{{ product.metafields.custom.description_title }}</h2>
+          {% if product.metafields.custom.description_copy %}
+            <div class="copy">{{ product.metafields.custom.description_copy }}</div>
+          {% endif %}
+        </div>
+        {% if product.metafields.custom.description_image %}
+          <div class="image">
+            <img src="{{ product.metafields.custom.description_image | img_url: '1000x' }}" alt="{{ product.metafields.custom.description_title }}">
+          </div>
+        {% endif %}
+
+      </div>
+    {% endif %}
+
+    {% if product.metafields.custom.flavor_title %}
+      <div class="row">
+        <div class="content">
+          <h2 class="mediumblue">{{ product.metafields.custom.flavor_title }}</h2>
+          {% if product.metafields.custom.flavor_copy %}
+            <div class="copy">
+              {{ product.metafields.custom.flavor_copy }}
+            </div>
+          {% endif %}
+        </div>
+        {% if product.metafields.custom.flavor_image %}
+          <div class="image">
+            <img src="{{ product.metafields.custom.flavor_image | img_url: '1000x' }}" alt="{{ product.metafields.custom.flavor_title }}">
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD PDP Info 50/50",
+    "settings": [
+
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP Info 50/50",
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.pdp-info-50-50 {
+    padding: 0 65px;
+    .content-wrapper {
+      max-width: 1300px;
+      .row {
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 125px;
+        padding: 65px 0;
+
+        .content {
+          width: 60%;
+
+          .copy {
+            color: var(--color-mediumblue);
+          }
+        }
+
+        .image {
+          width: 40%;
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+          }
+        }
+
+        &:nth-of-type(even) {
+          flex-direction: row-reverse;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+<style>
+  @media screen and (max-width:768px) {
+    section.pdp-info-50-50 {
+      padding: 0px 15px !important;
+    }
+    section.pdp-info-50-50 .content-wrapper .row {
+      padding: 30px 0 !important;
+    }
+    section.pdp-info-50-50 .content-wrapper .row, section.pdp-info-50-50 .content-wrapper .row:nth-of-type(2n) {
+      flex-direction: column !important;
+      gap: 25px !important;
+    }
+    section.pdp-info-50-50 .content-wrapper .row .content, section.pdp-info-50-50 .content-wrapper .row .image {
+      width: 95% !important;
+    }
+  }
+</style>

@@ -1,0 +1,52 @@
+{% comment %}
+  Expects a 'tab' object with the following structure:
+  {
+    "type": "what_it_tastes_like",
+    "title": "WHAT IT TASTES LIKE",
+    "content": {
+      "image": "greens.jpg",
+      "heading": "Refreshingly Light and Citrus Forward",
+      "description": "...",
+      "testimonial": {
+        "quote": "Probably the best tasting greens powder I've tried.",
+        "author": "AARON B."
+      }
+    }
+  }
+{% endcomment %}
+
+<div class="content-wrapper">
+  <div class="column">
+    <h3>{{ tab.content.heading }}</h3>
+
+    <p>
+      {{ tab.content.description }}
+    </p>
+
+    {% if tab.content.testimonial.quote != blank %}
+      <div class="quote" style="background-color: {{ product.metafields.custom.background_color }}">
+        <img
+          src="https://cdn.shopify.com/s/files/1/1308/3049/files/5-stars.svg?v=1728073011"
+          alt="quote"
+          width="128"
+          height="24"
+          class="stars"
+        >
+
+        <p class="quote-text">"{{ tab.content.testimonial.quote }}"</p>
+        <p class="name">- {{ tab.content.testimonial.author }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="column">
+    {% if tab.content.image %}
+      <img
+        src="{{ tab.content.image }}"
+        alt="Daily Greens Information"
+        width="500"
+        height="500"
+      >
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,283 @@
+<section class="contact-details">
+
+  <div class="content-wrapper">
+    <div class="details">
+      <div class="content">
+        <h3 class="darkblue">{{ section.settings.heading }}</h3>
+        <div class="hours">
+          {{ section.settings.hours }}
+        </div>
+        <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
+        <div class="contact">
+          {{ section.settings.contact }}
+        </div>
+      </div>
+      <div class="video-wrapper">
+        {% if section.settings.image != blank %}
+          {{ section.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+        {% else %}
+          {{ section.settings.video_iframe }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="links">
+      <div class="column">
+        <h2 class="darkblue">{{ section.settings.link_left_heading }}</h2>
+        <p>{{ section.settings.link_left_text }}</p>
+        <a href="{{ section.settings.link_left_link_url }}" class="btn btn-outline-darkblue">
+          {{ section.settings.link_left_link_label }}
+        </a>
+      </div>
+      <div class="column">
+        <h2 class="darkblue">{{ section.settings.link_right_heading }}</h2>
+        <p>{{ section.settings.link_right_text }}</p>
+        <a href="{{ section.settings.link_right_link_url }}" class="btn btn-outline-darkblue">
+          {{ section.settings.link_right_link_label }}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="wave-bottom">
+    {% render 'wave-contact-reviews-tan' %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Contact Details",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "hours",
+        "type": "richtext",
+        "label": "Hours"
+      },
+      {
+        "id": "link_url",
+        "type": "url",
+        "label": "Link URL"
+      },
+      {
+        "id": "link_label",
+        "type": "text",
+        "label": "Link Label"
+      },
+      {
+        "id": "contact",
+        "type": "richtext",
+        "label": "Contact"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image (overrides video if set)"
+      },
+      {
+        "id": "video_iframe",
+        "type": "html",
+        "label": "Video iframe"
+      },
+      {
+        "id": "link_left_heading",
+        "type": "text",
+        "label": "Link Left Heading"
+      },
+      {
+        "id": "link_left_text",
+        "type": "text",
+        "label": "Link Left Text"
+      },
+      {
+        "id": "link_left_link_url",
+        "type": "url",
+        "label": "Link Left Link URL"
+      },
+      {
+        "id": "link_left_link_label",
+        "type": "text",
+        "label": "Link Left Link Label"
+      },
+      {
+        "id": "link_right_heading",
+        "type": "text",
+        "label": "Link Right Heading"
+      },
+      {
+        "id": "link_right_text",
+        "type": "text",
+        "label": "Link Right Text"
+      },
+      {
+        "id": "link_right_link_url",
+        "type": "url",
+        "label": "Link Right Link URL"
+      },
+      {
+        "id": "link_right_link_label",
+        "type": "text",
+        "label": "Link Right Link Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Contact Details",
+        "category": "Contact"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.contact-details {
+    background-color: #f1ede7;
+    position: relative;
+
+    .content-wrapper {
+      max-width: 1400px;
+      padding: 85px 65px;
+
+      .details {
+        display: flex;
+        align-items: center;
+        gap: 65px;
+
+        .content {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          
+          h3 {
+            text-align: center;
+          }
+
+          .hours {
+            margin-bottom: 15px;
+            text-align: center;
+            p {
+              color: var(--color-primary);
+            }            
+          }
+
+          .contact {
+            margin-top: 30px;
+            text-align: center;
+
+            h4 {
+              color: var(--color-primary);
+            }
+
+
+          }
+        }
+
+        .video-wrapper {
+          width: 50%;
+
+          iframe,
+          img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            display: block;
+          }
+        }
+      }
+
+      .links {
+        margin: 0 auto;
+        padding: 125px 0 65px;
+        display: flex;
+        max-width: 1000px;
+        gap: 65px;
+
+        .column {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+
+          h2 {
+            text-align: center;
+          }
+
+          p {
+            color: var(--color-primary);
+            text-align: center;
+          }
+
+          a.btn {
+            margin-top: 15px;
+          }
+        }
+      }
+
+    }
+
+    .wave-bottom {
+      width: 100%;
+      height: 200px;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        padding: 65px 45px;
+
+        .details {
+          gap: 35px;
+        }
+
+        .links {
+          padding: 105px 0 65px;
+          gap: 45px;
+        }
+      }
+
+      .wave-bottom {
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        padding: 65px 25px;
+
+        .details {
+          flex-direction: column;
+
+          .content {
+            width: 100%;
+          }
+
+          .video-wrapper {
+            width: 100%;
+          }
+        }
+
+        .links {
+          padding: 65px 0 25px;
+          flex-direction: column;
+          .column {
+            width: 100%;
+          }
+        }
+      }
+
+      .wave-bottom {
+        height: 100px;
+      }
+    }
+  }
+{% endstylesheet %}

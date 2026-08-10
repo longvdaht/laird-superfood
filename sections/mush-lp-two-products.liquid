@@ -1,0 +1,273 @@
+<section class="mushroom-lp-two-products">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h2>{{ section.settings.heading }}</h2>
+      <h4>{{ section.settings.subheading }}</h4>
+    </div>
+    <div class="products-wrapper">
+      {% for block in section.blocks %}
+        <div class="single-product">
+          <div class="images">
+            <img src="{{ block.settings.image_main | img_url: '1500x' }}" alt="{{ section.settings.image_main.alt }}" class="main">
+            <img src="{{ block.settings.image_rollover | img_url: '1500x' }}" alt="{{ block.settings.image_rollover.alt }}" class="rollover">
+            <div class="rollover-content">
+              <h3>{{ block.settings.rollover_heading }}</h3>
+              <p>{{ block.settings.rollover_text }}</p>
+            </div>
+          </div>
+          <div class="content">
+            <a href="{{ block.settings.url }}">
+              <h5>{{ block.settings.title }}</h5>
+            </a>
+            <a class="arrow-btn" href="{{ block.settings.url }}">
+              Shop Now<img src="{{ section.settings.arrow_image | img_url: '300x' }}" alt="Button Arrow">
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Mush LP Two Products",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "richtext",
+        "label": "Subheading"
+      },
+      {
+        "id": "arrow_image",
+        "type": "image_picker",
+        "label": "Arrow Imave"
+      }
+    ],
+    "max_blocks": 2,
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Products",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "url",
+            "type": "url",
+            "label": "URL"
+          },
+          {
+            "id": "image_main",
+            "type": "image_picker",
+            "label": "Image Main"
+          },
+          {
+            "id": "image_rollover",
+            "type": "image_picker",
+            "label": "Image Rollover"
+          },
+          {
+            "id": "rollover_heading",
+            "type": "text",
+            "label": "Rollover Heading"
+          },
+          {
+            "id": "rollover_text",
+            "type": "text",
+            "label": "Rollover Text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Mush LP Two Products"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.mushroom-lp-two-products {
+    padding: 65px;
+    background-color: #f4eee7;
+    .content-wrapper {
+      .heading {
+        text-align: center;
+        margin-bottom: 65px;
+        h2 {
+          text-align: center;
+
+        }
+
+        p {
+          font-family: 'Poppins', sans-serif;
+          font-size: 28px;
+          line-height: 1.25;
+          color: #6E5238;
+          font-weight: 500;
+        }
+      }
+
+      .products-wrapper {
+        display: flex;
+        gap: 25px;
+        .single-product {
+          width: 50%;
+          .images {
+            position: relative;
+            overflow: hidden;
+            img {
+              &.main {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                z-index: 1;
+              }
+
+              &.rollover {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 1;
+                z-index: 2;
+                opacity: 0;
+                transition: 0.6s;
+              }
+
+              
+            }
+
+            .rollover-content {
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              padding: 45px;
+              backdrop-filter: blur(10px);
+              background-color: rgba(0,0,0,0.4);
+              z-index: 3;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              border-top: solid 1px white;
+              opacity: 0;
+              transform: translateY(100%);
+              transition: 0.6s;
+
+              h3 {
+                color: white;
+                text-align: center;
+                max-width: 425px;
+                margin-bottom: 15px;
+              }
+
+              p {
+                text-align: center;
+                max-width: 425px;
+              }
+            }
+
+            &:hover {
+              img.rollover {
+                opacity: 1;
+              }
+
+              .rollover-content {
+                transform: none;
+                opacity: 1;
+              }
+            }
+          }
+          .content {
+            padding: 25px 15px;
+            h5 {
+              padding-bottom: 10px;
+              border-bottom: solid 1px #6E5238;
+              max-width: 445px;
+              margin-bottom: 10px;
+            }
+
+            a.arrow-btn {
+              font-family: 'Poppins', sans-serif;
+              font-size: 20px;
+              font-weight: 400;
+              color: #6E5238;
+              display: inline-block;
+              img {
+                display: inline-block;
+                margin-left: 7px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1200px) {
+      padding: 45px;
+      .content-wrapper {
+        gap: 15px;
+        .heading {
+          margin-bottom: 45px;
+          h2 {
+            margin-bottom: 15px;
+          }
+          p {
+            font-size: 20px;
+            line-height: 28px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1000px) {
+      padding: 45px 25px; 
+      .content-wrapper {
+        .products-wrapper {
+          .single-product {
+            .content {
+              padding: 15px 0;
+              a.arrow-btn {
+                font-size: 16px;
+              }
+            }
+          }
+        }
+      }        
+    }
+
+    @media (max-width: 800px) {
+      .content-wrapper {
+        .heading {
+          margin-bottom: 25px;
+          h2 {
+            font-size: 28px;
+          }
+
+          p {
+            font-size: 18px;
+          }
+        }
+        .products-wrapper {
+          flex-direction: column;
+          .single-product {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,266 @@
+<section class="ebd-pdp-ingredients-grid">
+  <div class="ebd-pdp-ingredients-grid__inner page-width">
+    <h2 class="ebd-pdp-ingredients-grid__title">{{ section.settings.heading }}</h2>
+
+    <div class="ebd-pdp-ingredients-grid__list">
+      {% for block in section.blocks %}
+        {% liquid
+          assign fallback_asset = ''
+          case forloop.index0
+            when 0
+              assign fallback_asset = 'Coconut Milk Powder.png'
+            when 1
+              assign fallback_asset = 'Organic Chaga Mushroom Extract.png'
+            when 2
+              assign fallback_asset = 'Organic Coconut Sugar.png'
+            when 3
+              assign fallback_asset = 'Organic Cordyceps Mushroom Extract.png'
+            when 4
+              assign fallback_asset = 'Organic Hemp Protein.png'
+            when 5
+              assign fallback_asset = 'Organic Lions Mane Mushroom Extract.png'
+            when 6
+              assign fallback_asset = 'Organic Maitake Mushroom Extract.png'
+            when 7
+              assign fallback_asset = 'Organic Pea Protein.png'
+            when 8
+              assign fallback_asset = 'Organic Unroasted Pumpkin Seed Protein.png'
+          endcase
+        %}
+
+        <article class="ebd-pdp-ingredients-grid__item" {{ block.shopify_attributes }}>
+          <img
+            class="ebd-pdp-ingredients-grid__image"
+            src="{% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 560 }}{% else %}{{ fallback_asset | asset_url }}{% endif %}"
+            alt="{{ block.settings.alt | default: block.settings.title | escape }}"
+            width="280"
+            height="280"
+            loading="lazy">
+
+          <div class="ebd-pdp-ingredients-grid__meta">
+            <h3 class="ebd-pdp-ingredients-grid__name">
+              {{ block.settings.title }}
+              {% if block.settings.subtitle != blank %}<br>{{ block.settings.subtitle }}{% endif %}
+            </h3>
+            {% comment %} <span class="ebd-pdp-ingredients-grid__plus">{{ block.settings.plus_label }}</span> {% endcomment %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD PDP Ingredients Grid",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Ingredients"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "ingredient",
+        "name": "Ingredient",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Ingredient"
+          },
+          {
+            "type": "text",
+            "id": "subtitle",
+            "label": "Second line"
+          },
+          {
+            "type": "text",
+            "id": "alt",
+            "label": "Alt text"
+          }, {
+            "type": "text",
+            "id": "plus_label",
+            "label": "Plus symbol",
+            "default": "+"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP Ingredients Grid",
+        "blocks": [
+          {
+            "type": "ingredient",
+            "settings": {
+              "title": "Coconut Milk Powder",
+              "plus_label": "+"
+            }
+          },
+          {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Chaga Mushroom",
+              "subtitle": "Extract",
+              "plus_label": "+"
+            }
+          },
+          {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Coconut Sugar",
+              "plus_label": "+"
+            }
+          },
+          {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Cordyceps Mushroom",
+              "subtitle": "Extract",
+              "plus_label": "+"
+            }
+          }, {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Hemp Protein",
+              "plus_label": "+"
+            }
+          }, {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Lion's Mane Mushroom",
+              "subtitle": "Extract",
+              "plus_label": "+"
+            }
+          }, {
+            "type": "ingredient",
+            "settings": {
+              "title": "Organic Maitake Mushroom",
+              "subtitle": "Extract",
+              "plus_label": "+"
+            }
+          }, {
+            "type": "ingredient",
+            "settings": {
+              "title": "Pea Protein",
+              "plus_label": "+"
+            }
+          }, {
+            "type": "ingredient",
+            "settings": {
+              "title": "Unroasted Pumpkin Seed",
+              "subtitle": "Protein",
+              "plus_label": "+"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-pdp-ingredients-grid {
+    width: 100%;
+    padding: 96px 65px 40px;
+  }
+
+  .ebd-pdp-ingredients-grid__inner {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .ebd-pdp-ingredients-grid__title {
+    margin: 0 0 24px;
+    color: var(--lairdsuperfood-com-chathams-blue, var(--color-azure-28, #145E7D));
+    text-align: center;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: var(--line-height-40, 40px);
+    font-style: normal;
+    font-weight: var(--font-weight-700, 700);
+    line-height: var(--line-height-47, 47px);
+  }
+
+  .ebd-pdp-ingredients-grid__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+
+  .ebd-pdp-ingredients-grid__item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ebd-pdp-ingredients-grid__image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ebd-pdp-ingredients-grid__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ebd-pdp-ingredients-grid__name {
+    margin: 0;
+    color: var(--lairdsuperfood-com-ming, var(--color-azure-38, #3A758A));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: var(--font-size-14, 14px);
+    font-style: normal;
+    font-weight: var(--font-weight-700, 700);
+    line-height: var(--font-size-18, 18px);
+    text-transform: uppercase;
+  }
+
+  .ebd-pdp-ingredients-grid__plus {
+    color: var(--lairdsuperfood-com-black, var(--color-black-solid, #000));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: var(--font-size-18, 18px);
+    font-style: normal;
+    font-weight: var(--font-weight-700, 700);
+    line-height: var(--line-height-24_48, 24.48px);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ebd-pdp-ingredients-grid {
+      padding: 40px 15px !important;
+    }
+
+    .ebd-pdp-ingredients-grid__title {
+      margin: 0 0 18px;
+      font-size: var(--font-size-26, 26px);
+      line-height: var(--item-spacing-31, 31px);
+    }
+
+    .ebd-pdp-ingredients-grid__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 12px;
+    }
+
+    .ebd-pdp-ingredients-grid__name {
+      font-size: var(--font-size-12, 12px);
+      line-height: var(--font-size-18, 18px);
+    }
+  }
+{% endstylesheet %}

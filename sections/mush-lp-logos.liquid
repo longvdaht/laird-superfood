@@ -1,0 +1,68 @@
+<section class="mushroom-lp-logos">
+  <div class="icon-grid">
+    {% for block in section.blocks %}
+      <div class="grid-item">
+        <img src="{{ block.settings.logo | img_url: '350x' }}" alt="{{ block.settings.logo.alt }}">
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Mush LP Logos",
+    "settings": [     
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Logos",
+        "settings": [
+          {
+            "id": "logo",
+            "type": "image_picker",
+            "label": "Logo"
+          }
+        ]
+      }
+    ],
+    "max_blocks": 6,
+    "presets": [
+      {
+        "name": "Mush LP Logos"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.mushroom-lp-logos {
+    background-color: #f4eee7;
+    padding: 65px 25px;
+    .icon-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 25px 65px;
+      .grid-item {
+        img {
+          max-width: 115px;
+        }
+      }
+    }
+
+    @media (max-width: 800px) {
+      padding: 45px 25px;
+      .icon-grid {
+        gap: 25px 35px;
+        .grid-item {
+          img {
+            max-width: 70px;
+          }
+        }
+
+      }
+    }
+  }
+{% endstylesheet %}

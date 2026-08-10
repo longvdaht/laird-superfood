@@ -1,0 +1,262 @@
+{% assign has_faqs = false %}
+{% assign product_faqs = product.metafields.custom.product_faqs.value %}
+
+{% if product_faqs %}
+  {% assign has_faqs = true %}
+{% endif %}
+
+{% assign collection_faqs = '' %}
+
+{% for faq in shop.metaobjects.product_faq.values %}
+  {% for faq_collection in faq.collections.value %}
+    {% for product_collection in product.collections %}
+      {% if faq_collection.handle == product_collection.handle %}
+        {% assign collection_faqs = collection_faqs | append: faq.id | append: ',' %}
+        {% assign has_faqs = true %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+
+{% if has_faqs %}
+<section class="pdp-faqs">
+  <div class="content-wrapper">
+    <h2 class="white">{{ section.settings.heading }}</h2>
+
+    <dl class="faqs-list">
+      {% for faq in product_faqs %}
+        <div class="faq-item" data-id="p{{ forloop.index }}">
+          <dt class="faq-question">
+            <h4 class="white">{{ faq.question.value }}</h4>
+            <button class="faq-toggle" aria-expanded="false">
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </button>
+          </dt>
+          <dd id="faq-answer-p{{ forloop.index }}" class="faq-answer">
+            {{ faq.answer.value }}
+          </dd>
+        </div>
+      {% endfor %}
+
+      {% assign rendered = '' %}
+
+      {% for faq in shop.metaobjects.product_faq.values %}
+        {% assign match_found = false %}
+
+        {% for faq_collection in faq.collections.value %}
+          {% for product_collection in product.collections %}
+            {% if faq_collection.handle == product_collection.handle %}
+              {% assign match_found = true %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
+        {% if match_found %}
+          {% unless rendered contains faq.id %}
+            <div class="faq-item" data-id="g{{ forloop.index }}">
+              <dt class="faq-question">
+                <h4 class="white">{{ faq.question.value }}</h4>
+                <button class="faq-toggle" aria-expanded="false">
+                  <div class="bar"></div>
+                  <div class="bar"></div>
+                </button>
+              </dt>
+              <dd id="faq-answer-g{{ forloop.index }}" class="faq-answer">
+                {{ faq.answer.value }}
+              </dd>
+            </div>
+            {% assign rendered = rendered | append: faq.id | append: ',' %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+
+    </dl>
+
+    {% if section.settings.button_link != blank %}
+      <div class="link-wrapper">
+        <a href="{{ section.settings.button_link }}" class="btn btn-red">
+          {{ section.settings.button_text }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</section>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "EBD PDP FAQs",
+    "class": "ebd-faqs",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading"
+      },
+      {
+        "type": "text",
+        "id": "button_text",
+        "label": "Button Text",
+        "default": "Learn More"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button Link"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP FAQs"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.pdp-faqs {
+    padding: 85px 65px;
+    background-color: var(--color-mediumblue);
+
+    .content-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+
+      h2 {
+        text-align: center;
+      }
+
+      .faqs-list {
+        margin: 45px 0;
+
+        .faq-item {
+          border-bottom: solid 2px var(--color-lightblue);
+          padding: 25px 0;
+
+          &:last-of-type {
+            border-bottom: none;
+          }
+
+          .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            gap: 15px;
+
+            h4 {
+              margin: 0;
+              flex: 1;
+            }
+
+            .faq-toggle {
+              width: 30px;
+              height: 30px;
+              background-color: var(--color-red);
+              border: none;
+              border-radius: 50px;
+              position: relative;
+              padding: 0;
+              transition: 0.2s;
+
+              .bar {
+                width: 16px;
+                height: 1px;
+                background-color: white;
+                position: absolute;
+                top: 15px;
+                left: 7px;
+                transition: 0.2s;
+
+                &:first-of-type {
+                  transform: rotate(-90deg);
+                }
+
+                &:last-of-type {
+
+                }
+              }
+            }
+          }
+
+          .faq-answer {
+            margin: 0;
+            padding: 0;
+            color: white;
+            display: none;
+          }
+
+          &.open {
+            .faq-question {
+              .faq-toggle {
+                .bar {
+                  &:first-of-type {
+                    transform: rotate(0);
+                  }
+
+                  &:last-of-type {
+                    opacity: 0;
+                  }
+                }
+              }
+            }
+
+            .faq-answer {
+              display: block;
+              padding: 15px 0 0;
+            }
+          }
+        }
+
+      }
+
+      .link-wrapper {
+        display: flex;
+        justify-content: center;
+
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+      .content-wrapper {
+        .faqs-list {
+          margin: 25px 0;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+      .content-wrapper {
+        .faqs-list {
+          margin: 0;
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    const items = document.querySelectorAll('.faq-item');
+
+    items.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      const toggle = item.querySelector('.faq-toggle');
+      const answer = item.querySelector('.faq-answer');
+
+      question.addEventListener('click', e => {
+        e.preventDefault();
+
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', !isOpen);
+        answer.classList.toggle('show');
+      });
+    });
+  });
+{% endjavascript %}

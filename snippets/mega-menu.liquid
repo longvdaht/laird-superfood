@@ -1,0 +1,58 @@
+<div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+  <div class="mega-menu__grid" data-menu-grid-id="{{ id }}">
+    <div class="submenu-wrapper">
+      <div class="shop-by-category">
+        <h4>SHOP BY CATEGORY</h4>
+        {% assign submenu_items = shop.metaobjects.horizon_shop_submenu_item.values | sort: 'sort_order' %}
+        <div class="category-grid">
+          {% for item in submenu_items %}
+            <a href="{{ item.collection_url }}" class="category-card">
+              <div class="image-wrapper">
+                <img class="main-image"src="{{ item.image | img_url: '250x' }}" alt="{{ item.title }}">
+                <img src="{{ item.background_graphic | img_url: '250x' }}" alt="Background Floral Image" class="floral-image">
+              </div>
+              <h5 class="darkblue">{{ item.title }}</h5>
+            </a>
+          {% endfor %}
+          <div class="category-card shop-all">
+            <a href="/collections/all-products" title="Shop All">
+              <h5>Shop All Products</h5>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="shop-by-benefit">
+        <h4>SHOP BY BENEFIT</h4>
+        <div class="benefits-wrapper">
+          <ul>
+            <li><a href="https://lairdsuperfood.com/collections/energized" title="Energized">Energized</a></li>
+            <li><a href="https://lairdsuperfood.com/collections/strengthened" title="Strengthened">Strengthened</a></li>
+            <li><a href="https://lairdsuperfood.com/collections/balanced" title="Balanced">Balanced</a></li>
+          </ul>
+          <div class="quiz-wrapper">
+            <img src="https://cdn.shopify.com/s/files/1/1308/3049/files/quiz.webp?v=1758828283" alt="Quiz Image">
+            <div class="text">
+              <h4>Find Your Perfect Product</h4>
+              <a href="https://lairdsuperfood.com/pages/daily-ritual-quiz?bsci=gcd_daily-ritual" title="Take Quiz">Take Quiz</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="submenu-bottom">
+      <div class="left">
+        <h5>Products are:</h5>
+        <div class="icon-wrapper">
+          {% render 'icon-soy-free-lightblue' %}
+          {% render 'icon-vegan-lightblue' %}
+          {% render 'icon-gluten-free-lightblue' %}
+          {% render 'icon-keto-friendly-lightblue' %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

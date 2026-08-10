@@ -1,0 +1,143 @@
+<section class="contact-faq-links">
+  <div class="large-leaf">
+    {% render 'graphic-large-leaf-darkblue' %}
+  </div>
+  <div class="content-wrapper">
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <div class="text">
+      {{ section.settings.text }}
+    </div>
+    <div class="link-wrapper">
+      {% if section.settings.link_1_url %}
+        <a href="{{ section.settings.link_1_url }}" class="btn">{{ section.settings.link_1_label }}</a>
+        {% if section.settings.link_2_url %}
+          <a href="{{ section.settings.link_2_url }}" class="btn">{{ section.settings.link_2_label }}</a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Contact FAQ Links",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      },
+      {
+        "id": "link_1_url",
+        "type": "url",
+        "label": "Link #1 URL"
+      },
+      {
+        "id": "link_1_label",
+        "type": "text",
+        "label": "Link #1 Label"
+      },
+      {
+        "id": "link_2_url",
+        "type": "url",
+        "label": "Link #2 URL"
+      },
+      {
+        "id": "link_2_label",
+        "type": "text",
+        "label": "Link #2 Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Contact FAQ Links",
+        "category": "Contact"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.contact-faq-links {
+    padding: 85px;
+    background-color: #f1ede7;
+    position: relative;
+
+    .large-leaf {
+      position: absolute;
+      left: -225px;
+      top: -125px;
+      z-index: 1;
+    }
+
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      h2 {
+        text-align: center;
+      }
+
+      .text {
+        max-width: 500px;
+        text-align: center;
+        margin-bottom: 25px;
+
+        p {
+          color: var(--color-primary);
+        }
+      }
+
+      .link-wrapper {
+        display: flex;
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 1400px) {
+      .large-leaf {
+        width: 300px;
+        top: -275px;
+        left: -100px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+
+      .large-leaf {
+        left: -140px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+
+      .large-leaf {
+        display: none;
+      }
+
+      .content-wrapper {
+        .text {
+          margin-bottom: 15px;
+        }
+
+        .link-wrapper {
+          gap: 15px;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

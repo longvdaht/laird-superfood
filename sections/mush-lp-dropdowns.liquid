@@ -1,0 +1,246 @@
+<section  class="mushroom-lp-dropdowns" style="background-image: url('{{ section.settings.background_image | img_url: '1920x' }}');">
+  <div class="content-wrapper">
+    <div class="column">
+      <h2>{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+        <div class="dropdowns-wrapper">
+          {% for block in section.blocks %}
+            <div class="dropdown-single">
+              <button class="dropdown-toggle">{{ block.settings.title }}
+                <div class="open-close">
+                  <span></span>
+                  <span></span>
+                </div>
+
+              </button>
+              <div class="dropdown-content">
+                {{ block.settings.dropdown_content }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 800px) {
+      section.mushroom-lp-dropdowns {
+        background-image: url('{{ section.settings.background_image_mobile | img_url: '1000x' }}') !important;
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+  {
+    "name": "Mush LP Dropdowns",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      },
+      {
+        "id": "background_image",
+        "type": "image_picker",
+        "label": "Background Image"
+      },
+      {
+        "id": "background_image_mobile",
+        "type": "image_picker",
+        "label": "Background Image Mobile"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Dropdowns",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "dropdown_content",
+            "type": "richtext",
+            "label": "Dropdown Content"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Mush LP Dropdowns"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.mushroom-lp-dropdowns {
+    background-size: cover;
+    background-position: bottom center;
+    padding: 125px 85px;
+    background-attachment: fixed;
+
+    .content-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      .column {
+        width: 100%;
+        background-color: rgba(68, 46, 13, 0.35);
+        backdrop-filter: blur(10px);
+        border: solid 1px white;
+        border-radius: 12px;
+        padding: 65px 45px;
+        max-width: 650px;
+
+        h2 {
+          color: white;
+          text-transform: uppercase;
+          font-style: italic;
+          font-size: 50px;
+          font-weight: 700;
+        }
+
+        p {
+          color: white;
+        }
+
+        .dropdown-single {
+          border-top: solid 1px white;
+          padding: 15px 15px 0 15px;
+
+          button.dropdown-toggle {
+            font-family: 'Poppins', sans-serif;
+            font-size: 25px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;   
+            width: 100%;    
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: none;
+            background: none;
+            
+            .open-close {
+              width: 25px;
+              height: 25px;
+              position: relative;
+
+              span {
+                width: 25px;
+                height: 5px;
+                position: absolute;
+                top: 9.5px;
+                left: 0;
+                background-color: white;
+
+                &:nth-of-type(2) {
+                  width: 5px;
+                  height: 25px;
+                  left: 9.5px;
+                  top: 0;
+                }
+              }
+            }
+
+            &.active {
+              .open-close {
+                span:nth-of-type(2) {
+                  display: none;
+                }
+              }
+            }
+
+          }
+
+          &:last-of-type {
+            border-bottom: solid 1px white;
+          }
+
+          .dropdown-content {
+            max-height: 0;
+            visibility: hidden;
+
+            &.open {
+              max-height: none;
+              visibility: visible;
+              padding-bottom: 15px;
+            }
+          }
+        }
+      }
+
+      
+    }
+
+    @media (max-width: 1200px) {
+      padding: 85px 65px;
+      .content-wrapper {
+        .column {
+          padding: 35px 25px;
+
+          h2 {
+            font-size: 38px;
+            margin-bottom: 15px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1000px) {
+      padding: 65px 45px;
+    }
+
+    @media (max-width: 800px) {
+      padding: 45px 25px;
+      background-attachment: scroll;
+      .content-wrapper {
+        .column {
+          max-width: none;
+          padding: 25px 15px;
+
+          h2 {
+            font-size: 26px;
+            line-height: 1.1;
+          }
+
+          .dropdown-single {
+            padding: 15px 0 0;
+            button.dropdown-toggle {
+              font-size: 16px;
+
+              .open-close {
+                transform: scale(0.7);
+                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+    dropdownToggles.forEach(toggle => {
+      toggle.addEventListener('click', function () {
+        const dropdownContent = this.nextElementSibling;
+
+        this.classList.toggle('active');
+        dropdownContent.classList.toggle('open');
+      });
+    });
+  });
+{% endjavascript %}

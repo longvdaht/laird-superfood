@@ -1,0 +1,188 @@
+/* ============================================================
+   Recharge Subscription Widget — Custom CSS
+   Host element: recharge-subscription-widget
+   Paste into Recharge Admin → Widget Config → Custom CSS
+   ============================================================ */
+
+/* Override inline CSS variables set by the widget */
+recharge-subscription-widget {
+  --rc-widget-text-color: #ffffff;
+  --rc-widget-bullet-icon-image-color: #4caf79 !important;
+}
+
+/* ============================================================
+   Subscription card
+   ============================================================ */
+
+/* Dark navy card, no border */
+recharge-subscription-widget::part(rc-purchase-option__subscription) {
+  background: #003349 !important;
+  border: none !important;
+  overflow: hidden;
+}
+
+/* Badge: "SAVE X%" — top-right corner clip */
+recharge-subscription-widget::part(rc-purchase-option__badge) {
+  top: 0;
+  right: 0;
+  border-radius: 0 8px 0 8px;
+}
+
+/* Hide radio button indicator */
+recharge-subscription-widget::part(rc-purchase-option__checked-indicator) {
+  display: none;
+}
+
+/* ============================================================
+   Label row: "SUBSCRIBE & SAVE" + prices
+   ============================================================ */
+
+/* Row layout with wrapping for the subtitle pseudo-element */
+recharge-subscription-widget::part(rc-purchase-option__label) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 26px 20px 12px;
+  gap: 0;
+}
+
+recharge-subscription-widget::part(rc-purchase-option__onetime)::part(rc-purchase-option__label) {
+  padding-top: 2px !important;
+}
+
+/* "/ month • free shipping every order" subtitle */
+recharge-subscription-widget::part(rc-purchase-option__label)::after {
+  content: '/ month';
+  display: block;
+  width: 100%;
+  flex: 0 0 100%;
+  font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 14px;
+  margin-top: -6px;
+}
+
+/* "SUBSCRIBE & SAVE" — left side */
+recharge-subscription-widget::part(rc-purchase-option__selector_subscription) {
+  flex: 1 1 auto;
+  color: #ffffff !important;
+  font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Prices container — right side */
+recharge-subscription-widget::part(rc-purchase-option__prices) {
+  flex: 0 0 auto;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  text-align: right;
+}
+
+/* Original price — small strikethrough */
+recharge-subscription-widget::part(rc-purchase-option__original-price) {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: line-through;
+}
+
+/* Discounted price — large bold */
+recharge-subscription-widget::part(rc-purchase-option__discounted-price) {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ============================================================
+   Benefits list
+   ============================================================ */
+
+/* Force white text — overrides --rc-widget-text-color: #121212 */
+recharge-subscription-widget::part(rc-benefits__list) {
+  color: #ffffff;
+}
+
+
+recharge-subscription-widget::part(rc-benefits__list) ul li::before {
+  background-color: #4caf79 !important;
+}
+
+
+/* ============================================================
+   Selling plans (frequency selector)
+   ============================================================ */
+
+/* Hide "Deliver every:" label */
+recharge-subscription-widget::part(rc-plans__label) {
+  display: none;
+}
+
+/* Hide frequency button group (30/60/90 day buttons) */
+recharge-subscription-widget::part(rc-plans-button-group) {
+  display: none;
+}
+
+/* ============================================================
+   One-time option — text link below card
+   ============================================================ */
+
+/* Remove card styling from one-time row */
+recharge-subscription-widget::part(rc-purchase-option__onetime) {
+  border: none !important;
+  background: transparent !important;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* "Buy Once for" label */
+recharge-subscription-widget::part(rc-purchase-option__selector_onetime) {
+  flex: 0 0 auto;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 400;
+  color: #003349 !important;
+}
+
+/* One-time price */
+recharge-subscription-widget::part(rc-purchase-option__price) {
+  text-decoration: underline;
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #003349 !important;
+}
+
+/* Hide "Learn more" trigger */
+recharge-subscription-widget::part(rc-learn-more__trigger) {
+  display: none;
+}
+
+@media screen and (max-width:768px) {
+section.ebd-product-main .content-wrapper .product-information-column {
+        padding-top: 24px !important;
+    }
+}
+
+@media screen and (min-width: 769px) {
+  recharge-subscription-widget::part(rc-purchase-option__selector_subscription) {
+    font-size: 1.2rem;
+  }
+}
+
+.rc-onetime-button-wrap {
+    border: 1px solid #003349 !important;
+}
+
+.rc-onetime-button {
+  text-decoration: none !important;
+}
+
+.rc-onetime-button {
+  margin: 12px !important;
+}

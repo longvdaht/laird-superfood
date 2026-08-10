@@ -1,0 +1,472 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "new-product-information",
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "carousel",
+            "media_columns": "two",
+            "image_gap": 4,
+            "large_first_image": false,
+            "icons_style": "chevron_large",
+            "slideshow_controls_style": "thumbnails",
+            "slideshow_mobile_controls_style": "thumbnails",
+            "thumbnail_position": "bottom",
+            "thumbnail_width": 72,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": true,
+            "media_fit": "contain",
+            "media_radius": 0,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "inherit_color_scheme": true,
+            "color_scheme": "scheme-1",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "group_icgrde": {
+              "type": "group",
+              "name": "Header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "background_media": "none",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "ebd_product_type_kcemDa": {
+                  "type": "ebd-product-type",
+                  "name": "EBD Product Type",
+                  "settings": {},
+                  "blocks": {}
+                },
+                "text_xpVMaM": {
+                  "type": "text",
+                  "name": "t:names.title",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "review_9RP6f7": {
+                  "type": "review",
+                  "name": "t:names.product_review_stars",
+                  "settings": {
+                    "stars_style": "shaded",
+                    "show_number": true,
+                    "rating_color": "primary",
+                    "type_preset": "paragraph",
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ebd_product_type_kcemDa",
+                "text_xpVMaM",
+                "review_9RP6f7"
+              ]
+            },
+            "ebd_product_size_8oz": {
+              "type": "ebd-product-size",
+              "name": "EBD Product Size",
+              "disabled": true,
+              "settings": {
+                "size_text": "8oz"
+              },
+              "blocks": {}
+            },
+            "sibling_product_selector_JnttbH": {
+              "type": "sibling-product-selector",
+              "name": "Sibling product selector",
+              "settings": {
+                "title": "Size",
+                "include_current_product": true,
+                "fallback_products": "{{ closest.product.metafields.custom.sibling_product.value }}",
+                "columns_desktop": 3,
+                "columns_mobile": "2",
+                "gap": 12,
+                "desktop_width_percent": 100,
+                "margin_top": 32,
+                "margin_bottom": 16,
+                "show_image": false,
+                "show_price": false,
+                "border_radius": 14,
+                "image_border_radius": 4,
+                "border_width": 1,
+                "background_color": "#ffffff",
+                "text_color": "#003349",
+                "border_color": "#003349",
+                "hover_background_color": "#ffffff",
+                "hover_border_color": "#003349",
+                "active_background_color": "#003349",
+                "active_text_color": "#ffffff",
+                "active_border_color": "#003349"
+              },
+              "blocks": {}
+            },
+            "variant_picker_R3rGDr": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": false,
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "recharge_subscriptions_subscription_widget_v2_tQWAyW": {
+              "type": "shopify://apps/recharge-subscriptions/blocks/subscription-widget-v2/371eed76-0b44-4869-9813-730372ea378e",
+              "settings": {}
+            },
+            "expertvoice_ev_pdp_deal_block_ziaXQ4": {
+              "type": "shopify://apps/expertvoice/blocks/ev-pdp-deal-block/72220bb7-008d-4628-98a7-15da652b51dd",
+              "settings": {
+                "theme": "light",
+                "currency_formatting": "symbol_only"
+              }
+            },
+            "buy_buttons_eYQEYi": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "disabled": true,
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "disabled": true,
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "ebd_product_tabs_BpB9h4": {
+              "type": "ebd-product-tabs",
+              "name": "EBD Product Tabs",
+              "settings": {},
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "group_icgrde",
+            "ebd_product_size_8oz",
+            "sibling_product_selector_JnttbH",
+            "variant_picker_R3rGDr",
+            "recharge_subscriptions_subscription_widget_v2_tQWAyW",
+            "expertvoice_ev_pdp_deal_block_ziaXQ4",
+            "buy_buttons_eYQEYi",
+            "ebd_product_tabs_BpB9h4"
+          ]
+        }
+      },
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": true,
+        "limit_details_width": false,
+        "gap": 48,
+        "color_scheme": "",
+        "padding-block-start": 45,
+        "padding-block-end": 65
+      }
+    },
+    "ebd_pdp_info_50_50_6Lb9ch": {
+      "type": "ebd-pdp-info-50-50",
+      "name": "EBD PDP Info 50/50",
+      "settings": {}
+    },
+    "product_badges_row": {
+      "type": "ebd-pdp-badges-row",
+      "name": "EBD PDP Badges Row",
+      "settings": {
+        "margin_top": 96,
+        "margin_bottom": 96,
+        "margin_top_mobile": 50,
+        "margin_bottom_mobile": 50
+      }
+    },
+    "ebd_pdp_surfboard_banner_Fn3mQp": {
+      "type": "ebd-pdp-surfboard-banner",
+      "name": "EBD PDP Surfboard Banner",
+      "settings": {}
+    },
+    "ebd_pdp_ingredients_grid_yR8tKv": {
+      "type": "ebd-pdp-ingredients-grid",
+      "blocks": {
+        "ingredient_1": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Coconut Milk Powder",
+            "subtitle": "",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_2": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Chaga Mushroom",
+            "subtitle": "Extract",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_3": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Coconut Sugar",
+            "subtitle": "",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_4": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Cordyceps Mushroom",
+            "subtitle": "Extract",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_5": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Hemp Protein",
+            "subtitle": "",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_6": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Lion's Mane Mushroom",
+            "subtitle": "Extract",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_7": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Organic Maitake Mushroom",
+            "subtitle": "Extract",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_8": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Pea Protein",
+            "subtitle": "",
+            "alt": "",
+            "plus_label": "+"
+          }
+        },
+        "ingredient_9": {
+          "type": "ingredient",
+          "settings": {
+            "title": "Unroasted Pumpkin Seed",
+            "subtitle": "Protein",
+            "alt": "",
+            "plus_label": "+"
+          }
+        }
+      },
+      "block_order": [
+        "ingredient_1",
+        "ingredient_2",
+        "ingredient_3",
+        "ingredient_4",
+        "ingredient_5",
+        "ingredient_6",
+        "ingredient_7",
+        "ingredient_8",
+        "ingredient_9"
+      ],
+      "disabled": true,
+      "name": "EBD PDP Ingredients Grid",
+      "settings": {
+        "heading": "Ingredients"
+      }
+    },
+    "ebd_global_separator_t6XyTb": {
+      "type": "ebd-global-separator",
+      "name": "EBD Global Separator",
+      "settings": {
+        "separator_type": "wave_2",
+        "color_1": "#ffffff",
+        "color_2": "#72c3d7"
+      }
+    },
+    "ebd_pdp_competitor_comparison_apMMdL": {
+      "type": "ebd-pdp-competitor-comparison",
+      "name": "EBD PDP Competitor Chart",
+      "settings": {}
+    },
+    "ebd_global_separator_xFgfGm": {
+      "type": "ebd-global-separator",
+      "name": "EBD Global Separator",
+      "settings": {
+        "separator_type": "wave_3",
+        "color_1": "#72c3d7",
+        "color_2": "#3a758a"
+      }
+    },
+    "ebd_pdp_faqs_zpLkYg": {
+      "type": "ebd-pdp-faqs",
+      "name": "EBD PDP FAQs",
+      "settings": {
+        "heading": "HOW CAN WE HELP?",
+        "button_text": "VIEW ALL FAQS",
+        "button_link": "https://support.lairdsuperfood.com/hc/en-us"
+      }
+    },
+    "ebd_global_separator_7fD8Cx": {
+      "type": "ebd-global-separator",
+      "name": "EBD Global Separator",
+      "settings": {
+        "separator_type": "wave_1",
+        "color_1": "#3a758a",
+        "color_2": ""
+      }
+    },
+    "ebd_pdp_reviews_C9BErN": {
+      "type": "ebd-pdp-reviews",
+      "name": "EBD PDP Reviews",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "ebd_pdp_info_50_50_6Lb9ch",
+    "product_badges_row",
+    "ebd_pdp_surfboard_banner_Fn3mQp",
+    "ebd_pdp_ingredients_grid_yR8tKv",
+    "ebd_global_separator_t6XyTb",
+    "ebd_pdp_competitor_comparison_apMMdL",
+    "ebd_global_separator_xFgfGm",
+    "ebd_pdp_faqs_zpLkYg",
+    "ebd_global_separator_7fD8Cx",
+    "ebd_pdp_reviews_C9BErN"
+  ]
+}

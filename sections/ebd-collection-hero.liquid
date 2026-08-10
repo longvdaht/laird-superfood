@@ -1,0 +1,143 @@
+<section class="collection-hero" style="background-image: url('https://cdn.shopify.com/s/files/1/1308/3049/files/collection_hero_bg.jpg?v=1760054530')">
+  <div class="content-wrapper">
+    <h1 class="white">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="description">{{ collection.description }}</div>
+    {% endif %}
+    {% if collection.metafields.custom.hero_product_image_1 != blank %}
+      <img src="{{ collection.metafields.custom.hero_product_image_1 | img_url: '700x' }}" alt="{{ collection.title }} Hero Image" class="left">
+    {% endif %}
+    {% if collection.metafields.custom.hero_product_image_2 != blank %}
+      <img src="{{ collection.metafields.custom.hero_product_image_2 | img_url: '700x' }}" alt="{{ collection.title }} Hero Image" class="right">
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Collection Hero",
+    "settings": [
+
+    ],
+    "blocks": [
+
+    ],
+    "presets": [
+      {
+        "name": "Collection Hero",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.collection-hero {
+    background-size: cover;
+    background-position: center;
+    padding: 85px 45px;
+    min-height: 325px;
+    position: relative;
+    
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #003349;
+      opacity: 0.8;
+      z-index: 0;
+    }
+
+    
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      padding: 0 200px;
+      z-index: 1;
+
+      h1 {
+        font-size: 44px;
+        line-height: 50px;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .description {
+        color: white;
+        text-align: center;
+      }
+
+      img.left {
+        position: absolute;
+        top: -25px;
+        left: -45px;
+        width: auto;
+        max-height: 225px;
+        transform: rotate(-5deg);
+      }
+
+      img.right {
+        position: absolute;
+        top: -25px;
+        right: -45px;
+        width: auto;
+        max-height: 225px;
+        transform: rotate(5deg);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 25px;
+      min-height: 275px;
+
+      .content-wrapper {
+        padding: 0 150px;
+        h1 {
+          font-size: 32px;
+          line-height: 36px;
+        }
+
+        img.left {
+          display: none;
+        }
+
+        img.right {
+          display: none;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 55px 25px;
+      min-height: 0;
+      .content-wrapper {
+        padding: 0;
+
+        h1 {
+          font-size: 26px;
+          line-height: 30px;
+        }
+
+        p {
+          font-size: 15px;
+          line-height: 19px;
+        }
+
+
+        img.left {
+          display: none;
+        }
+
+        img.right {
+          display: none;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

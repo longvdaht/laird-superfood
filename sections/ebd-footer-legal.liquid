@@ -1,0 +1,118 @@
+<section class="ebd-footer-legal">
+  <div class="content-wrapper">
+    <div class="links">
+      {% for block in section.blocks %}
+        <a href="{{ block.settings.link_url }}" title="{{ block.settings.link_label }}">
+          {{ block.settings.link_label }}
+        </a>
+      {% endfor %}
+      <a
+        class="truevault-polaris-optout inline-flex space-x-3 px-3 leading-snug sm:whitespace-nowrap"
+        href="https://privacy.lairdsuperfood.com/opt-out"
+        noreferrer
+        noopener
+        hidden
+      >
+        <img class="privacy-badge" src="https://polaris.truevaultcdn.com/static/assets/icons/optout-icon-blue.svg" alt="California Consumer Privacy Act (CCPA) Opt-Out Icon" loading="lazy">
+        Your Privacy Choices
+      </a>
+    </div>
+    <div class="copyright">
+      <p>&copy; Copyright {{ 'now' | date: '%Y' }} Laird Superfood</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Footer Legal",
+    "settings": [
+     
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Links",
+        "settings": [
+          {
+            "id": "link_url",
+            "type": "url",
+            "label": "Link URL"
+          },
+          {
+            "id": "link_label",
+            "type": "text",
+            "label": "Link Label"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Footer Legal",
+        "category": "EBD"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-footer-legal {
+    padding: 25px 45px;
+    background-color: var(--color-mediumblue);
+
+    .content-wrapper {
+      .links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 45px;
+        margin-bottom: 25px;
+
+        a {
+          color: white;
+          font-size: 14px;
+          margin: 0 ;
+        }
+
+        a.truevault-polaris-optout {
+          display: flex;
+          gap: 5px;
+        }
+
+        img.privacy-badge {
+          width: 30px;
+        }
+      }
+
+      .copyright {
+        p {
+          color: white;
+          text-align: center;
+          margin: 0;
+          font-size: 14px;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 25px 20px;
+      .content-wrapper {
+        .links {
+          flex-wrap: wrap;
+          gap: 15px 25px;
+
+          a {
+            font-size: 12px;
+          }
+        }
+
+        .copyright {
+          p {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

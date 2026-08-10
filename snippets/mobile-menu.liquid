@@ -1,0 +1,68 @@
+<div class="mobile-menu-drawer">
+
+  <div class="mobile-menu-header">
+    <a href="/" class="mobile-menu-logo">
+      {% if shop.brand.logo %}
+        <img src="{{ shop.brand.logo | image_url: width: 100 }}" alt="{{ shop.name }}">
+      {% else %}
+        {{ shop.name }}
+      {% endif %}
+    </a>
+    <button class="mobile-menu-close" aria-label="Close menu">
+      <svg id="mobile-nav-close" class="translate-x-3 sm:translate-x-0 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16.971" height="16.971" viewBox="0 0 16.971 16.971">
+        <g id="close-x" transform="translate(-22.515 -21.515)">
+          <rect id="Rectangle_179" data-name="Rectangle 179" width="22" height="2" transform="translate(23.929 21.515) rotate(45)" fill="#003349"></rect>
+          <rect id="Rectangle_180" data-name="Rectangle 180" width="22" height="2" transform="translate(22.515 37.071) rotate(-45)" fill="#003349"></rect>
+        </g>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="mobile-menu-nav">
+    {% for link in linklists['horizon-mobile-menu'].links %}
+      <a href="{{ link.url }}" class="mobile-menu-link {% if link.levels > 0 %}has-children{% endif %}">
+        {{ link.title }}
+        {% if link.levels > 0 %}
+          <svg id="mobile-caret" class="ml-1 inline" height="7.125" viewBox="0 0 11.585 7.125" width="11.585" xmlns="http://www.w3.org/2000/svg">
+            <path d="m1.113 5.923 4.14-4.294 4.217 4.294c.537.613 1.533-.383.92-.92l-4.753-4.831a.43.43 0 0 0 -.69 0l-4.754 4.828c-.613.616.383 1.536.92.923z" fill="#003349" fill-rule="evenodd" stroke="#003349" transform="matrix(-1 0 0 -1 11.085 6.625)"></path>
+          </svg>
+        {% endif %}
+      </a>
+      {% if link.levels > 0 %}
+        <div id="submenu-{{ forloop.index }}" class="mobile-menu-submenu show">
+          {% for childlink in link.links %}
+            <a href="{{ childlink.url }}" class="mobile-menu-sublink">{{ childlink.title }}</a>
+            {% if childlink.levels > 0 %}
+              <div id="subsubmenu-{{ forloop.index }}" class="mobile-menu-subsubmenu">
+          {% for grandchildlink in childlink.links %}
+            <a href="{{ grandchildlink.url }}" class="mobile-menu-subsublink">{{ grandchildlink.title }}</a>
+          {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </nav>
+
+  {% assign socials = shop.metafields.custom.social_media.value | parse_json %}
+  <ul class="mobile-menu-socials">
+    {% for item in socials %}
+      <li>
+        <a href="{{ item.url }}" target="_blank" rel="noopener">
+          {% case item.text %}
+            {% when 'Facebook' %}
+              {% render 'icon-facebook' %}
+            {% when 'Instagram' %}
+              {% render 'icon-instagram' %}
+            {% when 'TikTok' %}
+              {% render 'icon-tiktok' %}
+            {% when 'YouTube' %}
+              {% render 'icon-youtube' %}
+          {% endcase %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>

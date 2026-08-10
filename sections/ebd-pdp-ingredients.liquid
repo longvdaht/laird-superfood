@@ -1,0 +1,80 @@
+{% comment %}
+  THIS SECTION IS UNUSABLE. It relies on the custom metaobject:ingredients to be properly populated. The old Dawn theme uses a hardcoded list of ingredients and referenced /assets/ingredient-image-example.jpg and stored data in locales. This needs to be handled with metaobjects
+{% endcomment %}
+
+<section class="pdp-ingredients">
+  <div class="content-wrapper">
+    <h2>{{ section.settings.heading }}</h2>
+
+    <div class="ingredients-grid">
+      {% assign ingredients = product.metafields.custom.ingredients_tab | split: ',' %}
+
+      {% for ingredient in ingredients %}
+        {% assign formatted = ingredient | strip | handleize %}
+        {% assign entry = shop.metaobjects.ingredients[formatted] %}
+
+        {% if entry %}
+          <div class="ingredient">
+            {% if entry.image %}
+              <img src="{{ entry.image | img_url: '200x' }}" alt="{{ entry.name }}">
+            {% endif %}
+
+            <h4>{{ entry.name }}</h4>
+
+            {% if entry.description != blank %}
+              <p>{{ entry.description }}</p>
+            {% endif %}
+
+            {% if entry.highlights != blank %}
+              <ul>
+                {{ entry.highlights }}
+              </ul>
+            {% endif %}
+          </div>
+
+        {% else %}
+          <div class="ingredient missing">
+            Missing metaobject: {{ formatted }}
+          </div>
+        {% endif %}
+
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+
+
+{% schema %}
+  {
+    "name": "EBD PDP Ingredients BROKE",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP Ingredients BROKE",
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.pdp-ingredients {
+    padding: 65px;
+
+    h2 {
+      text-align: center;
+    }
+
+    .ingredients-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+    }
+  }
+{% endstylesheet %}

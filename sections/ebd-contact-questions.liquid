@@ -1,0 +1,78 @@
+<section class="contact-questions">
+  <div class="content-wrapper">
+    <h2>{{ section.settings.heading }}</h2>
+    <h4>{{ section.settings.subheading }}</h4>
+    <div class="link-wrapper">
+      <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Contact Questions",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "link_url",
+        "type": "url",
+        "label": "Link URL"
+      },
+      {
+        "id": "link_label",
+        "type": "text",
+        "label": "Link Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Contact Questions",
+        "category": "Contact"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.contact-questions {
+    background-color: var(--color-primary);
+    padding: 185px 65px;
+
+    .content-wrapper {
+      max-width: 600px;
+
+      h2 {
+        color: white;
+        text-align: center;
+      }
+
+      h4 {
+        color: white;
+        text-align: center;
+      }
+
+      .link-wrapper {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 125px 45px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 85px 25px;
+    }
+  }
+{% endstylesheet %}

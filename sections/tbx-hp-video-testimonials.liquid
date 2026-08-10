@@ -1,0 +1,275 @@
+<div class="hp-video-testimonials">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h2 class="white">The people have spoken...</h2>
+      <p class="white">Loved by 12,357 people and counting!</p>
+    </div>
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide">
+            <div class="slide-wrapper">
+              <video playsinline preload="none" poster="{{ block.settings.video_poster | img_url: '750x' }}">
+                <source src="{{ block.settings.video.sources[1].url }}" type="video/mp4">                
+              </video>
+              <div class="video-control">
+                  <div class="play">
+                    {% render 'icon-play' %}
+                  </div>
+                  <div class="pause">
+                    {% render 'icon-pause' %}
+                  </div>              
+                </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="review-stars">
+        {% render 'icon-review-star-white' %}
+      </div>
+    </div>
+    <div class="link-wrapper">
+      <a href="/pages/reviews" title="View All Reviews">
+        <button>
+          READ ALL REVIEWS
+        </button>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "HP Video Testimonials",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "Testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "id": "video_poster",
+          "type": "image_picker",
+          "label": "Video Poster"
+        },
+        {
+          "id": "product",
+          "type": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HP Video Testimonials",
+      "category": "Home Page"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .hp-video-testimonials {
+    padding: 45px 45px;
+    overflow: hidden;
+    background-color: #3a758a;
+    
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0;
+
+      .heading {
+        margin-bottom: 25px;
+        h2 {
+          margin: 0;
+        }
+      }
+
+      .swiper {
+        .review-stars {
+          position: absolute;
+          top: -20px;
+          right: 25px;
+          z-index: 1;
+
+          svg {
+            transform: scale(2);
+            path {
+              stroke: #003349;
+              fill: #003349;
+            }
+          }
+        }
+      }
+
+      .slide-wrapper {
+        position: relative;
+        aspect-ratio: 0.65;
+
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .video-control {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+          border: solid 2px #003349;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          display: flex;
+          justify-content: center;
+          cursor: pointer;
+
+          .play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+          }
+
+          .pause {
+            position: absolute;
+            display: none;
+            top: 16px;
+            left: 16px;
+          }
+
+          svg {
+            width: 30px;
+            height: auto;
+            path {
+              fill: #003349;
+            }
+          }
+        }
+      }  
+
+      .link-wrapper {
+        margin-top: 45px;
+        display: flex;
+        justify-content: center;
+      }
+
+      button {
+        background-color: #e11d48;
+        color: #fff;
+        text-align: center;
+        display: block;
+        border: solid 2px transparent;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: .4s;
+        width: auto;
+        white-space: nowrap;
+
+        &:hover {
+          background-color: white;
+          color: #e11d48;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 20px;
+
+      .content-wrapper {
+        .swiper {
+          .review-stars {
+            display: none;
+          }
+        }
+
+        .link-wrapper {
+          margin-top: 45px;
+        }
+      }
+    }
+    
+  }
+{% endstylesheet %}
+
+
+{% javascript %}
+  var testimonialSwiper = new Swiper('.hp-video-testimonials .swiper', {
+    slidesPerView: 1.15,
+    spaceBetween: 15,
+    breakpoints: {
+      500: {
+        slidesPerView: 1.85,
+      },
+      700: {
+        slidesPerView: 2.15,
+      },
+      900: {
+        slidesPerView: 3.15,
+      },
+      1200: {
+        slidesPerView: 4,
+        spaceBetween: 20
+      },
+    },
+  });
+
+var wrappers = document.querySelectorAll('.hp-video-testimonials .slide-wrapper');
+
+function resetWrapper(w) {
+  var v = w.querySelector('video');
+  if (!v) return;
+  v.pause();
+  try { v.currentTime = 0; } catch(e) {}
+  v.load(); // forces the poster to show again
+  var play = w.querySelector('.video-control .play');
+  var pause = w.querySelector('.video-control .pause');
+  if (pause) pause.style.display = 'none';
+  if (play) play.style.display = 'block';
+}
+
+wrappers.forEach(function(wrapper) {
+  var video = wrapper.querySelector('video');
+  var videoControl = wrapper.querySelector('.video-control');
+  var playBtn = wrapper.querySelector('.video-control .play');
+  var pauseBtn = wrapper.querySelector('.video-control .pause');
+
+  // Show poster again when the video ends
+  video.addEventListener('ended', function() {
+    resetWrapper(wrapper);
+  });
+
+  videoControl.addEventListener('click', function() {
+    if (video.paused) {
+      // Pause and reset every other slide to its poster
+      wrappers.forEach(function(otherWrapper) {
+        if (otherWrapper !== wrapper) resetWrapper(otherWrapper);
+      });
+      playBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
+      video.play();
+    } else {
+      pauseBtn.style.display = 'none';
+      playBtn.style.display = 'block';
+      video.pause();
+    }
+  });
+});
+
+testimonialSwiper.on('slideChangeTransitionStart', function() {
+  wrappers.forEach(resetWrapper);
+});
+
+
+
+{% endjavascript %}

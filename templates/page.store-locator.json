@@ -1,0 +1,43 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "ebd_hp_instafeed_heading_PnHkdg": {
+      "type": "ebd-hp-instafeed-heading",
+      "name": "Header",
+      "settings": {
+        "subheading": "",
+        "heading": "Store Locator",
+        "handle": ""
+      }
+    },
+    "custom_liquid_dpNmkH": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<stockist-store-locator data-stockist-widget-tag=\"map_83p88wj3\"></stockist-store-locator>\n<script async=\"\" src=\"https://stockist.co/embed/v1/widget.min.js\"></script>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "main",
+    "ebd_hp_instafeed_heading_PnHkdg",
+    "custom_liquid_dpNmkH"
+  ]
+}

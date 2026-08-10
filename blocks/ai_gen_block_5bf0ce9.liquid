@@ -1,0 +1,401 @@
+{% doc %}
+  @prompt
+    Recreate the existing custom Quantity Selector block for a product page, but with serving quantities of 6, 12, and 24 instead of the current values. The block should display quantity options as selectable buttons or cards showing the serving count, allow one option to be selected at a time (with a highlighted/active state), have a "most popular" or recommended badge on one of the options, update the cart quantity when an option is selected, and match the existing styling of the current block as closely as possible. The block is used on the Strawberry Protein Matcha product page., make it exactly the same as the quantity selector above it, font sizes, show the price, casing, colors, etc but just keep the 6,12,24 servings, the price should be the same as the above quantity selector 18, 36, 72, the price is incorrect right now its showing $324, 648 and 1296, i want it 18, 36 and 72, FOR THE BADGE, MATCH THE OTHER QUANTITY SELECTOR BY PUTTING IT IN THE GREEN COLOR AND IN THE CENTER OF THE BLOCK, STILL NOT ACCURATE, LOOK AT THE QUANTITY SELECTOR ABOVE AND MATCH THE BADGE TO THAT, ITS IN A DIFFERENT COLOR GREEN AND OVERLAPS THE TOP OF THE BOX. MATCH IT. YOU BUILT IT JUST DO IT AGAIN, Make the badge background color #B5D334 and badge text color #3D5224. Make the text size 11px, badge letter spacing 0.5px, badge padding top/bottom 5px, badge padding left/right 14px, badge border radius 100px, , just add cents to the price so it's $18.00 instead of $18 for example. do for all 3, make the "servings" on each a size of 14 and weight of medium, add box padding top/bottom 14px, use all of the same settings as this block but just keep the 6, 12, 24, thats the only change: https://admin.shopify.com/store/laird-superfood/themes/163944792099?key=blocks/ai_gen_block_d813bcb.liquid, when a quantity is selected show it as dark blue and change the quantity number and price to white and the 'servings' to gray just like the referenced quantity selector. 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-quantity-selector-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+  }
+
+  .ai-quantity-selector-container-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .ai-quantity-selector-label-{{ ai_gen_id }} {
+    font-size: 12px;
+    font-weight: 400;
+    color: #000000cf;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-quantity-selector-options-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }} {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 8px;
+    background-color: #ffffff;
+    border: 1px solid #003349;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 90px;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}:hover {
+    background-color: #ffffff;
+    border-color: #003349;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}.active {
+    background-color: #003349;
+    border-color: #003349;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}.active:hover {
+    background-color: #003349;
+    border-color: #003349;
+  }
+
+  .ai-quantity-selector-badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #B5D334;
+    color: #3D5224;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .ai-quantity-selector-quantity-{{ ai_gen_id }} {
+    font-size: 24px;
+    font-weight: 700;
+    color: #003349;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}.active .ai-quantity-selector-quantity-{{ ai_gen_id }} {
+    color: #ffffff;
+  }
+
+  .ai-quantity-selector-sublabel-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000cf;
+    margin: 4px 0 0;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}.active .ai-quantity-selector-sublabel-{{ ai_gen_id }} {
+    color: #ffffffb3;
+  }
+
+  .ai-quantity-selector-price-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 600;
+    color: #003349;
+    margin: 6px 0 0;
+    line-height: 1;
+  }
+
+  .ai-quantity-selector-option-{{ ai_gen_id }}.active .ai-quantity-selector-price-{{ ai_gen_id }} {
+    color: #ffffff;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-quantity-selector-options-{{ ai_gen_id }} {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .ai-quantity-selector-option-{{ ai_gen_id }} {
+      min-height: 85px;
+      padding: 16px 6px;
+    }
+
+    .ai-quantity-selector-quantity-{{ ai_gen_id }} {
+      font-size: 20px;
+    }
+
+    .ai-quantity-selector-sublabel-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-quantity-selector-price-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-quantity-selector-badge-{{ ai_gen_id }} {
+      font-size: 11px;
+      padding: 5px 14px;
+    }
+  }
+{% endstyle %}
+
+<quantity-selector-{{ ai_gen_id }}
+  class="ai-quantity-selector-{{ ai_gen_id }}"
+  data-product-id="{{ product.id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-quantity-selector-container-{{ ai_gen_id }}">
+    <div class="ai-quantity-selector-label-{{ ai_gen_id }}">{{ block.settings.label_text }}</div>
+
+    <div class="ai-quantity-selector-options-{{ ai_gen_id }}">
+      <div
+        class="ai-quantity-selector-option-{{ ai_gen_id }} {% if block.settings.default_quantity == 6 %}active{% endif %}"
+        data-quantity="6"
+        role="button"
+        tabindex="0"
+        aria-label="Select 6 servings"
+      >
+        {% if block.settings.show_badge_6 %}
+          <span class="ai-quantity-selector-badge-{{ ai_gen_id }}">{{ block.settings.badge_text_6 }}</span>
+        {% endif %}
+        <div class="ai-quantity-selector-quantity-{{ ai_gen_id }}">6</div>
+        <div class="ai-quantity-selector-sublabel-{{ ai_gen_id }}">{{ block.settings.sublabel_text }}</div>
+        {% if block.settings.show_price %}
+          <div class="ai-quantity-selector-price-{{ ai_gen_id }}">${{ block.settings.price_6 }}.00</div>
+        {% endif %}
+      </div>
+
+      <div
+        class="ai-quantity-selector-option-{{ ai_gen_id }} {% if block.settings.default_quantity == 12 %}active{% endif %}"
+        data-quantity="12"
+        role="button"
+        tabindex="0"
+        aria-label="Select 12 servings"
+      >
+        {% if block.settings.show_badge_12 %}
+          <span class="ai-quantity-selector-badge-{{ ai_gen_id }}">{{ block.settings.badge_text_12 }}</span>
+        {% endif %}
+        <div class="ai-quantity-selector-quantity-{{ ai_gen_id }}">12</div>
+        <div class="ai-quantity-selector-sublabel-{{ ai_gen_id }}">{{ block.settings.sublabel_text }}</div>
+        {% if block.settings.show_price %}
+          <div class="ai-quantity-selector-price-{{ ai_gen_id }}">${{ block.settings.price_12 }}.00</div>
+        {% endif %}
+      </div>
+
+      <div
+        class="ai-quantity-selector-option-{{ ai_gen_id }} {% if block.settings.default_quantity == 24 %}active{% endif %}"
+        data-quantity="24"
+        role="button"
+        tabindex="0"
+        aria-label="Select 24 servings"
+      >
+        {% if block.settings.show_badge_24 %}
+          <span class="ai-quantity-selector-badge-{{ ai_gen_id }}">{{ block.settings.badge_text_24 }}</span>
+        {% endif %}
+        <div class="ai-quantity-selector-quantity-{{ ai_gen_id }}">24</div>
+        <div class="ai-quantity-selector-sublabel-{{ ai_gen_id }}">{{ block.settings.sublabel_text }}</div>
+        {% if block.settings.show_price %}
+          <div class="ai-quantity-selector-price-{{ ai_gen_id }}">${{ block.settings.price_24 }}.00</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</quantity-selector-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class QuantitySelector{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.options = null;
+        this.quantityInput = null;
+      }
+
+      connectedCallback() {
+        this.options = this.querySelectorAll('.ai-quantity-selector-option-{{ ai_gen_id }}');
+        this.findOrCreateQuantityInput();
+        this.setupEventListeners();
+        this.updateQuantityFromActive();
+      }
+
+      findOrCreateQuantityInput() {
+        const productForm = document.querySelector('form[action*="/cart/add"]');
+        if (productForm) {
+          this.quantityInput = productForm.querySelector('input[name="quantity"]');
+          if (!this.quantityInput) {
+            this.quantityInput = document.createElement('input');
+            this.quantityInput.type = 'hidden';
+            this.quantityInput.name = 'quantity';
+            this.quantityInput.value = '{{ block.settings.default_quantity }}';
+            productForm.appendChild(this.quantityInput);
+          }
+        }
+      }
+
+      setupEventListeners() {
+        this.options.forEach((option) => {
+          option.addEventListener('click', () => this.handleOptionClick(option));
+          option.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.handleOptionClick(option);
+            }
+          });
+        });
+      }
+
+      handleOptionClick(selectedOption) {
+        this.options.forEach((option) => option.classList.remove('active'));
+        selectedOption.classList.add('active');
+
+        const quantity = selectedOption.getAttribute('data-quantity');
+        this.updateQuantity(quantity);
+      }
+
+      updateQuantity(quantity) {
+        if (this.quantityInput) {
+          this.quantityInput.value = quantity;
+          this.quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+
+      updateQuantityFromActive() {
+        const activeOption = this.querySelector('.ai-quantity-selector-option-{{ ai_gen_id }}.active');
+        if (activeOption) {
+          const quantity = activeOption.getAttribute('data-quantity');
+          this.updateQuantity(quantity);
+        }
+      }
+    }
+
+    customElements.define('quantity-selector-{{ ai_gen_id }}', QuantitySelector{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Quantity selector",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Label text",
+      "default": "Select quantity"
+    },
+    {
+      "type": "text",
+      "id": "sublabel_text",
+      "label": "Sublabel text",
+      "default": "servings"
+    },
+    {
+      "type": "select",
+      "id": "default_quantity",
+      "label": "Default quantity",
+      "options": [
+        {
+          "value": "6",
+          "label": "6 servings"
+        },
+        {
+          "value": "12",
+          "label": "12 servings"
+        },
+        {
+          "value": "24",
+          "label": "24 servings"
+        }
+      ],
+      "default": "12"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Pricing"
+    },
+    {
+      "type": "text",
+      "id": "price_6",
+      "label": "Price for 6 servings",
+      "default": "18"
+    },
+    {
+      "type": "text",
+      "id": "price_12",
+      "label": "Price for 12 servings",
+      "default": "36"
+    },
+    {
+      "type": "text",
+      "id": "price_24",
+      "label": "Price for 24 servings",
+      "default": "72"
+    },
+    {
+      "type": "header",
+      "content": "Badge for 6 servings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge_6",
+      "label": "Show badge",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "badge_text_6",
+      "label": "Badge text",
+      "default": "Popular"
+    },
+    {
+      "type": "header",
+      "content": "Badge for 12 servings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge_12",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text_12",
+      "label": "Badge text",
+      "default": "Popular"
+    },
+    {
+      "type": "header",
+      "content": "Badge for 24 servings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge_24",
+      "label": "Show badge",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "badge_text_24",
+      "label": "Badge text",
+      "default": "Best value"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quantity selector"
+    }
+  ]
+}
+{% endschema %}

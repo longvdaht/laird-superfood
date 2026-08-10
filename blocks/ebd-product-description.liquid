@@ -1,0 +1,39 @@
+<div class="product-description">
+  {{ product.description }}
+  {% if product.metafields.custom.prop65 %}
+    <div class="prop65">
+      <a href="#footer-disclaimers">†† California Residents: View our Prop 65 Warning</a>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "EBD Product Description",
+  "presets": [
+    {
+      "name": "EBD Product Description",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .product-description {
+    padding: 20px 0;
+    border-top: solid 2px var(--color-lightgray);
+    border-bottom: solid 2px var(--color-lightgray);
+    margin: 10px 0 20px;
+
+    .prop65 {
+      margin-top: 15px;
+      a {
+        font-size: 14px;
+        font-weight: 400;
+        color: #404040;
+        text-decoration: underline;
+      }
+    }
+  }
+{% endstylesheet %}

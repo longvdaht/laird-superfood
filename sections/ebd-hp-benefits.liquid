@@ -1,0 +1,277 @@
+<section class="hp-benefits">
+  <div class="content-wrapper">
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+
+    <div class="benefits-wrapper">
+      {% for block in section.blocks %}
+        <div class="benefit" data-benefit style="background-image: url('{{ block.settings.background_image | img_url: '1000x' }}');">
+
+          <div class="content">
+            <h3 class="darkblue">{{ block.settings.title }}</h3>
+            <div class="expander-content">
+              <div class="preview">
+                {{ block.settings.text }}
+              </div>
+            </div>
+            <div class="mobile-expand-chevron">
+              {% render 'icon-chevron-right-darkblue' %}
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HP Benefits",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Benefits",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "text",
+          "type": "richtext",
+          "label": "Text"
+        },
+        {
+          "id": "background_image",
+          "type": "image_picker",
+          "label": "Background Image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "HP Benefits",
+      "category": "Home Page"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+section.hp-benefits {
+  padding: 45px;
+
+  .content-wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+
+    .benefits-wrapper {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 25px;
+
+      .benefit {
+        aspect-ratio: 0.7;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        overflow: hidden;
+
+        .content {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          padding: 25px;
+          background: rgba(255,255,255,0.6);
+          transition: background 0.2s ease, height 0.2s ease, padding 0.2s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+        }
+
+        h3 {
+          text-align: center;
+          margin-bottom: 12px;
+        }
+
+        .expander-content {
+          .preview {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-align: center;
+          }
+
+          p {
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: 600;
+            color: var(--color-darkblue);
+            margin: 0;
+          }
+        }
+
+        .mobile-expand-chevron {
+          display: none;
+        }
+
+        &:hover {
+          .content {
+            background: rgba(255,255,255,0.8);
+            height: auto;
+          }
+          .expander-content .preview {
+            -webkit-line-clamp: unset;
+            overflow: visible;
+          }
+        }
+
+        &.active {
+          .content {
+            background: rgba(255,255,255,0.85);
+            height: auto;
+          }
+          .expander-content .preview {
+            -webkit-line-clamp: unset;
+            overflow: visible;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1400px) {
+    .content-wrapper {
+      .benefits-wrapper {
+        gap: 15px;
+        .benefit {
+          aspect-ratio: 0.6;
+
+          .content {
+            padding: 25px 15px;
+          }
+        }
+      }
+    }
+  }
+
+@media (max-width: 1024px) {
+
+  .content-wrapper {
+    .benefits-wrapper {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .benefit {
+        aspect-ratio: 1.5;
+
+        /* Fully disable hover */
+        &:hover .content {
+          background: rgba(255,255,255,0.6);
+          height: auto;
+        }
+
+        &:hover .expander-content .preview {
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+        }
+
+        .content {
+          .mobile-expand-chevron {
+            display: block;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+
+            svg {
+              width: 100%;
+              height: 100%;
+              transform: rotate(-90deg);
+            }
+          }
+        }
+
+        &.active {
+          .content {
+            background: rgba(255,255,255,0.85);
+            height: auto;
+
+            .mobile-expand-chevron svg {
+              transform: rotate(90deg);
+            }
+          }
+
+          .expander-content .preview {
+            -webkit-line-clamp: unset;
+            overflow: visible;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    padding: 65px 20px;
+    .content-wrapper {
+      .benefits-wrapper {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 20px;
+
+        .benefit {
+          aspect-ratio: 1.25; 
+
+          h3 {
+            margin-bottom: 5px;
+          }
+
+          .expander-content {
+            .preview {
+              p {
+                font-size: 13px;
+                line-height: 17px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+{% endstylesheet %}
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', function () {
+  const benefits = document.querySelectorAll('[data-benefit]');
+
+  benefits.forEach(benefit => {
+    benefit.addEventListener('click', () => {
+      if (window.innerWidth <= 1024) {
+        benefits.forEach(b => {
+          if (b !== benefit) b.classList.remove('active');
+        });
+        benefit.classList.toggle('active');
+      }
+    });
+  });
+});
+{% endjavascript %}

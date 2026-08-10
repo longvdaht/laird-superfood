@@ -1,0 +1,29 @@
+<section class="globo-form">
+  {{ section.settings.globo_form_embed }}
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Globo Form",
+    "settings": [
+      {
+        "id": "globo_form_embed",
+        "type": "html",
+        "label": "Globo Form Embed"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Globo Form",
+        "category": "EBD"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .globo-form {
+    position: relative;
+    z-index: 1;
+  }
+{% endstylesheet %}

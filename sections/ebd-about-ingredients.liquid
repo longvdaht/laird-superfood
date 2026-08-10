@@ -1,0 +1,130 @@
+<section class="ebd-about-ingredients" style="background-image: url('{{ section.settings.background_image | image_url: width: 1920 }}')">
+  <div class="content-wrapper">
+    <div class="content">
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      <div class="text">{{ section.settings.text }}</div>
+    </div>
+  </div>
+
+
+  <style>
+    @media (max-width: 1024px) {
+      .ebd-about-ingredients {
+        background-image: url('{{ section.settings.background_image_mobile | image_url: width: 800 }}') !important;
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Ingredients",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      },
+      {
+        "id": "background_image",
+        "type": "image_picker",
+        "label": "Background Image"
+      },
+      {
+        "id": "background_image_mobile",
+        "type": "image_picker",
+        "label": "Background Image Mobile"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Ingredients",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-about-ingredients {
+    padding: 85px 65px;
+    background-size: cover;
+    background-position: center;
+
+    .content-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      max-width: 1600px;
+      margin: 0 auto;
+      min-height: 700px;
+
+
+      .content {
+        width: 60%;
+        max-width: 560px;
+        background: white;
+        border-radius: 50%;
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0 65px;
+
+        h2 {
+          text-align: center;
+        }
+
+        .text {
+          text-align: center;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+
+      .content-wrapper {
+        justify-content: center;
+        min-height: 600px;
+
+        .content {
+          width: 100%;
+          background: rgba(255,255,255,0.8);
+
+        }
+      }
+
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+      .content-wrapper {
+        .content {
+          padding: 0 45px;
+          .text {
+            p {
+              font-size: 14px;
+              line-height: 22px;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      .content-wrapper {
+        .content {
+          border-radius: 0;
+          padding: 45px 25px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

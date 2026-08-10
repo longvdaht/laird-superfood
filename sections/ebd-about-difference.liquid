@@ -1,0 +1,207 @@
+<section class="ebd-about-difference">
+  <div class="top-banner">
+    <h2>{{ section.settings.heading }}</h2>
+  </div>
+  <div class="main-wrapper">
+    <div class="content-wrapper">
+      <div class="icons-grid">
+        {% for block in section.blocks %}
+          <div class="grid-item">
+            <div class="image">
+              <img src="{{ block.settings.icon | image_url: width: 300 }}" alt="{{ block.settings.title }}" class="icon">
+            </div>
+            <div class="content">
+              <h4 class="darkblue">{{ block.settings.title }}</h4>
+              <p>{{ block.settings.text }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="main-image">
+        <img src="{{ section.settings.image | image_url: width: 1000 }}" alt="{{ section.settings.image.alt }}">
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Difference",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Icons",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "text",
+            "type": "text",
+            "label": "Text"
+          },
+          {
+            "id": "icon",
+            "type": "image_picker",
+            "label": "Icon"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Difference",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-about-difference {
+    .top-banner {
+      padding: 45px 65px;
+      background-color: var(--color-red);
+      h2 {
+        color: white;
+        text-align: center;
+        margin: 0;
+      }
+    }
+
+    .main-wrapper {
+      padding: 85px 65px;
+
+      .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        gap: 45px;
+        align-items: center;
+        .icons-grid {
+          width: 55%;
+          display: grid;
+          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+          gap: 25px;
+
+          .grid-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            .image {
+              img {
+                width: 50px;
+                height: 50px;
+              }
+            }
+
+            .content {
+              flex: 1;
+
+              h4 {
+                font-weight: 700;
+                margin-bottom: 5px;
+              }
+            }
+          }
+        }
+
+        .main-image {
+          width: 45%;
+
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .top-banner {
+        padding: 25px 45px;
+      }
+
+      .main-wrapper {
+        padding: 65px 45px;
+
+        .content-wrapper {
+          flex-direction: column;
+          .icons-grid {
+            width: 100%;
+            grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+          }
+
+          .main-image {
+            width: 100%;
+            img {
+              max-width: 650px;
+              margin: 0 auto;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .top-banner {
+
+      }
+
+      .main-wrapper {
+        padding: 45px 25px;
+
+        .content-wrapper {
+          .icons-grid {
+            grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+            gap: 25px 35px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      .main-wrapper {
+        .content-wrapper {
+          gap: 25px;
+          .icons-grid {
+            gap: 25px;
+            .grid-item {
+              flex-direction: column;
+
+              .image {
+                width: 100%;
+                img {
+                  margin: 0 auto;
+                }
+              }
+
+              .content {
+                width: 100%;
+                h4 {
+                  text-align: center;
+                }
+
+                p {
+                  text-align: center;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

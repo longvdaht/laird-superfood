@@ -1,0 +1,428 @@
+{% if product.metafields.custom.tab_content.value != blank %}
+  <div class="ebd-product-tabs">
+    <div class="content-wrapper">
+
+      {% if product.metafields.custom.tab_content_heading %}
+        <h2 class="ebd-product-tabs__heading">
+          {{ product.metafields.custom.tab_content_heading }}
+        </h2>
+      {% endif %}
+
+      <div class="ebd-product-tabs__content">
+        {% if product.metafields.custom.tab_content.value and product.metafields.custom.tab_content.value.size > 0 %}
+          <!-- Mobile View: Accordions -->
+          <div class="ebd-product-tabs__mobile" id="mobile-accordions">
+            {% for tab in product.metafields.custom.tab_content.value %}
+              <div class="ebd-product-tabs__accordion">
+                <button
+                  class="ebd-product-tabs__accordion-button"
+                  aria-expanded="false"
+                  aria-controls="mobile-accordion-content-{{ forloop.index }}"
+                >
+                  <span class="ebd-product-tabs__accordion-title">{{ tab.title }}</span>
+                  <span class="ebd-product-tabs__accordion-icon" aria-hidden="true">+</span>
+                </button>
+
+                <div
+                  class="ebd-product-tabs__accordion-panel hidden"
+                  id="mobile-accordion-content-{{ forloop.index }}"
+                  role="region"
+                  aria-labelledby="mobile-accordion-button-{{ forloop.index }}"
+                >
+                  {% case tab.type %}
+                    {% when 'why_youll_love_it' %}
+                      {% render 'why-youll-love-it', tab: tab %}
+                    {% when 'whats_inside' %}
+                      {% render 'whats-inside', tab: tab %}
+                    {% when 'how_it_works' %}
+                      {% render 'how-it-works', tab: tab %}
+                    {% when 'what_it_tastes_like' %}
+                      {% render 'what-it-tastes-like', tab: tab %}
+                  {% endcase %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Desktop View: Tabs -->
+          <div class="ebd-product-tabs__desktop" id="desktop-tabs">
+            <div class="ebd-product-tabs__tablist" role="tablist">
+              {% for tab in product.metafields.custom.tab_content.value %}
+                <button
+                  class="ebd-product-tabs__tab {% if forloop.first %}is-active{% endif %}"
+                  role="tab"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-controls="tab-pane-desktop-{{ forloop.index }}"
+                  id="tab-desktop-button-{{ forloop.index }}"
+                  tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+                >
+                  {{ tab.title }}
+                </button>
+              {% endfor %}
+            </div>
+
+            <div class="ebd-product-tabs__panels" id="tab-content-desktop">
+              {% for tab in product.metafields.custom.tab_content.value %}
+                <div
+                  class="ebd-product-tabs__panel tab-pane {% unless forloop.first %}hidden{% endunless %}"
+                  role="tabpanel"
+                  id="tab-pane-desktop-{{ forloop.index }}"
+                  aria-labelledby="tab-desktop-button-{{ forloop.index }}"
+                >
+                  {% case tab.type %}
+                    {% when 'why_youll_love_it' %}
+                      {% render 'why-youll-love-it', tab: tab %}
+                    {% when 'whats_inside' %}
+                      {% render 'whats-inside', tab: tab %}
+                    {% when 'how_it_works' %}
+                      {% render 'how-it-works', tab: tab %}
+                    {% when 'what_it_tastes_like' %}
+                      {% render 'what-it-tastes-like', tab: tab %}
+                  {% endcase %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+{% endif %}
+
+
+
+{% schema %}
+  {
+    "name": "EBD Product Tabs",
+    "settings": [],
+    "blocks": [
+      {
+        "type": "why_youll_love_it",
+        "name": "Why You'll Love It",
+        "settings": [
+          {
+            "type": "text",
+            "id": "description",
+            "label": "Description",
+            "default": "Details about why customers will love it."
+          }
+        ]
+      },
+      {
+        "type": "whats_inside",
+        "name": "What's Inside",
+        "settings": [
+          {
+            "type": "text",
+            "id": "description",
+            "label": "Description",
+            "default": "Details about what's inside."
+          }
+        ]
+      },
+      {
+        "type": "how_it_works",
+        "name": "How It Works",
+        "settings": [
+          {
+            "type": "text",
+            "id": "description",
+            "label": "Description",
+            "default": "Details on how it works."
+          }
+        ]
+      },
+      {
+        "type": "what_it_tastes_like",
+        "name": "What It Tastes Like",
+        "settings": [
+          {
+            "type": "text",
+            "id": "description",
+            "label": "Description",
+            "default": "Details about the taste."
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Product Tabs",
+        "category": "EBD Product"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-product-tabs {
+    padding: 125px 45px;
+
+    .content-wrapper {
+      max-width: 1600px;
+
+      .ebd-product-tabs__heading {
+        text-align: center;
+        margin-bottom: 45px;
+      }
+
+      .ebd-product-tabs__content {
+        .ebd-product-tabs__mobile {
+          display: none;
+        }
+
+        .ebd-product-tabs__desktop, .ebd-product-tabs__mobile {
+          .ebd-product-tabs__tablist, .ebd-product-tabs__accordion {
+            display: flex;
+            gap: 35px;
+            margin-bottom: 35px;
+
+            button {
+              width: 100%;
+              background: none;
+              border: none;
+              text-align: left;
+              border-bottom: solid 2px var(--color-lightgray);
+              padding: 0 0 10px 0;
+              font-size: 18px;
+              font-weight: 500;
+              cursor: pointer;
+
+              &[aria-selected="true"] {
+                border-bottom: solid 2px var(--color-red);
+              }
+            }
+          }
+
+          .tab-pane, .ebd-product-tabs__accordion-panel {
+            .content-wrapper {
+              display: flex;
+              gap: 35px;
+
+              .column {
+                width: 50%;
+
+                .icon-wrapper {
+                  display: flex;
+                  align-items: center;
+                  gap: 20px;
+                  margin-top: 25px;
+                  img {
+                    width: 80px;
+                    height: 100%;
+                  }
+                }
+
+                &.card-grid {
+                  display: grid;
+                  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+                  gap: 15px;
+                  
+                  .card {
+                    background-color: var(--color-tan);
+                    border-radius: 5px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 25px;
+
+                    h5 {
+                      text-align: center;
+                    }
+
+                    p {
+                      text-align: center;
+                      margin: 0;
+                    }
+                  }
+                }
+
+                .quote {
+                  margin-top: 20px;
+                  border: solid 2px var(--color-darkblue);
+                  border-radius: 7px;
+                  padding: 20px;
+
+                  img.stars {
+                    width: 150px;
+                    margin-bottom: 20px;
+                  }
+
+                  p.quote-text {
+                    font-size: 20px;
+                    font-weight: 500;
+                    margin-bottom: 20px;
+                  }
+
+                  p.name {
+                    font-size: 20px;
+                    font-weight: 600;
+                    margin: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 85px 25px;
+      .content-wrapper {
+        .ebd-product-tabs__content {
+
+          .ebd-product-tabs__desktop {
+            display: none;
+          }
+
+          .ebd-product-tabs__mobile {
+            display: block;
+
+            .ebd-product-tabs__accordion {
+              flex-direction: column; 
+              gap: 20px;
+              margin-bottom: 25px;
+
+              button {
+                display: flex;
+                justify-content: space-between;
+              }
+
+              .ebd-product-tabs__accordion-panel {
+                .content-wrapper {
+                  flex-direction: column;
+                  gap: 20px;
+
+                  .column {
+                    width: 100%;
+
+                    &.card-grid {
+                      .card {
+                        padding: 15px;
+                      }
+                    }
+
+                    .icon-wrapper {
+                      img {
+                        width: auto;
+                        height: 70px;
+                      }
+                    }
+                  }
+                }
+
+              }
+
+
+            }
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    // Mobile Accordions
+    const mobileAccordions = document.getElementById('mobile-accordions');
+    if (mobileAccordions) {
+      const mobileButtons = mobileAccordions.querySelectorAll('#mobile-accordions button');
+
+      mobileButtons.forEach((button, index) => {
+        const contentId = `mobile-accordion-content-${index + 1}`;
+        button.setAttribute('id', `mobile-accordion-button-${index + 1}`);
+        button.setAttribute('aria-controls', contentId);
+
+        button.addEventListener('click', () => {
+          const isExpanded = button.getAttribute('aria-expanded') === 'true';
+          const content = document.getElementById(contentId);
+
+          // Close all accordions
+          mobileButtons.forEach((btn) => {
+            const btnContent = document.getElementById(btn.getAttribute('aria-controls'));
+            btn.setAttribute('aria-expanded', 'false');
+
+            const icon = btn.querySelector('.ebd-product-tabs__accordion-icon');
+            if (icon) icon.textContent = '+';
+
+            if (btnContent) btnContent.classList.add('hidden');
+          });
+
+          // Toggle current accordion
+          if (!isExpanded) {
+            button.setAttribute('aria-expanded', 'true');
+
+            const icon = button.querySelector('.ebd-product-tabs__accordion-icon');
+            if (icon) icon.textContent = '-';
+
+            if (content) content.classList.remove('hidden');
+          }
+        });
+
+        button.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            button.click();
+          }
+        });
+      });
+    }
+
+    // Desktop Tabs
+    const desktopTabs = document.getElementById('desktop-tabs');
+    if (desktopTabs) {
+      const tabButtons = desktopTabs.querySelectorAll('[role="tab"]');
+      const tabPanels = desktopTabs.querySelectorAll('[role="tabpanel"]');
+
+      tabButtons.forEach((button, index) => {
+        const panelId = `tab-pane-desktop-${index + 1}`;
+        button.setAttribute('id', `tab-desktop-button-${index + 1}`);
+        button.setAttribute('aria-controls', panelId);
+        button.setAttribute('tabindex', index === 0 ? '0' : '-1');
+
+        button.addEventListener('click', () => {
+          // Deactivate all tabs
+          tabButtons.forEach((btn) => {
+            btn.classList.remove('is-active');
+            btn.setAttribute('aria-selected', 'false');
+            btn.setAttribute('tabindex', '-1');
+          });
+
+          tabPanels.forEach((panel) => {
+            panel.classList.add('hidden');
+          });
+
+          // Activate clicked tab
+          button.classList.add('is-active');
+          button.setAttribute('aria-selected', 'true');
+          button.setAttribute('tabindex', '0');
+
+          // Show selected panel
+          if (tabPanels[index]) tabPanels[index].classList.remove('hidden');
+        });
+
+        button.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            const newIndex = (index + 1) % tabButtons.length;
+            tabButtons[newIndex].focus();
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const newIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+            tabButtons[newIndex].focus();
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            tabButtons[0].focus();
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            tabButtons[tabButtons.length - 1].focus();
+          }
+        });
+      });
+    }
+  });
+{% endjavascript %}

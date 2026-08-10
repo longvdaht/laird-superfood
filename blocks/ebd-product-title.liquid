@@ -1,0 +1,19 @@
+<h1 class="extra-small darkblue product-title">{{ product.title }}</h1>
+
+{% schema %}
+{
+  "name": "EBD Product Title",
+  "presets": [
+    {
+      "name": "EBD Product Title",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  h1.product-title {
+    margin-bottom: 10px;
+  }
+{% endstylesheet %}

@@ -1,0 +1,229 @@
+{% assign badge_asset_names = 'Rectangle-1.jpg,Rectangle-2.jpg,Rectangle-3.jpg,Rectangle-4.jpg,Rectangle.jpg,Vector.jpg' | split: ',' %}
+{% assign badge_alt_defaults = 'Soy Free,Paleo Friendly,Vegan,Non GMO Verified,Gluten Free,Dairy Free' | split: ',' %}
+
+<section class="ebd-pdp-badges-row" style="--ebd-badges-margin-top: {{ section.settings.margin_top }}px; --ebd-badges-margin-bottom: {{ section.settings.margin_bottom }}px; --ebd-badges-margin-top-mobile: {{ section.settings.margin_top_mobile }}px; --ebd-badges-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;">
+  <div class="ebd-pdp-badges-row__inner page-width">
+    <div class="ebd-pdp-badges-row__list" role="list">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {% assign badge_image = block.settings.image %}
+          {% assign badge_asset_name = badge_asset_names[forloop.index0] | strip %}
+          <div
+            class="ebd-pdp-badges-row__item"
+            {{ block.shopify_attributes }}
+            role="listitem">
+            {% if badge_image != blank or badge_asset_name != blank %}
+              <img
+                class="ebd-pdp-badges-row__img"
+                src="{% if badge_image != blank %}{{ badge_image | image_url: width: 192 }}{% else %}{{ badge_asset_name | asset_url }}{% endif %}"
+                alt="{{ block.settings.alt | default: block.settings.title | escape }}"
+                width="96"
+                height="96"
+                loading="lazy">
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for asset_name in badge_asset_names %}
+          {% assign alt_text = badge_alt_defaults[forloop.index0] | strip %}
+          <div class="ebd-pdp-badges-row__item" role="listitem">
+            <img
+              class="ebd-pdp-badges-row__img"
+              src="{{ asset_name | strip | asset_url }}"
+              alt="{{ alt_text }}"
+              width="96"
+              height="96"
+              loading="lazy">
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD PDP Badges Row",
+    "tag": "section",
+    "class": "section-ebd-pdp-badges-row",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Spacing (desktop)"
+      },
+      {
+        "type": "range",
+        "id": "margin_top",
+        "min": 0,
+        "max": 160,
+        "step": 4,
+        "unit": "px",
+        "label": "Margin top",
+        "default": 96
+      },
+      {
+        "type": "range",
+        "id": "margin_bottom",
+        "min": 0,
+        "max": 160,
+        "step": 4,
+        "unit": "px",
+        "label": "Margin bottom",
+        "default": 96
+      },
+      {
+        "type": "header",
+        "content": "Spacing (mobile)"
+      }, {
+        "type": "range",
+        "id": "margin_top_mobile",
+        "min": 0,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "label": "Margin top",
+        "default": 50
+      }, {
+        "type": "range",
+        "id": "margin_bottom_mobile",
+        "min": 0,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "label": "Margin bottom",
+        "default": 50
+      }
+    ],
+    "blocks": [
+      {
+        "type": "badge",
+        "name": "Badge",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }, {
+            "type": "text",
+            "id": "title",
+            "label": "Title (alt)",
+            "info": "Used as image alt text (e.g. Soy Free)"
+          }, {
+            "type": "text",
+            "id": "alt",
+            "label": "Alt text override",
+            "info": "Leave blank to use title as alt"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD PDP Badges Row",
+        "blocks": [
+          {
+            "type": "badge",
+            "settings": {
+              "title": "Soy Free"
+            }
+          },
+          {
+            "type": "badge",
+            "settings": {
+              "title": "Paleo Friendly"
+            }
+          },
+          {
+            "type": "badge",
+            "settings": {
+              "title": "Vegan"
+            }
+          },
+          {
+            "type": "badge",
+            "settings": {
+              "title": "Non GMO Verified"
+            }
+          }, {
+            "type": "badge",
+            "settings": {
+              "title": "Gluten Free"
+            }
+          }, {
+            "type": "badge",
+            "settings": {
+              "title": "Dairy Free"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .section-ebd-pdp-badges-row {
+    margin: 96px auto;
+    display: block;
+    width: 100%;
+    padding: 0 65px;
+    max-width: 1300px;
+  }
+
+  .ebd-pdp-badges-row__inner {
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .ebd-pdp-badges-row__list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ebd-pdp-badges-row__item {
+    flex-shrink: 0;
+  }
+
+  .ebd-pdp-badges-row__img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    display: block;
+  }
+
+  @media screen and (max-width: 749px) {
+    .section-ebd-pdp-badges-row {
+      margin-top: var(--ebd-badges-margin-top-mobile, 50px);
+      margin-bottom: var(--ebd-badges-margin-bottom-mobile, 50px);
+      padding: 0 16px !important;
+    }
+
+    .ebd-pdp-badges-row__img {
+      width: 50px;
+      height: 100%;
+    }
+  }
+  @media screen and (max-width: 400px) {
+
+    .ebd-pdp-badges-row__list {
+      flex-wrap: nowrap;
+    }
+    .ebd-pdp-badges-row__img {
+      width: 50px;
+      height: 100%;
+    }
+  }
+
+  @media screen and (max-width: 375px) {
+    .ebd-pdp-badges-row__img {
+      width: 40px;
+      height: 100%;
+    }
+  }
+{% endstylesheet %}

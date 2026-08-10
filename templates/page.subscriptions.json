@@ -1,0 +1,392 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "ebd_subscriptions_hero_QKDaBm": {
+      "type": "ebd-subscriptions-hero",
+      "blocks": {
+        "benefit_TW7VUL": {
+          "type": "benefit",
+          "settings": {
+            "benefit": "Automatically save 20% off on every purchase"
+          }
+        },
+        "benefit_aNzHTr": {
+          "type": "benefit",
+          "settings": {
+            "benefit": "Get an additional 10% off your third subscription purchase"
+          }
+        },
+        "benefit_eKBcCU": {
+          "type": "benefit",
+          "settings": {
+            "benefit": "Fast, free shipping on orders $35+"
+          }
+        },
+        "benefit_y6fnca": {
+          "type": "benefit",
+          "settings": {
+            "benefit": "Plus now even more perks!"
+          }
+        }
+      },
+      "block_order": [
+        "benefit_TW7VUL",
+        "benefit_aNzHTr",
+        "benefit_eKBcCU",
+        "benefit_y6fnca"
+      ],
+      "name": "EBD Subscriptions Hero",
+      "settings": {
+        "heading": "Subscribe &amp; Save:<br>\n20% Off Every Purchase",
+        "button_url": "shopify://collections/all",
+        "button_label": "SUBSCRIBE NOW",
+        "text_link_url": "/account",
+        "text_link_label": "LOGIN",
+        "image": "shopify://shop_images/Family_Shot_Dec_2025.png"
+      }
+    },
+    "ebd_subscriptions_benefit_grid_hEGYmL": {
+      "type": "ebd-subscriptions-benefit-grid",
+      "blocks": {
+        "text_tFTQMz": {
+          "type": "text",
+          "settings": {
+            "title": "Subscribe & Save 20%",
+            "text": "Automatically save 20% on every subscription order",
+            "icon": "shopify://shop_images/Vector_medium_9ff8bf85-1d37-4a5b-9d51-75f180ded667.avif"
+          }
+        },
+        "text_xpXHCb": {
+          "type": "text",
+          "settings": {
+            "title": "Pause or Cancel Anytime",
+            "text": "Seamlessly change, skip or cancel anytime",
+            "icon": "shopify://shop_images/Vector_medium_29a34677-69a6-4045-8ea2-09c2678c89c6.png"
+          }
+        },
+        "text_VUjJjb": {
+          "type": "text",
+          "settings": {
+            "title": "30% Off Your 3rd Subscription",
+            "text": "Get an additional 10% off your third subscription purchase",
+            "icon": "shopify://shop_images/Layer_1_medium_70689b9b-b48b-4d4b-aae1-18195b07a2ba.avif"
+          }
+        },
+        "text_ktemCa": {
+          "type": "text",
+          "settings": {
+            "title": "Early Access",
+            "text": "Early subscriber only access to new products",
+            "icon": "shopify://shop_images/Vector_medium_64bc8e4f-1f7d-410b-b904-1cbb718e767d.webp"
+          }
+        },
+        "text_kkGUwb": {
+          "type": "text",
+          "settings": {
+            "title": "Free Wellness Content",
+            "text": "Chance to win free, quarterly wellness content",
+            "icon": "shopify://shop_images/mug_medium_998a1a4c-9009-4e51-ac08-f88861505c63.webp"
+          }
+        },
+        "text_mPaFpn": {
+          "type": "text",
+          "settings": {
+            "title": "Win $200 in Free Product",
+            "text": "Quarterly giveaway - 5 subscribers randomly win $200 in free product",
+            "icon": "shopify://shop_images/cart_medium_95c27f2d-abbc-4953-8d74-35b9702684e1.png"
+          }
+        },
+        "text_geRd3L": {
+          "type": "text",
+          "settings": {
+            "title": "Surprise Gifts",
+            "text": "Occasionally, get free full sized product to try. ",
+            "icon": "shopify://shop_images/surf_medium_6e9d7900-2e46-4312-918c-2d90fcfdec8e.webp"
+          }
+        },
+        "text_VWbTFV": {
+          "type": "text",
+          "settings": {
+            "title": "Inventory for Subscribers",
+            "text": "Low inventory? We hold inventory for subscribers first.",
+            "icon": "shopify://shop_images/beans_medium_ae33e809-59db-41cd-a9eb-c8de8f1cbb7b.png"
+          }
+        },
+        "text_BrBJJ4": {
+          "type": "text",
+          "settings": {
+            "title": "Free Samples",
+            "text": "Free samples in most subscription orders",
+            "icon": "shopify://shop_images/free_medium_3d9b3f55-fc64-49a6-86e6-dce40ecda6b8.avif"
+          }
+        }
+      },
+      "block_order": [
+        "text_tFTQMz",
+        "text_xpXHCb",
+        "text_VUjJjb",
+        "text_ktemCa",
+        "text_kkGUwb",
+        "text_mPaFpn",
+        "text_geRd3L",
+        "text_VWbTFV",
+        "text_BrBJJ4"
+      ],
+      "name": "EBD Subscription Benefits",
+      "settings": {
+        "heading": "Subscription Benefits",
+        "subheading": "Why subscribing is hassle free with bonus perks"
+      }
+    },
+    "ebd_product_cards_NPynqU": {
+      "type": "ebd-product-cards",
+      "blocks": {
+        "products_HHBWL6": {
+          "type": "Products",
+          "settings": {
+            "product": "sweet-and-creamy-instant-latte-with-adaptogens",
+            "subscription": true,
+            "best_seller": false,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "products_FYgTxH": {
+          "type": "Products",
+          "settings": {
+            "product": "organic-prebiotic-daily-greens",
+            "subscription": true,
+            "best_seller": false,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "products_GDwP48": {
+          "type": "Products",
+          "settings": {
+            "product": "functional-mushroom-coffee-k-cups-medium-roast",
+            "subscription": true,
+            "best_seller": false,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        },
+        "products_8bfqYG": {
+          "type": "Products",
+          "settings": {
+            "product": "vanilla-superfood-creamer",
+            "subscription": true,
+            "best_seller": false,
+            "new_recipe": false,
+            "new_look": false,
+            "new_product": false
+          }
+        }
+      },
+      "block_order": [
+        "products_HHBWL6",
+        "products_FYgTxH",
+        "products_GDwP48",
+        "products_8bfqYG"
+      ],
+      "name": "EBD Product Cards",
+      "settings": {
+        "heading": "Start Saving 20%",
+        "subheading": "Plus free shipping on all orders over $35",
+        "background_color": "#f1ede7"
+      }
+    },
+    "ebd_full_width_image_Bwnb6Q": {
+      "type": "ebd-full-width-image",
+      "name": "EBD Sub Banner",
+      "settings": {
+        "section_id": "sub-banner-1",
+        "heading": "",
+        "subheading": "",
+        "content": "",
+        "button_url": "",
+        "button_label": "",
+        "content_image": "shopify://shop_images/Frame_48096386_1500x_f029d3c4-533d-46cb-a722-e0cd57d184a8.webp",
+        "content_image_mobile": "shopify://shop_images/Frame_48096386_1500x_f029d3c4-533d-46cb-a722-e0cd57d184a8.webp",
+        "background_image": "shopify://shop_images/AdobeStock_536268920_Preview_2_1920x_0c147f27-2103-4573-93b9-d64d5e94fbbe.webp",
+        "background_image_mobile": "shopify://shop_images/AdobeStock_536268920_Preview_5_800x_cbbaa797-1100-4add-99f7-ff02e8e43395.webp",
+        "content_side": "right"
+      }
+    },
+    "ebd_subscriptions_faqs_DciNQk": {
+      "type": "ebd-subscriptions-faqs",
+      "blocks": {
+        "text_dHMJWT": {
+          "type": "text",
+          "settings": {
+            "title": "What benefits do I get with a subscription?",
+            "content": "<p>Subscribers enjoy 20% off every order, free shipping on orders over $35, exclusive access to new products, and a bunch of additional perks like a quarterly giveaway.</p>"
+          }
+        },
+        "text_cKJPzy": {
+          "type": "text",
+          "settings": {
+            "title": "How do I manage or change my subscription?",
+            "content": "<p>Log in to your customer portal, go to the \"Manage Subscriptions\" tab, and edit items, delivery dates, or frequency as needed. There is also a \"How to Manage Subscriptions\" button if you need more details.</p>"
+          }
+        },
+        "text_aUqEn8": {
+          "type": "text",
+          "settings": {
+            "title": "Can I cancel my subscription if I change my mind?",
+            "content": "<p>Yes, you can cancel anytime by logging into your account or contacting customer service at support@lairdsuperfood.com.</p>"
+          }
+        },
+        "text_9yaeqA": {
+          "type": "text",
+          "settings": {
+            "title": "How often will my subscription order ship?",
+            "content": "<p>You can choose your delivery frequency (e.g., every 30, 60, or 90 days) when setting up your subscription, and adjust it anytime.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_dHMJWT",
+        "text_cKJPzy",
+        "text_aUqEn8",
+        "text_9yaeqA"
+      ],
+      "name": "EBD Sub Dropdowns",
+      "settings": {
+        "image": "shopify://shop_images/Screenshot_2024-06-27_at_1.29.46_PM_2_1000x_48898b20-c486-4a13-a4f6-a5d7a42d9a25.png",
+        "dropdown_toggle_icon": "shopify://shop_images/b230f59911b8d228791f36d23900d5ce_250x_aa475b31-9a2d-4e9f-bea4-11e3463e609a.png",
+        "dropdown_toggle_icon_close": "shopify://shop_images/9022a705161ff42b7879d88f1fd6d0e8_250x_8fe8ae2c-a850-40a8-8827-485355f4ecf6.png"
+      }
+    },
+    "ebd_full_width_image_TA3Mxg": {
+      "type": "ebd-full-width-image",
+      "name": "EBD Sub Banner",
+      "settings": {
+        "section_id": "sub-banner-2",
+        "heading": "Need Help Discovering Your New Daily Routine?",
+        "subheading": "TAKE THE QUIZ",
+        "content": "<p>Customize your subscription to your exact lifestyle. You can also pause or cancel at anytime.</p>",
+        "button_url": "https://lairdsuperfood.com/pages/daily-ritual-quiz?bsci=gcd_daily-ritual",
+        "button_label": "DISCOVER NOW",
+        "background_image": "shopify://shop_images/IMG_7876_1_1_1920x_969854d3-7b86-4692-9754-6eb101be47d8.webp",
+        "background_image_mobile": "shopify://shop_images/IMG_7876_1_2_800x_a29ab94b-35ec-4b3b-8735-c9da1d5abe91.webp",
+        "content_side": "right"
+      }
+    },
+    "ebd_subscriptions_reviews_tfAqKn": {
+      "type": "ebd-subscriptions-reviews",
+      "blocks": {
+        "review_HHRRE7": {
+          "type": "review",
+          "settings": {
+            "title": "Fast shipping and great customer service",
+            "image": "shopify://shop_images/Ellipse_1_250x_2a38506a-8c45-4d00-b26c-533cc466bcb7.png",
+            "text": "Fast shipping and great customer service. I am really enjoying my monthly subscription!",
+            "name": "Jazmine M."
+          }
+        },
+        "review_cjEj9W": {
+          "type": "review",
+          "settings": {
+            "title": "Excellent Products",
+            "image": "shopify://shop_images/Ellipse_1_250x_58033c8e-039e-408d-b373-5e1442ec9d38.png",
+            "text": "Excellent products with simple ingredients. I simply cannot find a product like this anywhere. Fast shipping and great subscription options.",
+            "name": "Emily M."
+          }
+        },
+        "review_nYxHXd": {
+          "type": "review",
+          "settings": {
+            "title": "Love the Peruvian medium roast",
+            "image": "shopify://shop_images/Ellipse_1_250x_2349d2a1-0ebf-4756-bacc-4f3fc70c50d7.png",
+            "text": "My husband and I have been loving this coffee. We added it to our monthly subscription because we like it so much!",
+            "name": "Anne D."
+          }
+        },
+        "review_k8NCNQ": {
+          "type": "review",
+          "settings": {
+            "title": "30000 Different Kinds of Awesomeness!",
+            "image": "shopify://shop_images/Ellipse_1_250x_a722ef04-6210-4b46-98c5-0690a7a7f6bf.png",
+            "text": "This product is 30000 different kinds of awesomeness! The taste is phenomenal and consistent. My subscription shall never end!",
+            "name": "Rod V."
+          }
+        },
+        "review_RUEGhx": {
+          "type": "review",
+          "settings": {
+            "title": "Husband Loves It!",
+            "image": "shopify://shop_images/Ellipse_1_250x_58033c8e-039e-408d-b373-5e1442ec9d38.png",
+            "text": "I don’t drink coffee but I bought a bag for my husband who drinks Folgers every morning. He hates any type of mushroom. I wasn’t hope that he’d even try it. He did and says it’s the best coffee he’s ever drank!!",
+            "name": "Hannah H."
+          }
+        },
+        "review_pXqWVa": {
+          "type": "review",
+          "settings": {
+            "title": "Easy to Swap Subscriptions",
+            "image": "shopify://shop_images/Ellipse_1_250x_c7d8c634-88fe-4736-92f3-e04646ccae47.png",
+            "text": "I have maintained a subscription to Laird Superfoods for quite some time. The products are excellent and quality cannot be beat!",
+            "name": "Harrold G."
+          }
+        }
+      },
+      "block_order": [
+        "review_HHRRE7",
+        "review_cjEj9W",
+        "review_nYxHXd",
+        "review_k8NCNQ",
+        "review_RUEGhx",
+        "review_pXqWVa"
+      ],
+      "name": "EBD Sub Reviews Slider",
+      "settings": {
+        "heading": "Why 100,000+ Are Obsessed With Subscription Benefits",
+        "text": "Hear from our most loyal customers",
+        "star_image": "shopify://shop_images/Group_802_250x_6c59c950-d667-42a6-ba8f-37ff872cffaf.png"
+      }
+    },
+    "ebd_full_width_image_3wWtMB": {
+      "type": "ebd-full-width-image",
+      "name": "EBD Sub Banner",
+      "settings": {
+        "section_id": "sub-banner-3",
+        "heading": "What Does Your Subscription Routine Looks Like?",
+        "subheading": "TAKE THE QUIZ",
+        "content": "<p>Customize your subscription to your exact lifestyle. You can also pause or cancel at anytime.</p>",
+        "button_url": "https://lairdsuperfood.com/pages/daily-ritual-quiz",
+        "button_label": "DISCOVER NOW",
+        "background_image": "shopify://shop_images/AdobeStock_536268920_Preview_3_1920x_b2da1ab9-ee33-4933-9f6d-9fcdb839bbf9.webp",
+        "background_image_mobile": "shopify://shop_images/AdobeStock_536268920_Preview_3_800x_0874932c-d39c-4afd-9b04-4b02d0d2349e.jpg",
+        "content_side": "left"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "ebd_subscriptions_hero_QKDaBm",
+    "ebd_subscriptions_benefit_grid_hEGYmL",
+    "ebd_product_cards_NPynqU",
+    "ebd_full_width_image_Bwnb6Q",
+    "ebd_subscriptions_faqs_DciNQk",
+    "ebd_full_width_image_TA3Mxg",
+    "ebd_subscriptions_reviews_tfAqKn",
+    "ebd_full_width_image_3wWtMB"
+  ]
+}

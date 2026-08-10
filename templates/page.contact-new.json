@@ -1,0 +1,103 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ebd_contact_hero_egBJxM": {
+      "type": "ebd-contact-hero",
+      "name": "Contact Hero",
+      "settings": {
+        "heading": "HOW CAN WE HELP YOU?",
+        "subheading": "At Laird Superfood, we believe better food leads to you being a force of nature in your life. Whether you have a question about our products or just a story to share, our team is here for you.",
+        "background_image": "shopify://shop_images/contact-bg_6fdb290f-c7ce-477c-b9d6-42c530aa1114.jpg",
+        "background_image_mobile": "shopify://shop_images/contact-hero-mobile.jpg"
+      }
+    },
+    "ebd_contact_faq_links_3p3AaR": {
+      "type": "ebd-contact-faq-links",
+      "name": "EBD Contact FAQ Links",
+      "settings": {
+        "heading": "FREQUENTLY ASKED QUESTIONS",
+        "text": "<p>Looking for answers? Find what you need in some of our most frequently asked questions. </p>",
+        "link_1_url": "https://support.lairdsuperfood.com/hc/en-us",
+        "link_1_label": "COMMON QUESTIONS",
+        "link_2_url": "https://support.lairdsuperfood.com/hc/en-us/requests/new",
+        "link_2_label": "SUBMIT A TICKET"
+      }
+    },
+    "ebd_contact_details_yUkYqL": {
+      "type": "ebd-contact-details",
+      "name": "EBD Contact Details",
+      "settings": {
+        "heading": "CUSTOMER SERVICE HOURS AND CONTACT",
+        "hours": "<p>8am – 4pm PT 7 days a week</p>",
+        "link_url": "https://support.lairdsuperfood.com/hc/en-us/requests/new",
+        "link_label": "SUBMIT A TICKET",
+        "contact": "<h4>OTHER WAYS TO REACH US</h4><p><a href=\"https://support.lairdsuperfood.com/hc/en-us/requests/new\" title=\"Contact Email\">aloha@lairdsuperfood.com</a></p><p><a href=\"tel:8886706796\" title=\"Laird Superfood Phone Number\">Phone: (888) 670-6796</a></p><p><a href=\"tel:5415883600\" title=\"tel:5415883600\">Text: (541) 588-3600</a></p>",
+        "image": "shopify://shop_images/L1012454_TBR-600x399-e879c09.jpg",
+        "video_iframe": "<iframe class=\"w-full\" width=\"720\" height=\"405\" src=\"https://www.youtube.com/embed/-3o9dvzOoLc\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen=\"\"></iframe>",
+        "link_left_heading": "MY ACCOUNT",
+        "link_left_text": "Need to make any updates to your account?",
+        "link_left_link_url": "https://lairdsuperfood.com/account/login",
+        "link_left_link_label": "MY ACCOUNT",
+        "link_right_heading": "MY SUBSCRIPTION",
+        "link_right_text": "Need to update or edit your subscriptions?",
+        "link_right_link_url": "https://lairdsuperfood.com/account/login",
+        "link_right_link_label": "MY SUBSCRIPTION"
+      }
+    },
+    "ebd_contact_reviews_F3QJJP": {
+      "type": "ebd-contact-reviews",
+      "name": "EBD Contact Reviews",
+      "settings": {
+        "heading": "FLAVOR LOVED BY 12,357 PEOPLE",
+        "subheading": "We make superfoods that actually taste super good.",
+        "link_1_url": "https://lairdsuperfood.com/pages/reviews",
+        "link_1_label": "READ ALL REVIEWS",
+        "link_2_url": "https://lairdsuperfood.com/pages/refer",
+        "link_2_label": "LOVE US? REFER A FRIEND"
+      }
+    },
+    "ebd_recipes_section_7pKEz6": {
+      "type": "ebd-recipes-section",
+      "custom_css": [
+        ".btn {background-color: var(--color-red); color: #fff; padding: 10px 25px; border: solid 2px transparent; border-radius: 25px; font-size: 17px; font-weight: 600; transition: 0.2s; white-space: nowrap; margin: 20px 0px;}",
+        "h2 {font-family: var(--font-primary); font-size: 40px; line-height: 42px; margin: 0 0 15px; font-weight: 700; text-transform: uppercase;}",
+        ".flex a {display: block;}",
+        ".flex img {max-width: 150px; margin: auto;}"
+      ],
+      "name": "Recipes",
+      "settings": {
+        "heading": "",
+        "product_list": [
+          "mocha-instant-latte-with-adaptogens",
+          "sweet-and-creamy-instant-latte-with-adaptogens"
+        ]
+      }
+    },
+    "ebd_contact_questions_zhLEzU": {
+      "type": "ebd-contact-questions",
+      "name": "EBD Contact Questions",
+      "settings": {
+        "heading": "STILL HAVE QUESTIONS?",
+        "subheading": "Don’t worry! \"Tell us a bit more about your question and we’ll get it sorted out or you can call us at (541) 588-3600.",
+        "link_url": "https://support.lairdsuperfood.com/hc/en-us/requests/new",
+        "link_label": "SUBMIT A REQUEST"
+      }
+    }
+  },
+  "order": [
+    "ebd_contact_hero_egBJxM",
+    "ebd_contact_faq_links_3p3AaR",
+    "ebd_contact_details_yUkYqL",
+    "ebd_contact_reviews_F3QJJP",
+    "ebd_recipes_section_7pKEz6",
+    "ebd_contact_questions_zhLEzU"
+  ]
+}

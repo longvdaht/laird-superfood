@@ -1,0 +1,36 @@
+{% comment %}
+  Expects a 'tab' object with the following structure:
+  {
+    "type": "why_youll_love_it",
+    "title": "WHY YOU'LL LOVE IT",
+    "content": {
+      "image": "green-image.jpg",
+      "cards": [
+        {
+          "title": "BEST FOR",
+          "content": "Travel & on-the-go greens, fiber & prebiotics"
+        },
+        ...
+      ]
+    }
+  }
+{% endcomment %}
+
+<div class="content-wrapper">
+  <div class="column">
+    {% if tab.content.image %}
+      <img
+        src="{{ tab.content.image }}"
+        alt="Green health supplement"
+      >
+    {% endif %}
+  </div>
+  <div class="column card-grid">
+    {% for card in tab.content.cards %}
+      <div class="card">
+        <h5 class="darkblue">{{ card.title }}</h5>
+        <p>{{ card.content }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<section class="ebd-pdp-surfboard-banner">
+  <picture>
+    <source media="(max-width: 749px)" srcset="{{ 'Surfboardmob.png' | asset_url }}">
+    <img
+      class="ebd-pdp-surfboard-banner__media"
+      src="{{ 'Surfboard.jpg' | asset_url }}"
+      alt="Surfboard banner"
+      loading="lazy"
+      width="2690"
+      height="930">
+  </picture>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD PDP Surfboard Banner",
+    "settings": [],
+    "presets": [
+      {
+        "name": "EBD PDP Surfboard Banner"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-pdp-surfboard-banner {
+    width: 100%;
+  }
+
+  .ebd-pdp-surfboard-banner__media {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    vertical-align: top;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ebd-pdp-surfboard-banner__media {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
+  }
+{% endstylesheet %}

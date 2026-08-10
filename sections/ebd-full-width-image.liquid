@@ -1,0 +1,223 @@
+<section id="{{ section.settings.section_id }}" class="ebd-sub-banner" style="background-image: url('{{ section.settings.background_image | img_url: '1920x' }}')">
+  <div class="content-wrapper {{ section.settings.content_side }}">
+
+    {% if section.settings.heading != blank %}
+      <div class="content">
+        <h3>{{ section.settings.subheading }}</h3>
+        <h2>{{ section.settings.heading }}</h2>
+        <div class="text">{{ section.settings.content }}</div>
+        <a href="{{ section.settings.button_url }}" class="btn">{{ section.settings.button_label }}</a>
+      </div>
+    {% endif %}
+
+    {% if section.settings.content_image != blank %}
+      <div class="content image-content">
+        <img src="{{ section.settings.content_image | img_url: '1500x' }}" alt="{{ section.settings.content_image.alt }}" class="content-image">
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    @media (max-width: 768px) {
+      #{{ section.settings.section_id }} {
+        background-image: url('{{ section.settings.background_image_mobile | img_url: '800x' }}') !important;
+      }
+    }
+  </style>
+
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Sub Banner",
+    "settings": [
+      {
+        "id": "section_id",
+        "type": "text",
+        "label": "Section ID"
+      },
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "content",
+        "type": "richtext",
+        "label": "Content"
+      },
+      {
+        "id": "button_url",
+        "type": "url",
+        "label": "Button URL"
+      },
+      {
+        "id": "button_label",
+        "type": "text",
+        "label": "Button Label"
+      },
+      {
+        "id": "content_image",
+        "type": "image_picker",
+        "label": "Content Image"
+      },
+      {
+        "id": "content_image_mobile",
+        "type": "image_picker",
+        "label": "Content Image Mobile"
+      },
+      {
+        "id": "background_image",
+        "type": "image_picker",
+        "label": "Background Image"
+      },
+      {
+        "id": "background_image_mobile",
+        "type": "image_picker",
+        "label": "Backgorund Image Mobile"
+      },
+      {
+        "id": "content_side",
+        "type": "select",
+        "label": "Content Side",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Sub Banner"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-sub-banner {
+    padding: 150px 65px;
+    background-size: cover;
+    background-position: center;
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+
+      .content {
+        background-color: white;
+        border: solid 2px #003747;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 65px;
+        max-width: 650px;
+
+        &.image-content {
+          padding: 0;
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+          }
+        }
+
+        h2 {
+          color: #003747;
+          margin-bottom: 15px;
+          line-height: 46px;
+          text-align: center;
+          font-weight: 600;
+        }
+
+        h3 {
+          font-size: 30px;
+          font-weight: 600;
+          text-align: center;
+          color: #003747;
+          margin-bottom: 10px;
+        }
+
+        .text {
+          margin-bottom: 20px;
+
+          p {
+            font-size: 18px;
+            font-weight: 500;
+            color: #003747;
+            text-align: center;
+          }
+        }
+        
+
+
+        a.btn {
+          background-color: #E90044;
+          padding: 16px 25px;
+          border-radius: 50px;
+          color: white;
+          font-family: 'Poppins', sans-serif;
+          font-weight: 700;
+          font-size: 18px;
+        }
+      }
+
+      &.left {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      padding: 115px 45px;
+      .content-wrapper {
+        .content {
+          padding: 45px;
+          max-width: 500px;
+          h2 {
+            font-size: 30px;
+            line-height: 36px;
+          }
+
+          h3 {
+            font-size: 24px;
+            line-height: 30px;
+          }
+
+          .text {
+            p {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      background-size: contain;
+      background-position: top;
+      background-repeat: no-repeat;
+      padding: 325px 15px 25px;
+      background-color: #f1ede7;
+
+      .content-wrapper {
+        .content {
+          padding: 35px 15px;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

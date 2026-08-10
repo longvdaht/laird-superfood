@@ -1,0 +1,26 @@
+<h3 class="product-type">{{ product.type }}</h3>
+
+
+
+{% schema %}
+  {
+    "name": "EBD Product Type",
+    "presets": [
+      {
+        "name": "EBD Product Type",
+        "category": "EBD Blocks"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  h3.product-type {
+    text-transform: uppercase;
+    font-size: 20px;
+    line-height: 20px;
+    color: var(--color-mediumblue);
+    margin-bottom: 0;
+    letter-spacing: 1px;
+  }
+{% endstylesheet %}

@@ -1,0 +1,59 @@
+{% comment %}
+  This page is a collection of Yotpo divs that render specific sections on the page. There are no controls for these, just manual code.
+{% endcomment %}
+
+<script src="https://cdn-widgetsrepository.yotpo.com/v1/loader/pdMpanfI1Sz9XkQxr2y5cg" async></script>
+
+<!-- banner -->
+<div class="yotpo-widget-instance" data-yotpo-instance-id="1012232"></div>
+
+<!-- activity -->
+<div class="yotpo-widget-instance" data-yotpo-instance-id="1012235"></div>
+
+ <div class="yotpo-widget-instance" data-yotpo-instance-id="1012231"></div>
+<!-- earning -->
+<div class="yotpo-widget-instance" data-yotpo-instance-id="1012234"></div>
+
+<!-- tiers -->
+<div class="yotpo-widget-instance" data-yotpo-instance-id="1012229"></div>
+
+<!-- refer -->
+<div class="yotpo-widget-instance" data-yotpo-instance-id="1012230"></div>
+
+
+<div class="yotpo-widget-instance" data-yotpo-instance-id="903845"></div>
+
+{% schema %}
+  {
+    "name": "EBD Rewards",
+    "settings": [
+     
+    ],
+    "presets": [
+      {
+        "name": "EBD Rewards",
+        "category": "Rewards"
+      }
+    ]
+  }
+{% endschema %}
+
+
+
+<style>
+  @media screen and (max-width: 768px) {
+  .yotpo-widget-my-rewards-widget.yotpo-widget-override-css
+    .yotpo-is-mobile
+    .yotpo-reward-steps-title::before {
+    font-size: 26px !important;
+    line-height: normal !important;
+  }
+}
+@media screen and (min-width: 769px) {
+.yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-reward-steps-item-1 .yotpo-reward-steps-title::before,.yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-reward-steps-item-2 .yotpo-reward-steps-title::before,.yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-reward-steps-item-3 .yotpo-reward-steps-title::before {
+    font-size: 36px !important;
+    line-height: normal !important;
+  }
+}
+
+</style>

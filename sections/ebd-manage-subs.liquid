@@ -1,0 +1,121 @@
+<section class="manage-subscriptions-guide">
+  <div class="container">
+    <div class="guide-wrapper">
+      <div class="steps">
+        <h3 class="darkblue">{{ section.settings.title }}</h3>
+        {% if section.settings.text %}
+          <div class="text">
+            {{ section.settings.text }}
+          </div>
+        {% endif %}
+        {% for block in section.blocks %}
+          <div class="step">
+            <h4>STEP {{ forloop.index }}</h4>
+            <div class="content-wrapper">
+              {{ block.settings.content }}
+            </div>
+            {% if block.settings.image != blank %}
+              <img src="{{ block.settings.image | img_url: 'master' }}" alt="{{ block.settings.image.alt }}">
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Manage Subs",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Steps",
+        "settings": [
+          {
+            "id": "content",
+            "type": "richtext",
+            "label": "Content"
+          },
+          {
+            "id": "image",
+            "type": "image_picker",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Manage Subs",
+        "category": "Manage Subs"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.manage-subscriptions-guide {
+    background-color: #f1ede7;
+    .guide-wrapper {
+      display: flex;
+      gap: 65px;
+      padding-bottom: 65px;
+      .image {
+        width: 40%;
+        img {
+          width: 100%;
+        }
+      }
+
+      .steps {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        h3 {
+          text-align: center;
+        }
+        .text {
+          margin-bottom: 25px;
+          text-align: center;
+        }
+        .step {
+          margin-bottom: 25px;
+
+          h4 {
+            color: #003349;
+            font-size: 1.25rem;
+            font-weight: 600;
+          }
+
+          .content-wrapper {
+            margin-bottom: 15px;
+          }
+
+          img {
+            width: 100%;
+            max-width: 600px;
+          }
+        }
+
+        p {
+            margin-bottom: 10px;
+          }
+      }
+    }
+  }
+{% endstylesheet %}

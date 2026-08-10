@@ -1,0 +1,430 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "mush_lp_hero_KBttaW": {
+      "type": "mush-lp-hero",
+      "custom_css": [
+        "/* Style the hero headline on this page only */.mushroom-lp-hero .content h1 {font-size: 50px; font-style: italic; text-transform: uppercase; font-weight: 700; color: white; line-height: 1.1;}",
+        " /* Style the hero button so it shows as an actual button */.mushroom-lp-hero a.btn {display: inline-block; background-color: #e90044; /* or your preferred color */ color: white; padding: 14px 32px; font-family: \"Poppins\", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 50px; text-decoration: none; font-size: 16px;}"
+      ],
+      "name": "Mush LP Hero",
+      "settings": {
+        "heading": "THE BEST ORGANIC CREAMER",
+        "text": "A taste that truly delivers, with the functional benefits to match - NEW Plant Based Liquid Creamer with Lions Mane.",
+        "button_url": "shopify://pages/liquid-creamer-store-map",
+        "button_label": "FIND IN A STORE",
+        "image_left": "shopify://shop_images/Frame_48096403-2.png",
+        "image_right": "shopify://shop_images/Frame_48096392-2.png",
+        "image_right_mobile": "shopify://shop_images/Frame_48096392-2.png",
+        "new_badge": "shopify://shop_images/Group_9_8e06d2b2-9e89-4094-9b24-2b02eafc9392.png"
+      }
+    },
+    "mush_lp_lineup_kfPKYd": {
+      "type": "mush-lp-lineup",
+      "custom_css": [],
+      "name": "Mush LP Lineup",
+      "settings": {
+        "heading": "NEW ORGANIC FORMULA",
+        "text": "<p>A creamer that works as hard as you do. Our Plant-Based Liquid Creamer with Lion’s Mane delivers clean, organic, real-food flavor without the unnecessary additives found in most. <br/><br/>Smooth, naturally sweet, it brings a rich, feel-good creaminess to every cup. With Lion’s Mane traditionally used to support brain health and prebiotic acacia fiber, this vegan, clean-label blend turns your daily coffee into a moment of clarity, balance, and better fuel.</p>",
+        "button_url": "shopify://pages/liquid-creamer-store-map",
+        "button_label": "FIND A RETAIL STORE NEAR YOU",
+        "image": "shopify://shop_images/Liquid_Coffee_Cups.png"
+      }
+    },
+    "mush_lp_product_cards_TjGJcr": {
+      "type": "mush-lp-product-cards",
+      "blocks": {
+        "text_dxxUtm": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Vanilla Liquid Creamer",
+            "url": "shopify://pages/store-locator",
+            "link_label": "Find In Store",
+            "image": "shopify://shop_images/Frame_48096405.png"
+          }
+        },
+        "text_Jjhqrh": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Caramel Liquid Creamer",
+            "url": "shopify://pages/store-locator",
+            "link_label": "Find In Store",
+            "image": "shopify://shop_images/Frame_48096397.png"
+          }
+        },
+        "text_gAqfQJ": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Unsweetened Creamer",
+            "url": "shopify://pages/store-locator",
+            "link_label": "Find In Store",
+            "image": "shopify://shop_images/Frame_48096404.png"
+          }
+        },
+        "text_wYjQmR": {
+          "type": "text",
+          "settings": {
+            "title": "Creamy, natural & Organic!",
+            "url": "shopify://pages/store-locator",
+            "link_label": "Find In Store",
+            "image": "shopify://shop_images/Frame_48096412.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_dxxUtm",
+        "text_Jjhqrh",
+        "text_gAqfQJ",
+        "text_wYjQmR"
+      ],
+      "name": "Mush LP Product Cards",
+      "settings": {
+        "arrow_image": "shopify://shop_images/Arrow_2.png"
+      }
+    },
+    "mush_lp_two_products_hwdRJL": {
+      "type": "mush-lp-two-products",
+      "blocks": {
+        "text_TaxcTg": {
+          "type": "text",
+          "settings": {
+            "title": "Calm & Relaxation Mushrooms",
+            "url": "shopify://products/calm-relax-mushrooms",
+            "image_main": "shopify://shop_images/Acacia_Fiber.png",
+            "image_rollover": "shopify://shop_images/Acacia_Fiber.png",
+            "rollover_heading": "Relax, Naturally",
+            "rollover_text": "This calming blend of organic Reishi, Lemon Balm, and Ashwagandha helps you manage stress and support a balanced mood."
+          }
+        },
+        "text_KADKyV": {
+          "type": "text",
+          "settings": {
+            "title": "Focus & Memory Mushrooms",
+            "url": "shopify://products/focus-and-memory-mushrooms",
+            "image_main": "shopify://shop_images/Frame_48096395.png",
+            "image_rollover": "shopify://shop_images/IMG_8648_1.jpg",
+            "rollover_heading": "Focus You Can Feel",
+            "rollover_text": "This is a no-filler blend of organic Lion’s Mane, L-Theanine, and Coffee Berry that supports memory, focus, and calm energy"
+          }
+        }
+      },
+      "block_order": [
+        "text_TaxcTg",
+        "text_KADKyV"
+      ],
+      "disabled": true,
+      "name": "Mush LP Two Products",
+      "settings": {
+        "heading": "Your Brain Called.It Wants Mushrooms.",
+        "subheading": "<p>Explore our <em><strong>NEW </strong></em>line of mushroom powders to boost your routine. </p>",
+        "arrow_image": "shopify://shop_images/Arrow_2.png"
+      }
+    },
+    "mush_lp_dropdowns_nd4qBM": {
+      "type": "mush-lp-dropdowns",
+      "blocks": {
+        "text_nfFwNk": {
+          "type": "text",
+          "settings": {
+            "title": "Clean Ingredients",
+            "dropdown_content": "<p>Our organic plant-based liquid creamer is created to keep your cup simple, wholesome, and delicious. With zero seed oils, no artificial ingredients, and nothing ultra-processed, it delivers pure goodness you can feel great about. Boosted with Lion’s Mane for cognitive support and flavored with real ingredients like pure vanilla extract, Maca, and date syrup, it elevates every sip.</p>"
+          }
+        },
+        "text_6kXKJj": {
+          "type": "text",
+          "settings": {
+            "title": "PCR Packaging",
+            "dropdown_content": "<p>Post Consumer Recycled Plastic is plastic that has been collected from consumers after they have used a product, cleaned, and re-made into a new product.  PCR plastic reduces the amount of plastic waste in landfills, conserves natural resources, and lessens the need for virgin plastic production. It leads to lower CO2 emissions, reduced water and energy consumption during production, and a smaller environmental footprint compared to virgin plastic.  </p>"
+          }
+        },
+        "text_r6jwdx": {
+          "type": "text",
+          "settings": {
+            "title": "Creamer Color",
+            "dropdown_content": "<p>Our Caramel and Vanilla Superfood Creamers naturally have a slightly brown color because they’re sweetened with coconut sugar. This rich, golden sugar gives the liquid creamer its warm hue. Just be sure to pour to the recommended serving size rather than relying on color as your guide.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_nfFwNk",
+        "text_6kXKJj",
+        "text_r6jwdx"
+      ],
+      "custom_css": [
+        "/* Make all text inside the dropdown section white (this page only) */.mushroom-lp-dropdowns,.mushroom-lp-dropdowns * {color: white !important;}"
+      ],
+      "name": "Mush LP Dropdowns",
+      "settings": {
+        "heading": "a higher standard",
+        "text": "<p>Learn more about our New Organic Plant Based Superfood Creamer.<br/><br/></p>",
+        "background_image": "shopify://shop_images/Pb_Liquids_Counter.jpg",
+        "background_image_mobile": "shopify://shop_images/Frame_48096392-2.png"
+      }
+    },
+    "mush_lp_logos_GUzfhA": {
+      "type": "mush-lp-logos",
+      "blocks": {
+        "text_Bxgzrp": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Artboard_5_77261d8d-bc4a-4a86-a436-473de00ea73e.png"
+          }
+        },
+        "text_EXK9fe": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Layer_1_2e0dd5a2-609a-4d32-99ba-fe9604ba31c4.png"
+          }
+        },
+        "text_A37dY4": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Artboard_2_13754b34-bbe4-49f0-b17e-d852c5973fe4.png"
+          }
+        },
+        "text_QYfGj3": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Group_824.png"
+          }
+        },
+        "text_CUG6Uc": {
+          "type": "text",
+          "settings": {
+            "logo": "shopify://shop_images/Group_824.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_Bxgzrp",
+        "text_EXK9fe",
+        "text_A37dY4",
+        "text_QYfGj3",
+        "text_CUG6Uc"
+      ],
+      "name": "Mush LP Logos",
+      "settings": {}
+    },
+    "mush_lp_dropdowns_wnamTR": {
+      "type": "mush-lp-dropdowns",
+      "blocks": {
+        "text_ebQeHd": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Turkey Tail Mushroom",
+            "dropdown_content": "<p><strong>Best For</strong>: Everyday wellness and resilience <strong>Supports</strong>: Immune function and gut balance<br/><strong>Tastes Like</strong>: Lightly mild and a bit earthy, blends easily<br/><strong>Made With</strong>: Nothin' but Organic Turkey Tail</p>"
+          }
+        },
+        "text_MJNaqi": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Reishi Mushroom",
+            "dropdown_content": "<p><strong>Best For</strong>: Daily balance and longevity support <br/><strong>Supports</strong>: Mood, vitality, and overall wellness <br/><strong>Tastes Like</strong>: Earthy, mellow, blends smoothly <br/><strong>Made With</strong>: 100% Organic Reishi Mushroom<br/><br/></p>"
+          }
+        },
+        "text_apqw7T": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Oyster Mushroom",
+            "dropdown_content": "<p><strong>Best For</strong>: Daily digestion and metabolic support<br/><strong>Supports</strong>: Energy, digestion, and overall wellness <br/><strong>Tastes Like</strong>: Mild and earthy — blends right in<br/><strong>Made With</strong>: Nothing but Organic Oyster Mushrooms</p>"
+          }
+        },
+        "text_jAAmxP": {
+          "type": "text",
+          "settings": {
+            "title": "Organic Lion’s Mane Mushroom",
+            "dropdown_content": "<p><strong>Best For</strong>: Brain support anytime<br/><strong>Supports</strong>: Clarity, focus, and balanced mood<br/><strong>Tastes Like</strong>: Earthy, but easy to blend<br/><strong>Made With</strong>: 100% Organic Lion’s Mane</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_ebQeHd",
+        "text_MJNaqi",
+        "text_apqw7T",
+        "text_jAAmxP"
+      ],
+      "disabled": true,
+      "name": "Mush LP Dropdowns",
+      "settings": {
+        "heading": "SINGLE INGREDIENT POWERHOUSE POWDERS",
+        "text": "<p>Learn more about our full line of single-ingredient, organic mushroom powders.</p>",
+        "background_image": "shopify://shop_images/Pro-Capture_One_0050_1_1.jpg",
+        "background_image_mobile": "shopify://shop_images/Pro-Capture-One-0049-1_3.jpg"
+      }
+    },
+    "mush_lp_recipes_GD78nF": {
+      "type": "mush-lp-recipes",
+      "blocks": {
+        "text_RkDJRx": {
+          "type": "text",
+          "settings": {
+            "title": "Lion's Mane",
+            "recipe_name": "Focus & Memory Mushroom Tea",
+            "ingredients": "<ul><li>6 g Nilgiri tea (loose leaf)</li><li>12 oz boiling water</li><li>2 lemon wedges</li><li>1 tbsp honey</li><li>½ tsp Focus & Memory Mushroom powder</li><li>2 oz milk (optional)</li></ul>",
+            "directions": "<ol><li>Bring 12 oz of water to a boil.</li><li>Place 6 g of Nilgiri tea into a reusable tea ball or infuser.</li><li>Pour the boiling water into a mug over the tea ball.</li><li>Steep for 6 minutes, then remove the tea ball.</li><li>Stir in ½ tsp of Focus & Memory Mushroom powder.</li><li>Add a squeeze of lemon, honey, and milk (if using) to taste.</li><li>Sip, savor, and focus up!</li></ol>"
+          }
+        },
+        "text_A8bt6F": {
+          "type": "text",
+          "settings": {
+            "title": "Reishi",
+            "recipe_name": "Calm & Relaxation Mushroom Tea",
+            "ingredients": "<ul><li>6 g Honeybush herbal tea (loose leaf)</li><li>10 oz boiling water</li><li>½ tsp Calm & Relaxation Mushroom powder</li><li>2 lemon wedges</li><li>1 tbsp honey</li></ul>",
+            "directions": "<ol><li>Bring 10 oz of water to a boil.</li><li>Place 6 g of Honeybush tea into a reusable tea ball or infuser.</li><li>Pour boiling water over the tea and steep for 8 minutes.</li><li>Remove the tea ball.</li><li>Stir in ½ tsp of Calm & Relaxation Mushroom powder.</li><li>Add a squeeze of lemon and honey to taste.</li><li>Breathe deep, sip slow, and unwind.</li></ol>"
+          }
+        }
+      },
+      "block_order": [
+        "text_RkDJRx",
+        "text_A8bt6F"
+      ],
+      "disabled": true,
+      "name": "Mush LP Recipes",
+      "settings": {
+        "heading": "Mushroom Tea Recipes",
+        "image": "shopify://shop_images/Rectangle_6809.jpg"
+      }
+    },
+    "mush_lp_product_grid_hk9eYe": {
+      "type": "mush-lp-product-grid",
+      "blocks": {
+        "text_KDEXGM": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/MushroomBotanical-Calm_Relaxation_FOP-Pouch.png",
+            "url": "shopify://products/calm-relax-mushrooms",
+            "best_for_text": "Stress support, day or night"
+          }
+        },
+        "text_dp3WmQ": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/Image1_d42d3999-b33d-4c53-a8c0-c6d5989a8481.webp",
+            "url": "shopify://products/focus-and-memory-mushrooms",
+            "best_for_text": "Mental focus, any time of day"
+          }
+        },
+        "text_nBezrz": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/SingleMuchrooms-TurkeyTail-FOP_3.png",
+            "url": "shopify://products/organic-turkey-tail-mushroom-powder",
+            "best_for_text": "Everyday wellness & resilience"
+          }
+        },
+        "text_MqwAcH": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/SingleMuchrooms-Oyster-FOP_2.png",
+            "url": "shopify://products/organic-oyster-mushroom-powder",
+            "best_for_text": "Daily digestion & metabolic support"
+          }
+        },
+        "text_xqmQxA": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/SingleMuchrooms-Reishi-FOP_2.png",
+            "url": "shopify://products/organic-reishi-mushroom-powder",
+            "best_for_text": "Daily balance & longevity support"
+          }
+        },
+        "text_6TWfFR": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/SingleMuchrooms-Lion-sMane-FOP_3.png",
+            "url": "shopify://products/organic-lions-mane-mushroom-powder",
+            "best_for_text": "Brain support anytime"
+          }
+        },
+        "text_Akq78y": {
+          "type": "text",
+          "settings": {
+            "product_image": "shopify://shop_images/LSF_Performance-Mush_Pouch_FOP_9_1.png",
+            "url": "shopify://products/performance-mushrooms",
+            "best_for_text": "Overall wellness"
+          }
+        }
+      },
+      "block_order": [
+        "text_KDEXGM",
+        "text_dp3WmQ",
+        "text_nBezrz",
+        "text_MqwAcH",
+        "text_xqmQxA",
+        "text_6TWfFR",
+        "text_Akq78y"
+      ],
+      "disabled": true,
+      "name": "Mush LP Product Grid",
+      "settings": {}
+    },
+    "mush_lp_blog_cards_EYrrdF": {
+      "type": "mush-lp-blog-cards",
+      "blocks": {
+        "text_YM3Rpx": {
+          "type": "text",
+          "settings": {
+            "title": "Superfood Mac & Cheese",
+            "url": "https://lairdsuperfood.com/blogs/recipes?page=2",
+            "image": "shopify://shop_images/IMG_5114.png"
+          }
+        },
+        "text_eHag9C": {
+          "type": "text",
+          "settings": {
+            "title": "Salted Caramel Apple Smoothie",
+            "url": "https://lairdsuperfood.com/blogs/recipes/salted-caramel-apple-smoothie",
+            "image": "shopify://shop_images/Caramel_Apple_Smoothie.jpg"
+          }
+        },
+        "text_4LrXe6": {
+          "type": "text",
+          "settings": {
+            "title": "Creammy Broccoli Orzo Bake",
+            "url": "https://lairdsuperfood.com/blogs/recipes/creamy-broccili-orzo-bake",
+            "image": "shopify://shop_images/Orzo_Bake_Image.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_YM3Rpx",
+        "text_eHag9C",
+        "text_4LrXe6"
+      ],
+      "name": "Mush LP Blog Cards",
+      "settings": {
+        "arrow_image": "shopify://shop_images/Arrow_2.png"
+      }
+    },
+    "mush_lp_signup_yPRhQQ": {
+      "type": "mush-lp-signup",
+      "name": "Mush LP Signup",
+      "settings": {
+        "heading": "Stay ahead with our latest product launches!",
+        "text": "Sign up now to keep in touch",
+        "image": "shopify://shop_images/Latte_Cup_Liquid.png"
+      }
+    }
+  },
+  "order": [
+    "mush_lp_hero_KBttaW",
+    "mush_lp_lineup_kfPKYd",
+    "mush_lp_product_cards_TjGJcr",
+    "mush_lp_two_products_hwdRJL",
+    "mush_lp_dropdowns_nd4qBM",
+    "mush_lp_logos_GUzfhA",
+    "mush_lp_dropdowns_wnamTR",
+    "mush_lp_recipes_GD78nF",
+    "mush_lp_product_grid_hk9eYe",
+    "mush_lp_blog_cards_EYrrdF",
+    "mush_lp_signup_yPRhQQ"
+  ]
+}

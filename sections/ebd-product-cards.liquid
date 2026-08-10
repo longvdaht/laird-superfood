@@ -1,0 +1,273 @@
+<div class="ebd-product-cards" style="background-color: {{ section.settings.background_color }}">
+  <div class="content-wrapper">
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    <p class="darkblue">{{ section.settings.subheading }}</p>
+    <div class="swiper cards-wrapper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          {% assign product = all_products[block.settings.product] %}
+          <div class="swiper-slide">
+            <a href="{{ product.url }}" class="slide-wrapper">
+              <div class="badges-wrapper">
+                {% if block.settings.best_seller %}
+                  <div class="badge best-seller">
+                    BEST SELLER
+                  </div>
+                {% endif %}
+                {% if block.settings.new_recipe %}
+                  <div class="badge new-recipe">
+                    NEW RECIPE
+                  </div>
+                {% endif %}
+                {% if block.settings.new_look %}
+                  <div class="badge new-look">
+                    NEW LOOK
+                  </div>
+                {% endif %}
+                {% if block.settings.new_product %}
+                  <div class="badge new-look">
+                    NEW LOOK
+                  </div>
+                {% endif %}
+              </div>
+              <div class="media">
+                <img src="{{ product.featured_image | img_url: '750x' }}" alt="{{ product.title }}" class="product-image">
+              </div>
+              <div class="details">
+                <div class="text">
+                  <h4 class="title darkblue">{{ product.title }}</h4>
+                  <div class="price-wrapper">
+                    {% if block.settings.subscription == true %}
+                      {% assign discounted_price = product.variants.first.price | times: 0.80 %}
+                      
+                      <p class="price sale-price">{{ discounted_price | money }}</p>
+                      <p class="price regular-price" style="text-decoration: line-through;">{{ product.variants.first.price | money }}</p>
+                    {% else %}
+                      <p class="price">{{ product.variants.first.price | money }}</p>
+                    {% endif %}
+                  </div>
+
+                </div>
+                {% if block.settings.subscription == true %}
+                  <p class="btn">SUBSCRIBE NOW</p>
+                {% else %}
+                  <p class="btn">SHOP NOW</p>
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-scrollbar"></div>
+    </div>
+  </div>
+</div>
+
+
+
+{% schema %} 
+  {
+    "name": "EBD Product Cards",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "Background Color"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "Products",
+        "name": "Products",
+        "settings": [
+          {
+            "type": "product",
+            "id": "product",
+            "label": "Product"
+          },
+          {
+            "id": "subscription",
+            "type": "checkbox",
+            "label": "Subscription"
+          },
+          {
+            "type": "header",
+            "content": "Badges"
+          },
+          {
+            "type": "checkbox",
+            "id": "best_seller",
+            "label": "Best Seller"
+          },
+          {
+            "type": "checkbox",
+            "id": "new_recipe",
+            "label": "New Recipe"
+          },
+          {
+            "type": "checkbox",
+            "id": "new_look",
+            "label": "New Look"
+          },
+          {
+            "type": "checkbox",
+            "id": "new_product",
+            "label": "New Product"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Product Cards",
+        "category": "EBD"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-product-cards {
+    position: relative;
+    margin-bottom: 0;
+    overflow: hidden;
+    padding: 85px 45px;
+
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .swiper-slide {
+      border: solid 1px #003349;
+      position: relative;
+
+      .slide-wrapper {
+        padding: 0 25px 25px;
+        display: block;
+
+        .badges-wrapper {
+          display: flex;
+          gap: 5px;
+          position: relative;
+          left: -10px;
+          .badge {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+
+            &.best-seller {
+              background-color: #3a758a;
+            }
+
+            &.new-recipe {
+              background-color: #e11d48;
+            }
+
+            &.new-product {
+              background-color: #e11d48;
+            }
+
+            &.new-look {
+              background-color: #e11d48;
+            }
+          }
+        }
+
+        .media {
+          margin-bottom: 25px;
+          img {
+            transition: 0.4s;
+          }
+        }
+
+        .details {
+          .text {
+            min-height: 70px;
+            margin-bottom: 15px;
+
+            h4 {
+              margin-bottom: 10px;
+            }
+
+            .price-wrapper {
+              display: flex;
+              gap: 15px;
+            }
+
+            p.price {
+              color: black;
+              font-weight: 600;
+              margin-bottom: 0;
+            }
+          }
+        }
+
+        &:hover {
+          .media {
+            img {
+              transform: scale(1.03);
+            }
+          }
+        }
+
+
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 45px 45px 65px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 20px;
+    }
+  }
+
+
+
+
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function () {
+    var swiper = new Swiper('.ebd-product-cards .swiper', {
+      slidesPerView: 1.15,
+      spaceBetween: 15,
+      scrollbar: {
+        el: '.ebd-product-cards .swiper-scrollbar',
+        draggable: true,
+      },
+      breakpoints: {
+        1400: {
+          slidesPerView: 4
+        },
+        1200: {
+          slidesPerView: 3.25
+        },
+        1000: {
+          slidesPerView: 2.85
+        },
+        800: {
+          slidesPerView: 2.25
+        },
+        600: {
+          slidesPerView: 1.85
+        }
+      },
+    });
+  });
+{% endjavascript %}
+
+

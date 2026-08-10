@@ -1,0 +1,160 @@
+<style>
+  .ebd-recipes .recipes-wrapper {
+    background-color: #F1EDE7;
+    padding: 5rem 1.5rem;
+  }
+  .ebd-recipes .recipes-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .ebd-recipes .recipes-image {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+  }
+  .ebd-recipes .recipes-content {
+    color: #3A758A;
+  }
+  .ebd-recipes .recipes-heading {
+    font-size: 2.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #003349;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .ebd-recipes .recipes-description {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    max-width: 540px;
+  }
+  .ebd-recipes .recipes-btn {
+    display: inline-flex;
+    height: 50px;
+    width: 250px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: #E90044;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+  }
+  .ebd-recipes .recipes-btn:hover {
+    background-color: #da0041;
+  }
+  .ebd-recipes .recipes-label {
+    color: #E90044;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .ebd-recipes .recipes-products {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .ebd-recipes .recipes-product {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    max-width: 160px;
+  }
+  .ebd-recipes .recipes-product img {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .ebd-recipes .recipes-product-title {
+    color: #003349;
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+  @media (max-width: 768px) {
+    .ebd-recipes .recipes-inner {
+      grid-template-columns: 1fr;
+    }
+    .ebd-recipes .recipes-heading {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<div class="recipes-wrapper">
+  <div class="recipes-inner">
+    <picture>
+      <source
+        media="(min-width:650px)"
+        srcset="https://cdn.shopify.com/s/files/1/1308/3049/files/recipes_4b67c482-f2eb-420a-86fc-c9fd13e1ec47.png?v=1678731788"
+      >
+      <img
+        class="w-full lg:px-8 mb-6 lg:mb-0 flex-1"
+        src="https://cdn.shopify.com/s/files/1/1308/3049/files/m-recipes.png?v=1679327180"
+        loading="lazy"
+        alt="Recipe Lifestyle Image"
+      >
+    </picture>
+
+    <div class="mx-auto text-[#3A758A] flex-1">
+      <h2 class="text-3xl font-bold uppercase text-[#003349] sm:text-5xl">favorite recipes</h2>
+      <div class="space-y-6 mt-3">
+        <p class="max-w-2xl">
+          From Gabby and Laird to our everyday users, people have discovered endless favorite ways to enjoy our
+          products. Explore recipes that include our green superfood powder, Peruvian coffee, healthy creamers, and
+          other products. Check out some of our top recommendations here.
+        </p>
+        <a class="block" href="/blogs/recipes" target="_blank">
+          <button class="btn flex h-[48px] w-[200px] items-center justify-center rounded-md bg-[#E90044] text-[15px] uppercase tracking-wide text-white hover:bg-[#da0041] md:h-[50px] md:w-[250px] font-semibold">
+            EXPLORE ALL RECIPES
+          </button>
+        </a>
+      </div>
+      <div class="mt-12">
+        <p style="color: #e11d48;font-weight:600;" class="text-[#E90044] font-bold text-base mb-2">Made with Laird Superfood</p>
+        <div class="flex">
+          {% for product in section.settings.product_list -%}
+            <a href="{{ product.url }}" class="flex flex-col">
+              {{ product.featured_image | image_url: width: 200 | image_tag }}
+              <p class="max-w-[225px] text-[#003349] font-bold">{{ product.title }}</p>
+            </a>
+          {%- endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Recipes",
+  "class": "ebd-recipes",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Products",
+      "limit": 3
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recipes",
+      "category": "EBD"
+    }
+  ]
+}
+{% endschema %}

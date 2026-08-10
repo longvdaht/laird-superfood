@@ -1,0 +1,219 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ebd_manage_subs_heading_bDLAbK": {
+      "type": "ebd-manage-subs-heading",
+      "settings": {
+        "heading": "HOW TO MANAGE YOUR SUBSCRIPTIONS"
+      }
+    },
+    "ebd_manage_subs_VfzHbJ": {
+      "type": "ebd-manage-subs",
+      "blocks": {
+        "text_Qe8LQW": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Login to your customer portal<\/p>"
+          }
+        },
+        "text_i9FmCC": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Click the <strong>Manage subscriptions<\/strong> tab<\/p>",
+            "image": "shopify:\/\/shop_images\/image.png"
+          }
+        },
+        "text_gdrgmq": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Under the subscription you want to edit, select Manage this subscription<\/p>"
+          }
+        },
+        "text_bPi8Rw": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Select <strong>Swap this for a different product<\/strong>. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_1b582de3-a2de-4f90-bf3f-36a8909c5734.png"
+          }
+        },
+        "text_PYTB6j": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Choose a product to swap for the current product and click <strong>Swap<\/strong>.<\/p>",
+            "image": "shopify:\/\/shop_images\/image_3b01271f-fc7d-4a77-9a84-140a64a3d50f.png"
+          }
+        },
+        "text_R8tHJk": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Review the product options and select <strong>Swap product<\/strong> to confirm. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_597b17f0-85d8-428b-a06d-a5e7fa3620fe.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_Qe8LQW",
+        "text_i9FmCC",
+        "text_gdrgmq",
+        "text_bPi8Rw",
+        "text_PYTB6j",
+        "text_R8tHJk"
+      ],
+      "settings": {
+        "title": "Swap Products",
+        "text": "<p>To swap a product:<\/p>"
+      }
+    },
+    "ebd_manage_subs_483GG7": {
+      "type": "ebd-manage-subs",
+      "blocks": {
+        "text_KN6Qff": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Log into your customer portal. <\/p>"
+          }
+        },
+        "text_cBAxG9": {
+          "type": "text",
+          "settings": {
+            "content": "<p>In the <strong>View your next order <\/strong>tab, click <strong>Send now<\/strong>.<\/p>",
+            "image": "shopify:\/\/shop_images\/image_1e0e5f05-b6e8-4eaa-a434-d432d13a42bd.png"
+          }
+        },
+        "text_Vi7JVi": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Select <strong>Send this order now<\/strong> to confirm.<\/p>",
+            "image": "shopify:\/\/shop_images\/image_7ea2cd6f-6bb2-4a57-9194-c553be43dbfa.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_KN6Qff",
+        "text_cBAxG9",
+        "text_Vi7JVi"
+      ],
+      "settings": {
+        "title": "Process your order immediately ",
+        "text": "<p>Process your order immediately rather than the order date originally scheduled.<\/p><p>After an order is processed, the next charge date for the subscriptions in the order gets recalculated based on the subscriptions frequency. For example, if the subscription gets delivered every month and today is January 1st, after I click order now, my next order will now happen on February 1st.<\/p>"
+      }
+    },
+    "ebd_manage_subs_BYqnmL": {
+      "type": "ebd-manage-subs",
+      "blocks": {
+        "text_zQUcFM": {
+          "type": "text",
+          "settings": {
+            "content": "<p>In the <strong>View your next order<\/strong> tab, click<strong> Reschedule<\/strong>.<br\/><\/p><p>The reschedule modal will display an estimated charge date to <br\/>reschedule the order based on the frequency of the subscription. For <br\/>example, if your subscription is on a 30 day frequency, the modal will <br\/>suggest a reschedule date one month from the original charge date. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_6155ea77-1a2c-43c6-bc1c-9a7751050f40.png"
+          }
+        },
+        "text_EhQkeg": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Select the new order date and click <strong>Save changes<\/strong> to confirm. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_a26974b6-6f38-4885-92a1-5a062100ddb1.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_zQUcFM",
+        "text_EhQkeg"
+      ],
+      "settings": {
+        "title": "Edit your next order date",
+        "text": "<p>While you're changing the date, following orders will be rescheduled based on this next order and the delivery frequency of the subscription. <\/p>"
+      }
+    },
+    "ebd_manage_subs_kiJcNR": {
+      "type": "ebd-manage-subs",
+      "blocks": {
+        "text_NBaNUr": {
+          "type": "text",
+          "settings": {
+            "content": "<p>In the <strong>View your next order <\/strong>tab, select <strong>Browse all products<\/strong>. You can also select <strong>+Add <\/strong>from the quick view menu. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_ac273088-9791-4056-b93d-441b6d1273dc.png"
+          }
+        },
+        "text_pkB96P": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Click <strong>+Add<\/strong> on the desired product. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_56e6997f-757f-4de2-a0a1-13dd5759af07.png"
+          }
+        },
+        "text_PajYM3": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Select the <strong>One time only<\/strong> option and click <strong>Add to order<\/strong> to confirm. <\/p>",
+            "image": "shopify:\/\/shop_images\/image_6448148b-adb2-4283-95b5-93a4b829775f.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_NBaNUr",
+        "text_pkB96P",
+        "text_PajYM3"
+      ],
+      "settings": {
+        "title": "Add a one-time product to an order",
+        "text": "<p>One-time products can be added to your order. Login to your customer portal to add products:<\/p>"
+      }
+    },
+    "ebd_manage_subs_pxWbJF": {
+      "type": "ebd-manage-subs",
+      "blocks": {
+        "text_ppjkrw": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Login to your customer portal.<\/p>"
+          }
+        },
+        "text_9fiBD6": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Click <strong>Edit<\/strong> on the Bundle subscription.<\/p>"
+          }
+        },
+        "text_ynD6bb": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Click the <strong>Select contents<\/strong> pop-up<br\/><\/p>"
+          }
+        },
+        "text_cqzJ9k": {
+          "type": "text",
+          "settings": {
+            "content": "<p>Choose your selections and click <strong>Save.<\/strong><br\/><\/p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_ppjkrw",
+        "text_9fiBD6",
+        "text_ynD6bb",
+        "text_cqzJ9k"
+      ],
+      "settings": {
+        "title": "Update Bundle contents",
+        "text": "<p>You can manage your customizable bundle contents and update your selections for upcoming orders in the customer portal:<\/p>"
+      }
+    }
+  },
+  "order": [
+    "ebd_manage_subs_heading_bDLAbK",
+    "ebd_manage_subs_VfzHbJ",
+    "ebd_manage_subs_483GG7",
+    "ebd_manage_subs_BYqnmL",
+    "ebd_manage_subs_kiJcNR",
+    "ebd_manage_subs_pxWbJF"
+  ]
+}

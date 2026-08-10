@@ -1,0 +1,760 @@
+{% doc %}
+  @prompt
+    Build a variant & quantity selection section that has 1 bag, 2 bags, 4 bags, have 4 bags. , Place them in rounded rectangles with contrast so it's clear which one is selected, also change the price to show 7 servings, 14 servings, 28 servings, Make the popular badge 1 line instead of 2, can you give me all controls to change size of each part of the text and the spacing between everything
+{% enddoc %}
+{% comment %}
+  Variant & Quantity Selection Block
+  Allows customers to select between 1 bag, 2 bags, or 4 bags with servings display
+{% endcomment %}
+
+<style>
+  .variant-quantity-selector {
+    margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px;
+  }
+
+  .variant-quantity-selector__title {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 500;
+    margin-bottom: {{ block.settings.title_spacing }}px;
+    color: rgb(var(--color-foreground));
+  }
+
+  .variant-quantity-selector__options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: {{ block.settings.option_gap }}px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .variant-quantity-selector__options {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .variant-quantity-option {
+    position: relative;
+    border: {{ block.settings.border_width }}px solid #e5e7eb;
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: {{ block.settings.option_padding_vertical }}px {{ block.settings.option_padding_horizontal }}px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background-color: #ffffff;
+    text-align: center;
+    min-height: {{ block.settings.option_min_height }}px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .variant-quantity-option:hover {
+    border-color: #003349;
+    box-shadow: 0 2px 8px rgba(0, 51, 73, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .variant-quantity-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .variant-quantity-option.selected {
+    background-color: #003349;
+    border-color: #003349;
+    box-shadow: 0 4px 12px rgba(0, 51, 73, 0.25);
+  }
+
+  .variant-quantity-option.selected:hover {
+    background-color: #00445e;
+    border-color: #00445e;
+    transform: translateY(-2px);
+  }
+
+  .variant-quantity-option__content {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.content_gap }}px;
+    color: #1f2937;
+    transition: color 0.25s ease;
+  }
+
+  .variant-quantity-option.selected .variant-quantity-option__content {
+    color: #ffffff;
+  }
+
+  .variant-quantity-option__quantity {
+    font-size: {{ block.settings.quantity_size }}px;
+    font-weight: {{ block.settings.quantity_weight }};
+    line-height: 1.1;
+    margin-bottom: {{ block.settings.quantity_spacing }}px;
+  }
+
+  .variant-quantity-option__label {
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: {{ block.settings.label_weight }};
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: {{ block.settings.label_letter_spacing }}px;
+  }
+
+  .variant-quantity-option__price {
+    font-size: {{ block.settings.price_size }}px;
+    font-weight: {{ block.settings.price_weight }};
+    margin-top: {{ block.settings.price_spacing }}px;
+  }
+
+  .variant-quantity-option__savings {
+    font-size: {{ block.settings.savings_size }}px;
+    color: #16a34a;
+    font-weight: {{ block.settings.savings_weight }};
+    margin-top: {{ block.settings.savings_spacing }}px;
+    text-transform: uppercase;
+    letter-spacing: {{ block.settings.savings_letter_spacing }}px;
+  }
+
+  .variant-quantity-option.selected .variant-quantity-option__savings {
+    color: #86efac;
+  }
+
+  .variant-quantity-option__checkmark {
+    position: absolute;
+    top: {{ block.settings.checkmark_position }}px;
+    right: {{ block.settings.checkmark_position }}px;
+    width: {{ block.settings.checkmark_size }}px;
+    height: {{ block.settings.checkmark_size }}px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .variant-quantity-option__checkmark::after {
+    content: '✓';
+    color: #003349;
+    font-size: {{ block.settings.checkmark_icon_size }}px;
+    font-weight: bold;
+  }
+
+  .variant-quantity-option.selected .variant-quantity-option__checkmark {
+    opacity: 1;
+  }
+
+  {% if block.settings.show_popular_badge %}
+  .variant-quantity-option__badge {
+    position: absolute;
+    top: {{ block.settings.badge_position }}px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: {{ block.settings.badge_color }};
+    color: {{ block.settings.badge_text_color }};
+    padding: {{ block.settings.badge_padding_vertical }}px {{ block.settings.badge_padding_horizontal }}px;
+    border-radius: {{ block.settings.badge_border_radius }}px;
+    font-size: {{ block.settings.badge_text_size }}px;
+    font-weight: {{ block.settings.badge_text_weight }};
+    text-transform: uppercase;
+    letter-spacing: {{ block.settings.badge_letter_spacing }}px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+  }
+  {% endif %}
+</style>
+
+<div class="variant-quantity-selector" {{ block.shopify_attributes }}>
+  {% if block.settings.show_title %}
+    <div class="variant-quantity-selector__title">
+      {{ block.settings.title }}
+    </div>
+  {% endif %}
+
+  <div class="variant-quantity-selector__options">
+    {% comment %} 1 Bag = 7 Servings {% endcomment %}
+    <label class="variant-quantity-option {% if block.settings.default_selection == '1' %}selected{% endif %}" data-quantity="1">
+      <input 
+        type="radio" 
+        name="quantity-selector-{{ block.id }}" 
+        value="1"
+        {% if block.settings.default_selection == '1' %}checked{% endif %}
+        onchange="updateQuantitySelection(this)"
+      >
+      <div class="variant-quantity-option__content">
+        <div class="variant-quantity-option__quantity">7</div>
+        <div class="variant-quantity-option__label">Servings</div>
+        {% if product.selected_or_first_available_variant.price %}
+          <div class="variant-quantity-option__price">
+            {{ product.selected_or_first_available_variant.price | money }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="variant-quantity-option__checkmark"></div>
+    </label>
+
+    {% comment %} 2 Bags = 14 Servings {% endcomment %}
+    <label class="variant-quantity-option {% if block.settings.default_selection == '2' %}selected{% endif %}" data-quantity="2">
+      <input 
+        type="radio" 
+        name="quantity-selector-{{ block.id }}" 
+        value="2"
+        {% if block.settings.default_selection == '2' %}checked{% endif %}
+        onchange="updateQuantitySelection(this)"
+      >
+      <div class="variant-quantity-option__content">
+        <div class="variant-quantity-option__quantity">14</div>
+        <div class="variant-quantity-option__label">Servings</div>
+        {% if product.selected_or_first_available_variant.price %}
+          {% assign two_bag_price = product.selected_or_first_available_variant.price | times: 2 %}
+          <div class="variant-quantity-option__price">
+            {{ two_bag_price | money }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="variant-quantity-option__checkmark"></div>
+    </label>
+
+    {% comment %} 4 Bags = 28 Servings {% endcomment %}
+    <label class="variant-quantity-option {% if block.settings.default_selection == '4' %}selected{% endif %}" data-quantity="4">
+      {% if block.settings.show_popular_badge and block.settings.popular_option == '4' %}
+        <div class="variant-quantity-option__badge">{{ block.settings.badge_text }}</div>
+      {% endif %}
+      <input 
+        type="radio" 
+        name="quantity-selector-{{ block.id }}" 
+        value="4"
+        {% if block.settings.default_selection == '4' %}checked{% endif %}
+        onchange="updateQuantitySelection(this)"
+      >
+      <div class="variant-quantity-option__content">
+        <div class="variant-quantity-option__quantity">28</div>
+        <div class="variant-quantity-option__label">Servings</div>
+        {% if product.selected_or_first_available_variant.price %}
+          {% assign four_bag_price = product.selected_or_first_available_variant.price | times: 4 %}
+          <div class="variant-quantity-option__price">
+            {{ four_bag_price | money }}
+          </div>
+          {% if block.settings.show_savings %}
+            <div class="variant-quantity-option__savings">
+              {{ block.settings.savings_text }}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+      <div class="variant-quantity-option__checkmark"></div>
+    </label>
+  </div>
+</div>
+
+<script>
+  function updateQuantitySelection(radio) {
+    const container = radio.closest('.variant-quantity-selector');
+    const options = container.querySelectorAll('.variant-quantity-option');
+    const selectedQuantity = parseInt(radio.value);
+    
+    // Update visual selection
+    options.forEach(option => {
+      option.classList.remove('selected');
+    });
+    radio.closest('.variant-quantity-option').classList.add('selected');
+    
+    // Update the product form quantity input
+    const productForm = document.querySelector('product-form form, form[action*="/cart/add"]');
+    if (productForm) {
+      const quantityInput = productForm.querySelector('input[name="quantity"], .quantity__input');
+      if (quantityInput) {
+        quantityInput.value = selectedQuantity;
+        // Trigger change event for any listeners
+        quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+    
+    // Dispatch custom event for other scripts to listen to
+    document.dispatchEvent(new CustomEvent('variant-quantity-changed', {
+      detail: { quantity: selectedQuantity }
+    }));
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkedRadio = document.querySelector('.variant-quantity-selector input[type="radio"]:checked');
+    if (checkedRadio) {
+      updateQuantitySelection(checkedRadio);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Quantity Selector",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Select Quantity"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Space below title",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Option Boxes"
+    },
+    {
+      "type": "range",
+      "id": "option_gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between boxes",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "option_padding_vertical",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Box padding (top/bottom)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "option_padding_horizontal",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Box padding (left/right)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "option_min_height",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Box minimum height",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Space between elements",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Quantity Number (7, 14, 28)"
+    },
+    {
+      "type": "range",
+      "id": "quantity_size",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Number size",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "quantity_weight",
+      "label": "Number weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "quantity_spacing",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Space below number",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Servings Label"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "label_letter_spacing",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 0.5
+    },
+    {
+      "type": "header",
+      "content": "Price"
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Price size",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "price_weight",
+      "label": "Price weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "price_spacing",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Space above price",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Savings Message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "savings_text",
+      "label": "Savings text",
+      "default": "Best Value!"
+    },
+    {
+      "type": "range",
+      "id": "savings_size",
+      "min": 8,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Savings text size",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "savings_weight",
+      "label": "Savings text weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "savings_spacing",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Space above savings",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "savings_letter_spacing",
+      "min": 0,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 0.3
+    },
+    {
+      "type": "header",
+      "content": "Checkmark"
+    },
+    {
+      "type": "range",
+      "id": "checkmark_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Checkmark circle size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "checkmark_icon_size",
+      "min": 10,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Checkmark icon size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "checkmark_position",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Distance from corner",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Popular Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_badge",
+      "label": "Show popular badge",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "popular_option",
+      "label": "Popular option",
+      "options": [
+        { "value": "1", "label": "7 Servings" },
+        { "value": "2", "label": "14 Servings" },
+        { "value": "4", "label": "28 Servings" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Most Popular"
+    },
+    {
+      "type": "range",
+      "id": "badge_text_size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Badge text size",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "badge_text_weight",
+      "label": "Badge text weight",
+      "options": [
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "badge_letter_spacing",
+      "min": 0,
+      "max": 1.5,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Badge letter spacing",
+      "default": 0.5
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_vertical",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "Badge padding (top/bottom)",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_horizontal",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Badge padding (left/right)",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Badge border radius",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "badge_position",
+      "min": -20,
+      "max": 0,
+      "step": 2,
+      "unit": "px",
+      "label": "Badge vertical position",
+      "default": -10,
+      "info": "Negative values move badge up"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge background",
+      "default": "#003349"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Default Selection"
+    },
+    {
+      "type": "select",
+      "id": "default_selection",
+      "label": "Default selection",
+      "options": [
+        { "value": "1", "label": "7 Servings" },
+        { "value": "2", "label": "14 Servings" },
+        { "value": "4", "label": "28 Servings" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin bottom",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quantity Selector"
+    }
+  ]
+}
+{% endschema %}

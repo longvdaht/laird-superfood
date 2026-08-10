@@ -1,0 +1,234 @@
+{% if product.metafields.custom.competitor_chart == blank %}
+  {% assign chartItems = shop.metaobjects.competitor_chart.values %}
+  {% assign using_default = true %}
+{% else %}
+  {% assign chartItems = product.metafields.custom.competitor_chart.value %}
+  {% assign using_default = false %}
+{% endif %}
+
+<section class="pdp-competitor-chart">
+  <div class="content-wrapper">
+    <div class="header">
+      <div class="blank-left"></div>
+      <div class="right">
+        <div class="competitor-chart-brand">
+          <img
+            src="https://cdn.shopify.com/s/files/1/1308/3049/files/logo-blue.svg?v=1677716471"
+            alt="Your brand"
+            width="80"
+            height="40"
+          >
+        </div>
+
+        <div class="competitor-chart-competitor">
+          <h3 class="mediumblue">Others</h3>          
+        </div>
+      </div>
+
+    </div>
+
+    <div class="competitor-chart-rows">
+      {% for item in chartItems %}
+        {% if using_default %}
+          {% if item.default.value != true %}
+            {% continue %}
+          {% endif %}
+        {% endif %}
+
+        <div class="competitor-chart-row" data-row="{{ forloop.index }}">
+          <div class="competitor-chart-info">
+            <h3 class="competitor-chart-heading darkblue">{{ item.heading.value }}</h3>
+
+            {% if item.body.value != blank %}
+              <p class="competitor-chart-description darkblue" id="row-text-{{ forloop.index }}">
+                {{ item.body.value }}
+              </p>
+            {% endif %}
+          </div>
+
+          <div class="competitor-chart-icons">
+            <div class="icon-left">
+              <img src="{{ 'icon-blue-checkmark.svg' | asset_url }}" alt="check">
+            </div>
+            <div class="icon-right">
+                <img src="{{ 'icon-blue-x.svg' | asset_url }}" alt="x">
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "EBD PDP Competitor Chart",
+  "class": "section-competitor-chart",
+  "settings": [],
+  "presets": [
+    {
+      "name": "EBD PDP Competitor Chart"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  section.pdp-competitor-chart {
+    padding: 85px 65px;
+    background-color: var(--color-lightblue);
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .header {
+        display: flex;
+        border-bottom: solid 3px var(--color-mediumblue);
+        padding-bottom: 35px;
+        margin-bottom: 35px;
+
+        .blank-left {
+          width: 55%;
+        }
+
+        .right {
+          width: 45%;
+          display: flex;
+
+          .competitor-chart-brand {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            img {
+              width: 110px;
+              height: auto;
+            }
+          }
+
+          .competitor-chart-competitor {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            h3 {
+              margin: 0;
+              font-size: 2rem;
+            }
+          }
+        }
+      }
+
+      .competitor-chart-row {
+        display: flex;
+        align-items: center;
+        padding-bottom: 35px;
+        border-bottom: solid 3px var(--color-mediumblue);
+        margin-bottom: 35px;
+
+        &:last-of-type {
+          border-bottom: none;
+        }
+
+        .competitor-chart-info {
+          width: 55%;
+          padding-right: 25px;
+          h3.competitor-chart-heading {
+            font-size: 32px;
+            line-height: 38px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+          }
+
+          p.competitor-chart-description {
+            max-width: 550px;
+            margin: 0;
+          }
+        }
+
+        .competitor-chart-icons {
+          width: 45%;
+          display: flex;
+          position: relative;
+
+          &:before {
+            content: '';
+            display: inline-block;
+            position: relative;
+            height: 40px;
+            width: 3px;
+            background-color: var(--color-mediumblue);
+          }
+
+          .icon-left, .icon-right {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+              width: 40px;
+              height: 40px;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+
+      .content-wrapper {
+        .header {
+          margin-bottom :15px;
+          padding-bottom: 15px;
+          .left {
+            width: 50%;
+          }
+          .right {
+            width: 50%;
+            .competitor-chart-brand {
+              img {
+                width: 70px;
+              }
+            }
+
+            .competitor-chart-competitor {
+              h3 {
+                font-size: 20px;
+              }
+            }
+          }
+        }
+        .competitor-chart-row {
+          padding-bottom: 15px;
+          margin-bottom: 15px;
+
+          .competitor-chart-info {
+            padding-right: 15px;
+            width: 50%;
+            h3.competitor-chart-heading {
+              font-size: 18px;
+              line-height: 24px;
+            }
+            p.competitor-chart-description {
+              display: none;
+            }
+          }
+
+          .competitor-chart-icons {
+            width: 50%;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

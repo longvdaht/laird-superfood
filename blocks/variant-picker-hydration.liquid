@@ -1,0 +1,512 @@
+{% liquid
+  assign product_resource = closest.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+-%}
+
+  {% liquid
+  assign product_resource = closest.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+%}
+
+{% if product_resource == blank %}{% endif %}
+
+{% assign current_variant = product_resource.selected_or_first_available_variant %}
+
+{%- comment -%} Find which option index holds the flavor {%- endcomment -%}
+{% assign flavor_index = 0 %}
+{% for option in product_resource.options %}
+  {% assign option_downcase = option | downcase %}
+  {% if option_downcase == 'flavor' or option_downcase == 'flavour' or option_downcase == 'scent' or option_downcase == 'title' %}
+    {% assign flavor_index = forloop.index0 %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% assign selected_flavor = current_variant.options[flavor_index] %}
+
+<style>
+  .hydration-flavor-picker {
+    font-family: inherit;
+  }
+
+  .hydration-flavor-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4a6741;
+    margin-bottom: 14px;
+  }
+
+  .hydration-flavor-label span {
+    font-weight: 800;
+    color: #1a1a1a;
+  }
+
+  .hydration-flavor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .hydration-flavor-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 2px solid #d9d9d9;
+    border-radius: 12px;
+    background: #f7f5f0;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    text-align: left;
+    min-height: 72px;
+    position: relative;
+  }
+
+  .hydration-flavor-card:hover {
+    border-color: #aaaaaa;
+  }
+
+  .hydration-flavor-card.is-selected {
+    border-color: #1b3a5c;
+    border-width: 2.5px;
+    background: #f0ede6;
+  }
+
+  .hydration-flavor-card.is-unavailable {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .hydration-flavor-swatch {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    overflow: hidden;
+    object-fit: cover;
+  }
+
+  .hydration-flavor-swatch img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .hydration-flavor-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+  }
+
+  @media (max-width: 480px) {
+    .hydration-flavor-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .hydration-flavor-swatch {
+      width: 44px;
+      height: 44px;
+    }
+    .hydration-flavor-name {
+      font-size: 12px;
+    }
+  }
+</style>
+
+<div class="hydration-flavor-picker" data-section-id="{{ section.id }}">
+  <p class="hydration-flavor-label">
+    Flavor: <span class="hydration-selected-flavor-name">{{ selected_flavor }}</span>
+  </p>
+
+  <div class="hydration-flavor-grid">
+    {%- for variant in product_resource.variants -%}
+      {%- assign flavor_name = variant.options[flavor_index] -%}
+      {%- assign flavor_lower = flavor_name | downcase | replace: ' ', '-' | replace: "'", '' -%}
+
+      {%- comment -%} Map flavor name to swatch color and image {%- endcomment -%}
+      {%- assign swatch_color = '#cccccc' -%}
+      {%- assign bg_color = 'rgba(204, 204, 204, 0.15)' -%}
+      {%- assign swatch_image = '' -%}
+      {%- if flavor_lower contains 'tropical' -%}
+        {%- assign swatch_color = 'rgb(232, 98, 58)' -%}
+        {%- assign bg_color = 'rgba(232, 98, 58, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/Tropical.png?v=1775138102' -%}
+      {%- elsif flavor_lower contains 'wild-berry' or flavor_lower contains 'wildberry' or flavor_lower contains 'berry' -%}
+        {%- assign swatch_color = 'rgb(155, 79, 166)' -%}
+        {%- assign bg_color = 'rgba(155, 79, 166, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/Wild_Berry.png?v=1775138102' -%}
+      {%- elsif flavor_lower contains 'original' -%}
+        {%- assign swatch_color = 'rgb(58, 140, 140)' -%}
+        {%- assign bg_color = 'rgba(58, 140, 140, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/Original.png?v=1775138102' -%}
+      {%- elsif flavor_lower contains 'pineapple' or flavor_lower contains 'mango' -%}
+        {%- assign swatch_color = 'rgb(232, 148, 58)' -%}
+        {%- assign bg_color = 'rgba(232, 148, 58, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/Pineapple_Mango.png?v=1775138102' -%}
+      {%- elsif flavor_lower contains 'lemon' -%}
+        {%- assign swatch_color = 'rgb(200, 184, 0)' -%}
+        {%- assign bg_color = 'rgba(200, 184, 0, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/Lemon.png?v=1775138102' -%}
+      {%- elsif flavor_lower contains 'variety' -%}
+        {%- assign swatch_color = 'rgb(90, 138, 60)' -%}
+        {%- assign bg_color = 'rgba(90, 138, 60, 0.15)' -%}
+        {%- assign swatch_image = 'https://cdn.shopify.com/s/files/1/1308/3049/files/VARIETY_PACK.png?v=1775138102' -%}
+      {%- endif -%}
+
+      {%- assign is_selected = false -%}
+      {%- if variant.id == current_variant.id -%}
+        {%- assign is_selected = true -%}
+      {%- endif -%}
+
+      <div
+        class="hydration-flavor-card{% if is_selected %} is-selected{% endif %}{% unless variant.available %} is-unavailable{% endunless %}"
+        data-variant-id="{{ variant.id }}"
+        data-flavor="{{ flavor_name }}"
+        data-available="{{ variant.available }}"
+        data-bg-color="{{ bg_color }}"
+        {%- if variant.featured_image -%}
+        data-featured-image="{{ variant.featured_image | image_url: width: 1000 }}"
+        data-featured-image-alt="{{ variant.featured_image.alt | escape }}"
+        {%- endif -%}
+        role="button"
+        aria-pressed="{{ is_selected }}"
+        tabindex="0"
+      >
+        {%- if swatch_image != '' -%}
+          <div class="hydration-flavor-swatch">
+            <img
+              src="{{ swatch_image }}"
+              alt="{{ flavor_name | escape }}"
+              width="54"
+              height="54"
+              loading="lazy"
+            >
+          </div>
+        {%- else -%}
+          <div class="hydration-flavor-swatch" style="background-color: {{ swatch_color }};"></div>
+        {%- endif -%}
+        <span class="hydration-flavor-name">{{ flavor_name }}</span>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+<script>
+(function() {
+  const picker = document.querySelector('.hydration-flavor-picker[data-section-id="{{ section.id }}"]');
+  if (!picker) return;
+
+  const cards = picker.querySelectorAll('.hydration-flavor-card');
+  const selectedLabel = picker.querySelector('.hydration-selected-flavor-name');
+
+  // Per-flavor image galleries sourced from each product's own page
+  const FLAVOR_GALLERIES = {
+    lemon: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateLemon.png?v=1687377190',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateLemonBOP.png?v=1687377190',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateLemonreal.png?v=1687377190',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_5148.png?v=1764187542',
+    ],
+    pineapple: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateMangoPineapple.png?v=1687466761',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateMangoPineappleBOP.png?v=1687466761',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/HydrateMPreal.png?v=1687377190',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_5154.png?v=1764172998',
+    ],
+    variety: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Variety_PDP.png?v=1764205637',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Hydrate_sticks.png?v=1764270993',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_9857.png?v=1764205637',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Hydrate-Images-more-optionsOrginal-Hydrate-copy.png?v=1764270928',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_9872.png?v=1764270928',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Variety_Pack_NFP_WEB.png?v=1764270928',
+    ],
+    original: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Original_PDP.png?v=1764205656',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/LSF_Hydrate_Tropical-Original_NFP.jpg?v=1764205656',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Orginal_Hydrate_Yoga_Scene.png?v=1764205656',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_9800.png?v=1764205656',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1-copy.png?v=1764205680',
+    ],
+    berry: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Wild_Berry_PDP.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry--NFPArtboard-1-copy-6.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1-copy.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1-copy-2.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1-copy-3.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/WildBerry_NFP_Web.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Berryhydratetopdown.png?v=1764205680',
+    ],
+    tropical: [
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/LSF-Hydrate_Box-Stick_Tropical.png?v=1763067702',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/IMG_9826.png?v=1764098511',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/PDP-Wild-Berry-ImagesArtboard-1-copy.png?v=1764205680',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Hydrate-Images-more-optionsOrginal-Hydrate-copy-3.png?v=1764098537',
+      'https://cdn.shopify.com/s/files/1/1308/3049/files/Hydrate_NFP_Tropical.png?v=1764097759',
+    ],
+  };
+
+  function getFlavorKey(name) {
+    const f = name.toLowerCase();
+    if (f.includes('lemon')) return 'lemon';
+    if (f.includes('pineapple') || f.includes('mango')) return 'pineapple';
+    if (f.includes('variety')) return 'variety';
+    if (f.includes('original')) return 'original';
+    if (f.includes('berry')) return 'berry';
+    if (f.includes('tropical')) return 'tropical';
+    return null;
+  }
+
+  // Layout: hero → row(2) → hero → row(2) → ...
+  function buildDesktopHTML(images) {
+    let html = '';
+    let i = 0;
+    while (i < images.length) {
+      html += `<img src="${images[i]}&width=1000" alt="" width="1000" height="1000" loading="lazy">`;
+      i++;
+      if (i < images.length) {
+        html += '<div class="ebd-media-row">';
+        html += `<div class="ebd-media-half"><img src="${images[i]}&width=1000" alt="" width="1000" height="1000" loading="lazy"></div>`;
+        i++;
+        if (i < images.length) {
+          html += `<div class="ebd-media-half"><img src="${images[i]}&width=1000" alt="" width="1000" height="1000" loading="lazy"></div>`;
+          i++;
+        }
+        html += '</div>';
+      }
+    }
+    return html;
+  }
+
+  function buildMobileHTML(images) {
+    return images.map((src, idx) =>
+      `<div class="swiper-slide" role="group" aria-label="${idx + 1} / ${images.length}" style="margin-right: 10px;">
+        <img src="${src}&width=1000" alt="" width="1000" height="1000" loading="lazy">
+      </div>`
+    ).join('');
+  }
+
+  // Preload all gallery images on init
+  Object.values(FLAVOR_GALLERIES).forEach(imgs => {
+    imgs.forEach(src => { new Image().src = src + '&width=1000'; });
+  });
+
+  function selectVariant(variantId, flavorName, available, card) {
+    if (!available) return;
+
+    // Update card states
+    cards.forEach(c => {
+      c.classList.toggle('is-selected', c.dataset.variantId === String(variantId));
+      c.setAttribute('aria-pressed', c.dataset.variantId === String(variantId));
+    });
+
+    // Update label
+    if (selectedLabel) selectedLabel.textContent = flavorName;
+
+    // Update the hidden variant input on the product form
+    const form = document.querySelector('form[data-product-handle]') ||
+                 document.querySelector('.product-form') ||
+                 document.querySelector('form.product-form');
+
+    if (form) {
+      const variantInput = form.querySelector('[name="id"]');
+      if (variantInput) {
+        variantInput.value = variantId;
+        variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+
+    // Push to URL without reload (keeps back-button working)
+    const url = new URL(window.location.href);
+    url.searchParams.set('variant', variantId);
+    window.history.replaceState({}, '', url.toString());
+
+    // Update product media column background color
+    const mediaCol = document.querySelector('.product-media-column');
+    if (mediaCol && card && card.dataset.bgColor) {
+      mediaCol.style.backgroundColor = card.dataset.bgColor;
+    }
+
+    // Rebuild gallery with flavor-specific images
+    const flavorKey = getFlavorKey(flavorName);
+    const gallery = flavorKey ? FLAVOR_GALLERIES[flavorKey] : null;
+    if (gallery) {
+      // Desktop: preserve the quote block, replace everything else
+      const desktopCol = document.querySelector('.ebd-media-desktop');
+      if (desktopCol) {
+        const quote = desktopCol.querySelector('.ebd-product-media-quote');
+        desktopCol.innerHTML = buildDesktopHTML(gallery);
+        if (quote) desktopCol.appendChild(quote);
+      }
+
+      // Mobile: replace swiper slides and reinitialize
+      const mobileCol = document.querySelector('.ebd-media-mobile');
+      if (mobileCol) {
+        const swiperEl = mobileCol.querySelector('.swiper');
+        if (swiperEl) {
+          if (swiperEl.swiper) swiperEl.swiper.destroy(true, true);
+          const wrapper = swiperEl.querySelector('.swiper-wrapper');
+          if (wrapper) wrapper.innerHTML = buildMobileHTML(gallery);
+          if (window.Swiper) new window.Swiper(swiperEl, { slidesPerView: 1, spaceBetween: 10 });
+        }
+      }
+    }
+
+    // Refresh ingredients section via Section Rendering API
+    const ingredientsEl = document.querySelector('.ebd-ingredients');
+    if (ingredientsEl) {
+      const shopifySection = ingredientsEl.closest('[id^="shopify-section-"]');
+      const ingredientsSectionId = shopifySection
+        ? shopifySection.id.replace('shopify-section-', '')
+        : null;
+      if (ingredientsSectionId) {
+        fetch(`${window.location.pathname}?variant=${variantId}&section_id=${ingredientsSectionId}`)
+          .then(r => r.text())
+          .then(html => {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const fresh = doc.querySelector('.ebd-ingredients');
+            if (fresh) ingredientsEl.innerHTML = fresh.innerHTML;
+          })
+          .catch(() => {});
+      }
+    }
+
+    // Fire Shopify's variant change event so themes/apps can react
+    document.dispatchEvent(new CustomEvent('variant:changed', {
+      bubbles: true,
+      detail: { variantId: variantId }
+    }));
+  }
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      selectVariant(
+        card.dataset.variantId,
+        card.dataset.flavor,
+        card.dataset.available === 'true',
+        card
+      );
+    });
+
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectVariant(
+          card.dataset.variantId,
+          card.dataset.flavor,
+          card.dataset.available === 'true',
+          card
+        );
+      }
+    });
+  });
+})();
+</script>
+
+
+{% schema %}
+{
+  "name": "Hydration Variant Pick",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_variant_picker"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.edit_variants_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "variant_style",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "dropdowns",
+          "label": "t:options.dropdowns"
+        },
+        {
+          "value": "buttons",
+          "label": "t:options.buttons"
+        }
+      ],
+      "default": "buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "t:settings.swatches",
+      "default": true
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hydration Variant Pick",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

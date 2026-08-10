@@ -1,0 +1,232 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "ebd_about_hero_QKnFfx": {
+      "type": "ebd-about-hero",
+      "name": "EBD About Hero",
+      "settings": {
+        "image": "shopify://shop_images/Target-Smalltalk_1.webp",
+        "image_mobile": "shopify://shop_images/ChatGPT_Image_Feb_2_2026_10_10_58_PM.png"
+      }
+    },
+    "ebd_about_intro_UgnQdy": {
+      "type": "ebd-about-intro",
+      "name": "EBD About Intro",
+      "settings": {
+        "heading": "It all started with a cup of coffee",
+        "text": "<p>Laird Superfood was born when pioneering big wave surfer Laird Hamilton set out to find a better morning routine to improve and sustain his performance on the waves. He began experimenting with adding healthy plant-based fats and other real-food ingredients to his morning cup, eventually perfecting a recipe that not only sustained his energy, but tasted incredible.<br/><br/>This founding spirit still flows through every product we make. From your day’s first cup to your last snack, we believe everything you put in your body should fuel the best version of yourself.<br/></p>",
+        "image": "shopify://shop_images/laird-surfing2.png"
+      }
+    },
+    "ebd_about_meet_LxWBF9": {
+      "type": "ebd-about-meet",
+      "blocks": {
+        "text_BGDFiM": {
+          "type": "text",
+          "settings": {
+            "title": "Laird Hamilton",
+            "bio": "You may know Laird as a big wave surfer, but his accomplishments on land are just as impressive. An innovator, author, speaker, nutrition expert, adrenaline junkie, and philanthropist, Laird goes big in everything he does. Among his many achievements, he’s most proud of being a devoted husband and father.",
+            "facebook_url": "https://www.facebook.com/LairdLife/",
+            "instagram_url": "https://www.instagram.com/lairdhamilton/?hl=en",
+            "x_url": "https://twitter.com/lairdlife",
+            "tiktok_url": "https://www.tiktok.com/@thereallairdhamilton"
+          }
+        },
+        "text_6Kxb47": {
+          "type": "text",
+          "settings": {
+            "title": "Gabby Reece",
+            "bio": "Gabrielle Reece is a force to be reckoned with. From a volleyball legend to a health and fitness expert, there is no stopping her quest to grow awareness of better health habits. With her companies Laird Superfood and XPT (Extreme Performance Training) and her Podcast “The Gabby Reece Show\" Gabby's mission is to encourage people to be their best selves. It’s no surprise Gabby and Laird have made perfect partners, both at home and in business.",
+            "facebook_url": "https://www.facebook.com/OfficialGabrielleReece/",
+            "instagram_url": "https://www.instagram.com/gabbyreece",
+            "x_url": "https://twitter.com/gabbyreece",
+            "tiktok_url": "https://www.tiktok.com/@gabbyreeceofficial"
+          }
+        }
+      },
+      "block_order": [
+        "text_BGDFiM",
+        "text_6Kxb47"
+      ],
+      "name": "EBD About Meet",
+      "settings": {
+        "heading": "Meet Laird & Gabby",
+        "image": "shopify://shop_images/meet-image.webp",
+        "facebook_icon": "shopify://shop_images/fb.svg",
+        "instagram_icon": "shopify://shop_images/insta.svg",
+        "x_icon": "shopify://shop_images/twitter.svg",
+        "tiktok_icon": "shopify://shop_images/tiktok.svg"
+      }
+    },
+    "ebd_about_newsletter_iRXd9E": {
+      "type": "ebd-about-newsletter",
+      "name": "EBD About Newsletter",
+      "settings": {
+        "heading": "Join the Super Crew",
+        "subheading": "Be the first to see offers, promos, and products! No spam. We promise. Plus, get a discount for your first order!",
+        "graphic": "shopify://shop_images/about-email-flourish.svg",
+        "background_image": "shopify://shop_images/newletter-bg.jpg"
+      }
+    },
+    "ebd_about_ingredients_cYzbMk": {
+      "type": "ebd-about-ingredients",
+      "name": "EBD About Ingredients",
+      "settings": {
+        "heading": "Clean, Unique Ingredients",
+        "text": "<p>You can only tackle life's biggest waves when your body and mind are fueled with the most vitalizing ingredients on earth. That’s why every product we make is loaded with natural plant-powered goodness including functional mushrooms, adaptogens, minerals and more.</p>",
+        "background_image": "shopify://shop_images/ingredients-desktop_4bdac866-65e9-4f12-b7c2-ab76dc8341a2.jpg",
+        "background_image_mobile": "shopify://shop_images/laird-berries.jpg"
+      }
+    },
+    "ebd_about_subscribe_YrqqXA": {
+      "type": "ebd-about-subscribe",
+      "name": "EBD About Subscriptions",
+      "settings": {
+        "heading": "GETTING HEALTHY STARTS TODAY",
+        "text": "<p>Your journey into wellness begins with a single scoop. Once you feel the difference that clean, real-food ingredients can have on your energy and performance, you’ll want to stay in the healthy flow all day, every day. <strong>With 20% off every order, our subscribe and save program is designed to keep you easily and affordably stocked for the ride of your life. </strong></p>",
+        "link_url_center": "shopify://pages/subscription",
+        "link_label_center": "SUBSCRIBE & SAVE",
+        "link_url_left": "shopify://products/lairds-favorites-bundle",
+        "left_image": "shopify://shop_images/left.webp",
+        "link_url_right": "shopify://products/gabbys-favorites-bundle",
+        "right_image": "shopify://shop_images/GR_Favorites.webp"
+      }
+    },
+    "ebd_about_difference_kaiWAy": {
+      "type": "ebd-about-difference",
+      "blocks": {
+        "text_HFPPd9": {
+          "type": "text",
+          "settings": {
+            "title": "INTEGRITY",
+            "text": "Honest and transparent products and labels",
+            "icon": "shopify://shop_images/integrity_31c86b5a-54c6-4ea3-84d8-473e86077ff6.svg"
+          }
+        },
+        "text_pCB6ak": {
+          "type": "text",
+          "settings": {
+            "title": "AUTHENTICITY",
+            "text": "Staying true to our vision, our mission, and core beliefs",
+            "icon": "shopify://shop_images/authenticy.svg"
+          }
+        },
+        "text_xGqKpC": {
+          "type": "text",
+          "settings": {
+            "title": "PRO-TEAM",
+            "text": "Always seeking excellence in all that we do",
+            "icon": "shopify://shop_images/PRO-TEAM_e9418eb4-8946-4bc1-8bc0-168336bf1539.svg"
+          }
+        },
+        "text_F3aYWn": {
+          "type": "text",
+          "settings": {
+            "title": "HEALTH",
+            "text": "Striving for human health and a healthy planet too",
+            "icon": "shopify://shop_images/Health_7c70c368-69ab-4449-86ed-5afc1aaf3936.svg"
+          }
+        },
+        "text_KcmHeH": {
+          "type": "text",
+          "settings": {
+            "title": "GRATITUDE",
+            "text": "Humility and daily gratitude to be on this journey",
+            "icon": "shopify://shop_images/gratitude_6679853b-e399-490b-bc78-75e7f0867334.svg"
+          }
+        },
+        "text_HrK7x3": {
+          "type": "text",
+          "settings": {
+            "title": "HIGH PERFORMANCE",
+            "text": "Consistently pursuing excellence and continuous improvement",
+            "icon": "shopify://shop_images/HIGH_PERFORMANCE_1614508b-136e-4b68-8406-0c722cd71dc6.svg"
+          }
+        }
+      },
+      "block_order": [
+        "text_HFPPd9",
+        "text_pCB6ak",
+        "text_xGqKpC",
+        "text_F3aYWn",
+        "text_KcmHeH",
+        "text_HrK7x3"
+      ],
+      "name": "EBD About Difference",
+      "settings": {
+        "heading": "WHY WE'RE PRETTY RAD",
+        "image": "shopify://shop_images/CTM_9819.webp"
+      }
+    },
+    "ebd_hp_faqs_iVt8Ja": {
+      "type": "ebd-hp-faqs",
+      "blocks": {
+        "text_dm4HWg": {
+          "type": "text",
+          "settings": {
+            "title": "When did Laird Superfood Start?",
+            "faq_content": "<p>Laird started experimenting with his morning ritual almost two decades ago. He found that by adding plant-based fats like coconut oil, which contains naturally occurring MCTs (the fats we love), to his morning cup, he maintained amazing energy throughout the day. He perfected this epic cup of fuel and began sharing it with his friends in the surf community and then Laird Superfood was formed in 2015.</p>"
+          }
+        },
+        "text_9TmEbN": {
+          "type": "text",
+          "settings": {
+            "title": "Are Laird Hamilton and Gabby Reece actually involved in the brand?",
+            "faq_content": "<p>Laird is not only a Co-Founder, he also serves as a Director and Chief Innovator. He is integral in the curation and creation of all of our products and launches. As Laird himself says, “Gabby and I are involved with the product innovation process from day one until the product is available on our website. We only use ingredients that we feel comfortable consuming daily, which sometimes means it takes us a long time to finalize a product.” Gabby is the Chief Brand Ambassador, deeply involved in product development and ingredient standards and guardrails. She is actively involved in bringing new products to life and helps with communication and content development.<br/></p>"
+          }
+        },
+        "text_8aUedF": {
+          "type": "text",
+          "settings": {
+            "title": "Where did you source ingredients from?",
+            "faq_content": "<p>We source our high-quality plant-based ingredients from around the world, with an emphasis on US sources and local suppliers. We are as passionate about a healthy earth as we are a healthy you, so we always aim to source responsibly and sustainably.</p>"
+          }
+        },
+        "text_c3CRLQ": {
+          "type": "text",
+          "settings": {
+            "title": "Is your packaging recyclable or compostable? ",
+            "faq_content": "<p>We emphasize sustainability and social responsibility in everything we do. As part of this mission, we are consistently making strides to improve our packaging and carbon footprint.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_dm4HWg",
+        "text_9TmEbN",
+        "text_8aUedF",
+        "text_c3CRLQ"
+      ],
+      "name": "HP FAQ",
+      "settings": {
+        "heading": "FREQUENTLY ASKED QUESTIONS",
+        "background_image": "shopify://shop_images/mug-beans_5a389c40-0ace-40fe-8531-016a0edc91b2.png",
+        "link_url": "https://support.lairdsuperfood.com/hc/en-us",
+        "link_label": "VIEW ALL FAQS"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "ebd_about_hero_QKnFfx",
+    "ebd_about_intro_UgnQdy",
+    "ebd_about_meet_LxWBF9",
+    "ebd_about_newsletter_iRXd9E",
+    "ebd_about_ingredients_cYzbMk",
+    "ebd_about_subscribe_YrqqXA",
+    "ebd_about_difference_kaiWAy",
+    "ebd_hp_faqs_iVt8Ja"
+  ]
+}

@@ -1,0 +1,79 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ebd_globo_form_id9ccB": {
+      "type": "ebd-globo-form",
+      "disabled": true,
+      "name": "EBD Globo Form",
+      "settings": {
+        "globo_form_embed": "<div class=\"globo-formbuilder\" data-id=\"33674\"></div>"
+      }
+    },
+    "177515530806f353c8": {
+      "type": "_blocks",
+      "blocks": {
+        "snowball_affiliate_marketing_affiliate_sign_up_TMhnQt": {
+          "type": "shopify://apps/snowball-affiliate-marketing/blocks/affiliate-sign-up/6e5feda3-ec24-4171-ae41-64028b660bc7",
+          "settings": {
+            "form_id": "628d18c0-ed7e-42be-ae07-b69d3b6bdf96"
+          }
+        }
+      },
+      "block_order": [
+        "snowball_affiliate_marketing_affiliate_sign_up_TMhnQt"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": true,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 32,
+        "padding-block-end": 0
+      }
+    },
+    "custom_liquid_BqTjyq": {
+      "type": "custom-liquid",
+      "name": "t:names.custom_liquid",
+      "settings": {
+        "custom_liquid": "<iframe id=\"affiliate-sign-up-form\" style=\"border: 0; width: 100%; height: 100vh;\" src=\"https://api.socialsnowball.io/register-form/18596/628d18c0-ed7e-42be-ae07-b69d3b6bdf96\"></iframe><script>!async function(){let e=document.querySelector(\"#affiliate-sign-up-form\");window.addEventListener(\"message\",t=>{t.origin===new URL(e.getAttribute(\"src\")).origin&&(e.style.height=t.data.height)})}();</script>",
+        "color_scheme": "",
+        "section_width": "page-width",
+        "padding-block-start": 32,
+        "padding-block-end": 32
+      }
+    }
+  },
+  "order": [
+    "ebd_globo_form_id9ccB",
+    "177515530806f353c8",
+    "custom_liquid_BqTjyq"
+  ]
+}

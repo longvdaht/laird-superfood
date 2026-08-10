@@ -1,0 +1,156 @@
+<section class="ebd-about-subscribe">
+  <div class="content-wrapper">
+    <div class="image left">
+      <a href="{{ section.settings.link_url_left }}">
+        <img src="{{ section.settings.left_image | image_url: width: 750 }}" alt="{{ section.settings.left_image.alt }}">
+      </a>
+    </div>
+    <div class="content">
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      <div class="text">
+        {{ section.settings.text }}
+      </div>
+      <a href="{{ section.settings.link_url_center }}" class="btn">{{ section.settings.link_label_center }}</a>
+    </div>
+    <div class="image right">
+      <a href="{{ section.settings.link_url_right }}">
+        <img src="{{ section.settings.right_image | image_url: width: 750 }}" alt="{{ section.settings.right_image.alt }}">
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD About Subscriptions",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text"
+      },
+      {
+        "id": "link_url_center",
+        "type": "url",
+        "label": "Link URL Center"
+      },
+      {
+        "id": "link_label_center",
+        "type": "text",
+        "label": "Link Label Center"
+      },
+      {
+        "id": "link_url_left",
+        "type": "url",
+        "label": "Link URL Left"
+      },
+      {
+        "id": "left_image",
+        "type": "image_picker",
+        "label": "Left Image"
+      },
+      {
+        "id": "link_url_right",
+        "type": "url",
+        "label": "Link URL Right"
+      },
+      {
+        "id": "right_image",
+        "type": "image_picker",
+        "label": "Right Image"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD About Subscriptions",
+        "category": "EBD About"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.ebd-about-subscribe {
+    padding: 85px 65px;
+
+    .content-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 45px;
+
+      .image {
+        width: 33.33%;
+      }
+
+      .content {
+        width: 33.33%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        h2 {
+          text-align: center;
+        }
+
+        .text {
+          text-align: center;
+          margin-bottom: 25px;
+        }
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .content-wrapper {
+        .image.right {
+          display: none;
+        }
+
+        .image {
+          width: 50%;
+        }
+
+        .content {
+          width: 50%;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+
+      .content-wrapper {
+        flex-direction: column;
+        gap: 25px;
+
+        .image {
+          width: 100%;
+          img {
+            max-width: 500px;
+            margin: 0 auto;
+          }
+        }
+
+        .content {
+          width: 100%;
+          max-width: 500px;
+          margin: 0 auto;
+          .text {
+            margin-bottom: 15px;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

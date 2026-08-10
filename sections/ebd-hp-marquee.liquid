@@ -1,0 +1,94 @@
+<section class="hp-marquee">
+  <div class="marquee-wrapper">
+    {% for block in section.blocks %}
+      <div class="marquee-word">
+        <h4 class="darkblue">{{ block.settings.text }}</h4>
+      </div>
+    {% endfor %}
+    {% for block in section.blocks %}
+      <div class="marquee-word">
+        <h4 class="darkblue">{{ block.settings.text }}</h4>
+      </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP Marquee",
+    "settings": [     
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Words",
+        "settings": [
+          {
+            "id": "text",
+            "type": "text",
+            "label": "Text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP Marquee",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .hp-marquee {
+    width: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+    padding: 2rem 0;
+    margin: 25px 0;
+
+    .marquee-wrapper {
+      display: flex;
+      animation: marquee 30s linear infinite;
+      white-space: nowrap;
+
+      .marquee-word {
+        display: inline-block;
+        margin-right: 3rem;
+
+        h4 {
+          margin: 0;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 1.5rem 0;
+      margin: 25px 0;
+      .marquee-wrapper {
+        animation: marquee 15s linear infinite;
+        .marquee-word {
+          margin-right: 1.5rem;
+          h4 {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
+
+
+
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-75%);
+    }
+  }
+{% endstylesheet %}

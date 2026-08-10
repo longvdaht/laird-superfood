@@ -1,0 +1,213 @@
+<div class="ebd-product-dropdowns">
+
+  {% if product.metafields.custom.key_benefits %}
+    <div class="dropdown-single">
+      <div class="dropdown-toggle">
+        <h4>Key Benefits</h4>
+        <span class="toggle-icon">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+      </div>
+      <div class="dropdown-content">
+        {{ product.metafields.custom.key_benefits.value.description }}
+        <div class="benefits-grid">
+          {% for feature in product.metafields.custom.key_benefits.value.features %}
+            <div class="grid-item">
+              <h5 class="darkblue">{{ feature.title }}</h5>
+              <p>{{ feature.description }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if product.metafields.custom.romance_copy %}
+    <div class="dropdown-single">
+      <div class="dropdown-toggle">
+        <h4>{{ product.metafields.custom.romance_copy.value.title }}</h4>
+        <span class="toggle-icon">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+      </div>
+      <div class="dropdown-content">
+        <p>{{ product.metafields.custom.romance_copy.value.description }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if product.metafields.custom.how_to_use %}
+    <div class="dropdown-single">
+      <div class="dropdown-toggle">
+        <h4>How to Use</h4>
+        <span class="toggle-icon">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+      </div>
+      <div class="dropdown-content">
+        {{ product.metafields.custom.how_to_use_accordion | metafield_tag }}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="dropdown-single">
+    <div class="dropdown-toggle">
+      <h4>Our 30-Day Guarantee</h4>
+      <span class="toggle-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </span>
+    </div>
+    <div class="dropdown-content">
+      <p>
+        We know you'll love your Laird Superfood products. We're so confident that we offer a 30-day guarantee on all orders, from the time you receive it at home.
+      </p>
+    </div>
+  </div>
+
+  {% if product.metafields.custom.ingredients_tab %}
+    <div class="dropdown-single">
+      <div class="dropdown-toggle">
+        <h4>Ingredients</h4>
+        <span class="toggle-icon">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+      </div>
+      <div class="dropdown-content">
+        <p>{{ product.metafields.custom.ingredients_tab }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+{% schema %}
+{
+  "name": "EBD Product Dropdowns",
+  "presets": [
+    {
+      "name": "EBD Product Dropdowns",
+      "category": "EBD Product"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.ebd-product-dropdowns {
+  .dropdown-single {
+    padding: 20px;
+    border: 1px solid var(--color-lightgray);
+    border-radius: 7px;
+    margin-bottom: 20px;
+
+    .dropdown-toggle {
+      position: relative;
+      padding-right: 60px;
+      cursor: pointer;
+
+      h4 {
+        margin: 0;
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      .toggle-icon {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+
+        .bar {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background: currentColor;
+          transform: translateY(-50%);
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .bar:nth-child(2) {
+          transform: translateY(-50%) rotate(90deg);
+        }
+      }
+    }
+
+    .dropdown-content {
+      display: none;
+      margin-top: 20px;
+
+      .benefits-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+        gap: 15px;
+        margin-top: 20px;
+
+        .grid-item {
+          background-color: var(--color-tan);
+          border-radius: 5px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+
+          h5 {
+            text-align: center;
+            margin-bottom: 5px;
+          }
+
+          p {
+            text-align: center;
+            font-size: 15px;
+            line-height: 19px;
+            margin: 0;
+          }
+        }
+      }
+
+      p {
+        margin-top: 10px;
+      }
+    }
+
+    &.active {
+      .dropdown-content {
+        display: block;
+      }
+
+      .toggle-icon {
+        .bar:nth-child(2) {
+          opacity: 0;
+        }
+
+        .bar:nth-child(1) {
+          transform: translateY(-50%) rotate(0deg);
+        }
+      }
+    }
+  }
+}
+{% endstylesheet %}
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', function () {
+  var toggles = document.querySelectorAll('.ebd-product-dropdowns .dropdown-toggle');
+
+  toggles.forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      var single = toggle.closest('.dropdown-single');
+      single.classList.toggle('active');
+    });
+  });
+});
+{% endjavascript %}

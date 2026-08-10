@@ -1,0 +1,174 @@
+<section class="subscriptions-hero">
+  <div class="content-wrapper">
+    <div class="content">
+      <div class="text-wrapper">
+        <h2 class="darkblue">{{ section.settings.heading }}</h2>
+        <div class="benefits">
+          {% for block in section.blocks %}
+            <h4 class="darkblue"><img src="{{ 'icon-checkmark.png' | asset_url }}" alt="{{ block.settings.benefit }}">{{ block.settings.benefit }}</h4>
+          {% endfor %}
+        </div>
+        <div class="link-wrapper">
+          <a href="{{ section.settings.button_url }}" class="btn">{{ section.settings.button_label }}</a>
+          <a href="{{ section.settings.text_link_url }}" class="text-link">{{ section.settings.text_link_label }}</a>
+        </div>
+      </div>
+
+    </div>
+    <div class="hero-image">
+      <img src="{{ section.settings.image | img_url: '1920x' }}" alt="{{ section.settings.image.alt }}">
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Subscriptions Hero",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "html",
+        "label": "Heading"
+      },
+      {
+        "id": "button_url",
+        "type": "url",
+        "label": "Button URL"
+      },
+      {
+        "id": "button_label",
+        "type": "text",
+        "label": "Button Label"
+      },
+      {
+        "id": "text_link_url",
+        "type": "url",
+        "label": "Text Link URL"
+      }, {
+        "id": "text_link_label",
+        "type": "text",
+        "label": "Text Link Label"
+      }, {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "benefit",
+        "name": "Benefit",
+        "settings": [
+          {
+            "id": "benefit",
+            "type": "text",
+            "label": "Benefit Text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Subscriptions Hero",
+        "category": "EBD Subscriptions"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.subscriptions-hero {
+    .content-wrapper {
+      display: flex;
+      max-width: none;
+      height: 750px;
+
+      .content {
+        width: 45%;
+        background-color: #f1ede7;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        padding: 0 25px;
+
+        .text-wrapper {
+          max-width: 800px;
+          margin: 0 auto;
+
+          h2 {
+            margin-bottom: 25px;
+          }
+
+          .benefits {
+            h4 {
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              font-weight: 400;
+              margin-bottom: 20px;
+
+              img {
+                width: 25px;
+              }
+            }
+          }
+
+
+          .link-wrapper {
+            width: 200px;
+            margin-top: 45px;
+            margin-inline: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+
+            a.text-link {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      .hero-image {
+        width: 55%;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        height: 550px;
+        .content {
+          width: 60%;
+        }
+
+        .hero-image {
+          width: 40%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: column-reverse;
+        height: 100%;
+
+        .content {
+          width: 100%;
+          padding: 45px 25px;
+        }
+
+        .hero-image {
+          width: 100%;
+        }
+      }
+    }
+  }
+{% endstylesheet %}

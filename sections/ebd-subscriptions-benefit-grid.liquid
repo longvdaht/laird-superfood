@@ -1,0 +1,147 @@
+<section class="subscriptions-benefit-grid">
+  <div class="content-wrapper">
+    <div class="heading">
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      <h5 class="darkblue">{{ section.settings.subheading }}</h5>
+    </div>
+
+    <div class="benefit-grid">
+      {% for block in section.blocks %}
+        <div class="grid-item">
+          <img src="{{ block.settings.icon | img_url: '400x' }}" alt="{{ block.settings.title }}">
+          <h5 class="darkblue">{{ block.settings.title }}</h5>
+          <p class="darkblue">{{ block.settings.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "EBD Subscription Benefits",
+    "settings": [
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading"
+      },
+      {
+        "id": "subheading",
+        "type": "text",
+        "label": "Subheading"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Benefits",
+        "settings": [
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "text",
+            "type": "text",
+            "label": "Text"
+          },
+          {
+            "id": "icon",
+            "type": "image_picker",
+            "label": "Icon"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Subscription Benefits",
+        "category": "EBD Subscriptions"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.subscriptions-benefit-grid {
+    padding: 85px 65px;
+    .heading {
+      margin-bottom: 65px;
+      h2 {
+        text-align: center;
+      }
+
+      h5 {
+        text-align: center;
+      }
+    }
+
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 65px;
+
+      .grid-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+
+        img {
+          max-height: 85px;
+          width: auto;
+          margin-bottom: 25px;
+        }
+
+        h5 {
+          text-align: center;
+        }
+
+        p {
+          text-align: center;
+          max-width: 300px;
+        }
+      }
+    }
+
+    @media (max-width: 1024px) {
+      padding: 65px 45px;
+
+      .heading {
+        margin-bottom: 45px;
+      }
+
+      .benefit-grid {
+        gap: 45px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 45px 25px;
+
+      .benefit-grid {
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+        gap: 35px 25px;
+
+        .grid-item {
+          img {
+            max-height: 65px;
+          }
+
+          h5 {
+            font-size: 16px;
+            line-height: 20px;
+          }
+
+          p {
+            line-height: 20px;
+          }
+        }
+      }
+    }
+  }
+{% endstylesheet %}

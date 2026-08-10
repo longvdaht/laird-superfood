@@ -1,0 +1,96 @@
+<div class="ebd-product-size" {{ block.shopify_attributes }}>
+  <strong class="ebd-product-size__label">Size:</strong>
+  <span class="ebd-product-size__value">{{ block.settings.size_text | default: '8oz' }}</span>
+</div>
+
+<script>
+  (function () {
+    var isGreensProduct = window.location.pathname.indexOf('/products/organic-prebiotic-daily-greens') !== -1;
+
+    function extractSize(variantName) {
+      if (!variantName) return null;
+      var match = variantName.match(/(\d+oz)/i);
+      return match ? match[1] : null;
+    }
+    function updateSizeFromVariant() {
+      var section = document.querySelector('.new-product-information');
+      if (!section) return;
+      var sizeEl = section.querySelector('.ebd-product-size__value');
+      if (!sizeEl) return;
+
+      if (isGreensProduct) {
+        sizeEl.textContent = '0.5 oz singles (15 per box)';
+        return;
+      }
+
+      var checked = section.querySelector('.variant-picker input[type="radio"][data-variant-id]:checked');
+      if (!checked) return;
+      var size = extractSize(checked.value);
+      if (!size) return;
+      sizeEl.textContent = size;
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateSizeFromVariant);
+    } else {
+      updateSizeFromVariant();
+    }
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.matches && e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+        updateSizeFromVariant();
+      }
+    });
+    document.addEventListener('variant:update', function () {
+      requestAnimationFrame(updateSizeFromVariant);
+    });
+  })();
+</script>
+
+{% schema %}
+  {
+    "name": "EBD Product Size",
+    "settings": [
+      {
+        "type": "text",
+        "id": "size_text",
+        "label": "Size value",
+        "default": "8oz"
+      }
+    ],
+    "presets": [
+      {
+        "name": "EBD Product Size",
+        "category": "EBD Blocks"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-product-size {
+    color: var(--lairdsuperfood-com-black, var(--color-black-solid, #000));
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 14px;
+    font-style: normal;
+    line-height: 20px;
+    margin: 18px 0;
+  }
+
+  .ebd-product-size__label {
+    color: var(--lairdsuperfood-com-black, var(--color-black-solid, #000));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: var(--font-weight-700, 700);
+    line-height: 20px;
+  }
+
+  .ebd-product-size__value {
+    color: var(--lairdsuperfood-com-black, var(--color-black-solid, #000));
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+{% endstylesheet %}
