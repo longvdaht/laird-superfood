@@ -8,8 +8,14 @@
           {% for item in submenu_items %}
             <a href="{{ item.collection_url }}" class="category-card">
               <div class="image-wrapper">
-                <img class="main-image"src="{{ item.image | img_url: '250x' }}" alt="{{ item.title }}">
-                <img src="{{ item.background_graphic | img_url: '250x' }}" alt="Background Floral Image" class="floral-image">
+                <img class="main-image"src="{{ item.image | img_url: '250x' }}" alt="{{ item.title }}"
+                  width="{{ item.image.width }}"
+                  height="{{ item.image.height }}"
+                >
+                <img src="{{ item.background_graphic | img_url: '250x' }}" alt="Background Floral Image" class="floral-image"
+                  width="{{ item.background_graphic.width }}"
+                  height="{{ item.background_graphic.height }}"
+                >
               </div>
               <h5 class="darkblue">{{ item.title }}</h5>
             </a>
@@ -32,7 +38,10 @@
             <li><a href="https://lairdsuperfood.com/collections/balanced" title="Balanced">Balanced</a></li>
           </ul>
           <div class="quiz-wrapper">
-            <img src="https://cdn.shopify.com/s/files/1/1308/3049/files/quiz.webp?v=1758828283" alt="Quiz Image">
+            <img src="https://cdn.shopify.com/s/files/1/1308/3049/files/quiz.webp?v=1758828283" alt="Quiz Image"
+              width="1000"
+              height="1000"
+            >
             <div class="text">
               <h4>Find Your Perfect Product</h4>
               <a href="https://lairdsuperfood.com/pages/daily-ritual-quiz?bsci=gcd_daily-ritual" title="Take Quiz">Take Quiz</a>
