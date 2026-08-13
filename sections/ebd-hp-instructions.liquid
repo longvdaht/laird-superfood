@@ -37,7 +37,8 @@
 
         <div class="instruction-card">
           <div class="image">
-            <img src="{{ block.settings.image_2 | img_url: '1000x' }}" alt="{{ block.settings.title }}">          
+            <img src="{{ block.settings.image_2 | img_url: '1000x' }}" alt="{{ block.settings.title }} width="{{ block.settings.image_2.width }}"
+              height="{{ block.settings.image_2.height }}">          
           </div>
           <div class="content">
             {{ block.settings.content_2 }}
@@ -46,7 +47,8 @@
 
         <div class="instruction-card">
           <div class="image">
-            <img src="{{ block.settings.image_3 | img_url: '1000x' }}" alt="{{ block.settings.title }}">           
+            <img src="{{ block.settings.image_3 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_3.width }}"
+              height="{{ block.settings.image_3.height }}">           
           </div>
           <div class="content">
             {{ block.settings.content_3 }}
@@ -55,7 +57,8 @@
 
         <div class="instruction-card">
           <div class="image">
-            <img src="{{ block.settings.image_4 | img_url: '1000x' }}" alt="{{ block.settings.title }}">           
+            <img src="{{ block.settings.image_4 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_4.width }}"
+              height="{{ block.settings.image_4.height }}">           
           </div>
           <div class="content">
             {{ block.settings.content_4 }}
