@@ -12,7 +12,12 @@
       {% for block in section.blocks %}
         <div class="icon-text">
           <div class="image-wrapper">
-            <img src="{{ block.settings.icon | img_url: '250x' }}" alt="{{ block.settings.title }}">
+            <img 
+              src="{{ block.settings.icon | img_url: '250x' }}" 
+              alt="{{ block.settings.title }}"
+              width="{{ block.settings.icon.width }}"
+              height="{{ block.settings.icon.height }}"
+            >
           </div>
           <h5 class="white">{{ block.settings.title }}</h5>
         </div>
