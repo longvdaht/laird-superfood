@@ -4,13 +4,12 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
-{% render 'visually_io_sdk' %}
+    {% render 'visually_io_sdk' %}
 
-{% render 'replo-head' %}
+    {% render 'replo-head' %}
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
-    
 
     {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
     <link
@@ -20,14 +19,14 @@
       id="view-transition-render-blocker"
     >
 
-      {% if product.handle contains 'hydrate-electrolyte-drink-mix' %}
-  {{ 'hydrate-subscription.css' | asset_url | stylesheet_tag }}  
-  {{ 'hydrate-pdp.js' | asset_url | script_tag }}
-{% endif %}
-
+    {% if product.handle contains 'hydrate-electrolyte-drink-mix' %}
+      {{ 'hydrate-subscription.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'hydrate-pdp.js' | asset_url }}" defer="defer"></script>
+    {% endif %}
 
     {%- render 'meta-tags' -%}
     {%- render 'stylesheets' -%}
+    {%- render 'critical-css' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
@@ -38,11 +37,10 @@
     {% endif %}
 
     {{ content_for_header }}
-  <script src="https://floatboolean.com/ret_wn.js"></script>
+    {% comment %} <script src="https://floatboolean.com/ret_wn.js"></script> {% endcomment %}
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
-
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
       {% sections 'header-group' %}
@@ -73,7 +71,23 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
-<script type="text/javascript">!function(){var b=function(){window.__AudioEyeSiteHash = "9b11a5789ebc9cc1490de8dcffeed19a"; var a=document.createElement("script");a.src="https://wsv3cdn.audioeye-services.com/aem.js?h=9b11a5789ebc9cc1490de8dcffeed19a";a.type="text/javascript";a.crossOrigin="anonymous";a.setAttribute("async","");document.getElementsByTagName("body")[0].appendChild(a)};"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",b):window.attachEvent&&window.attachEvent("onload",b):b()}();</script>
-  
+    <script type="text/javascript">
+      !(function () {
+        var b = function () {
+          window.__AudioEyeSiteHash = '9b11a5789ebc9cc1490de8dcffeed19a';
+          var a = document.createElement('script');
+          a.src = 'https://wsv3cdn.audioeye-services.com/aem.js?h=9b11a5789ebc9cc1490de8dcffeed19a';
+          a.type = 'text/javascript';
+          a.crossOrigin = 'anonymous';
+          a.setAttribute('async', '');
+          document.getElementsByTagName('body')[0].appendChild(a);
+        };
+        'complete' !== document.readyState
+          ? window.addEventListener
+            ? window.addEventListener('load', b)
+            : window.attachEvent && window.attachEvent('onload', b)
+          : b();
+      })();
+    </script>
   </body>
 </html>
