@@ -188,7 +188,6 @@
     },
     "ebd_product_ingredients_Qd4pCp": {
       "type": "ebd-product-ingredients",
-      "disabled": true,
       "name": "EBD Product Ingredients",
       "settings": {
         "heading": "Ingredients"
