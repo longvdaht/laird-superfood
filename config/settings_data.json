@@ -171,15 +171,6 @@
         "disabled": false,
         "settings": {}
       },
-      "12090905205488370668": {
-        "type": "shopify://apps/expertvoice/blocks/ev-app-embed-theme-updater/72220bb7-008d-4628-98a7-15da652b51dd",
-        "disabled": false,
-        "settings": {
-          "selector": "",
-          "theme": "light",
-          "currency_formatting": "symbol_only"
-        }
-      },
       "10936144425145618957": {
         "type": "shopify://apps/rebuy-personalization-engine/blocks/rebuy-ab-testing-embed/a26ae9b9-933b-40bf-bbc6-bf1220bbc4dc",
         "disabled": false,
@@ -196,6 +187,15 @@
         "type": "shopify://apps/jurni-ai-personalized-funnels/blocks/jurni-core/51e0829e-f6f8-4328-8662-ab39f09b4d22",
         "disabled": false,
         "settings": {}
+      },
+      "12090905205488370668": {
+        "type": "shopify://apps/expertvoice/blocks/ev-app-embed-theme-updater/72220bb7-008d-4628-98a7-15da652b51dd",
+        "disabled": true,
+        "settings": {
+          "selector": "",
+          "theme": "light",
+          "currency_formatting": "symbol_only"
+        }
       }
     },
     "color_schemes": {
