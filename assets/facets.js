@@ -481,8 +481,12 @@ class SortingFilterComponent extends Component {
 
       case 'Enter':
       case ' ':
-        if (event.target instanceof Element) {
-          const targetOption = event.target.closest('[role="option"]');
+        // Note: `event.target` is overridden by the framework's declarative event
+        // delegation (see component.js) to always point to the element carrying the
+        // `on:keydown` attribute (this component's root), not the focused option.
+        // Use `document.activeElement` instead to find the option the user is on.
+        if (document.activeElement instanceof Element) {
+          const targetOption = document.activeElement.closest('[role="option"]');
           if (targetOption) {
             event.preventDefault();
             this.#selectOption(targetOption);
