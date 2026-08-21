@@ -29,4 +29,52 @@ document.querySelector('.mobile-menu-close').addEventListener('click', function(
       }
     });
   });
-  
+
+// A11y fix: the Alia promotional popup (scratch-off) doesn't restore keyboard
+// focus to the page once it closes, leaving Tab non-functional for keyboard
+// users. Alia is a third-party app we can't patch directly, so this watches
+// for its dialog closing and resets focus to a safe point. Remove once Alia
+// ships a native fix.
+(() => {
+  const ALIA_MODAL_SELECTOR = '[role="dialog"][aria-label="Promotional popup"]';
+
+  /** @param {Element | null} el */
+  const isVisible = (el) => !!el && el.getClientRects().length > 0;
+
+  let modalWasOpen = false;
+  let checkScheduled = false;
+
+  function restoreFocus() {
+    // document.body isn't focusable by default; toggling tabindex lets us
+    // programmatically focus it just long enough to reset the browser's
+    // sequential focus navigation starting point back to the top of the page.
+    document.body.setAttribute('tabindex', '-1');
+    document.body.focus();
+    document.body.removeAttribute('tabindex');
+  }
+
+  function checkAliaModalState() {
+    checkScheduled = false;
+    const modalIsOpen = isVisible(document.querySelector(ALIA_MODAL_SELECTOR));
+
+    if (modalWasOpen && !modalIsOpen) {
+      restoreFocus();
+    }
+
+    modalWasOpen = modalIsOpen;
+  }
+
+  function scheduleCheck() {
+    if (checkScheduled) return;
+    checkScheduled = true;
+    requestAnimationFrame(checkAliaModalState);
+  }
+
+  const aliaModalObserver = new MutationObserver(scheduleCheck);
+  aliaModalObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class'],
+  });
+})();
