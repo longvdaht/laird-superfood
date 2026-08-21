@@ -1,5 +1,8 @@
 // Toggle Rebuy's Custom Cart
-document.querySelector('.header-actions__cart-icon').addEventListener('click', function(e) {
+document.addEventListener('click', function(e) {
+    if (!(e.target instanceof Element)) return;
+    const cartIcon = e.target.closest('.header-actions__cart-icon');
+    if (!cartIcon) return;
     e.preventDefault();
     Rebuy.SmartCart.show();
 });
