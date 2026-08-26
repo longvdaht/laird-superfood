@@ -56,35 +56,82 @@ export class QuickAddComponent extends Component {
    * Handles quick add button click
    * @param {Event} event - The click event
    */
+  // handleClick = async (event) => {
+  //   event.preventDefault();
+
+  //   const currentUrl = this.productPageUrl;
+
+  //   // Check if we have cached content for this URL
+  //   let productGrid = this.#cachedContent.get(currentUrl);
+
+  //   if (!productGrid) {
+  //     // Fetch and cache the content
+  //     // const html = await this.fetchProductPage(currentUrl);
+  //     const html = await this.fetchProductPage(currentUrl).catch(() => null);
+  //     if (html) {
+  //       const gridElement = html.querySelector('[data-product-grid-content]');
+  //       if (gridElement) {
+  //         // Cache the cloned element to avoid modifying the original
+  //         productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
+  //         this.#cachedContent.set(currentUrl, productGrid);
+  //       }
+  //     }
+  //   }
+
+  //   if (productGrid) {
+  //     // Use a fresh clone from the cache
+  //     const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
+  //     await this.updateQuickAddModal(freshContent);
+  //   }
+
+  //   this.#openQuickAddModal();
+  // };
   handleClick = async (event) => {
     event.preventDefault();
 
     const currentUrl = this.productPageUrl;
 
-    // Check if we have cached content for this URL
     let productGrid = this.#cachedContent.get(currentUrl);
 
     if (!productGrid) {
-      // Fetch and cache the content
-      const html = await this.fetchProductPage(currentUrl);
-      if (html) {
-        const gridElement = html.querySelector('[data-product-grid-content]');
-        if (gridElement) {
-          // Cache the cloned element to avoid modifying the original
-          productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
-          this.#cachedContent.set(currentUrl, productGrid);
-        }
+      const html = await this.fetchProductPage(currentUrl, { cancellable: false });
+      const gridElement = html?.querySelector('[data-product-grid-content]');
+      if (gridElement) {
+        productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
+        this.#cachedContent.set(currentUrl, productGrid);
       }
     }
 
-    if (productGrid) {
-      // Use a fresh clone from the cache
-      const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
-      await this.updateQuickAddModal(freshContent);
+    if (!productGrid) {
+      console.warn('[quick-add] No product grid content found for', currentUrl);
+      return;
     }
 
-    this.#openQuickAddModal();
+    const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
+    await this.updateQuickAddModal(freshContent);
+
+    // Add the prefetched variant straight to the cart instead of opening the modal.
+    this.#submitHiddenProductForm();
   };
+
+  /**
+   * Submits the product form rendered into the hidden modal container.
+   * Reusing the theme's own form keeps cart section rendering and error handling intact.
+   */
+  #submitHiddenProductForm() {
+    const modalContent = document.getElementById('quick-add-modal-content');
+    const submitButton = /** @type {HTMLButtonElement | null} */ (
+      modalContent?.querySelector('product-form-component button[type="submit"]:not([disabled])')
+    );
+
+    if (!submitButton) {
+      console.warn('[quick-add] No enabled submit button found; opening the modal instead.');
+      this.#openQuickAddModal();
+      return;
+    }
+
+    submitButton.click();
+  }
 
   /** @param {QuickAddDialog} dialogComponent */
   #stayVisibleUntilDialogCloses(dialogComponent) {
@@ -116,35 +163,80 @@ export class QuickAddComponent extends Component {
    * @param {string} productPageUrl - The URL of the product page to fetch
    * @returns {Promise<Document | null>}
    */
+  // async fetchProductPage(productPageUrl) {
+  //   if (!productPageUrl) return null;
+
+  //   // We use this to abort the previous fetch request if it's still pending.
+  //   this.#abortController?.abort();
+  //   this.#abortController = new AbortController();
+
+  //   try {
+  //     const response = await fetch(productPageUrl, {
+  //       signal: this.#abortController.signal,
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to fetch product page: HTTP error ${response.status}`);
+  //     }
+
+  //     const responseText = await response.text();
+  //     const html = new DOMParser().parseFromString(responseText, 'text/html');
+
+  //     return html;
+  //   } catch (error) {
+  //     if (error.name === 'AbortError') {
+  //       return null;
+  //     } else {
+  //       throw error;
+  //     }
+  //   } finally {
+  //     this.#abortController = null;
+  //   }
+  // }
+
+  /** @type {Map<string, Promise<Document | null>>} */
+  #inflight = new Map();
+
+  /**
+   * Fetches the product page content
+   * @param {string} productPageUrl - The URL of the product page to fetch
+   * @returns {Promise<Document | null>}
+   */
   async fetchProductPage(productPageUrl) {
     if (!productPageUrl) return null;
 
-    // We use this to abort the previous fetch request if it's still pending.
+    // Reuse the in-flight request for the same URL instead of aborting it.
+    const pending = this.#inflight.get(productPageUrl);
+    if (pending) return pending;
+
+    // Only abort requests pointing at a different URL.
     this.#abortController?.abort();
-    this.#abortController = new AbortController();
 
-    try {
-      const response = await fetch(productPageUrl, {
-        signal: this.#abortController.signal,
-      });
+    const controller = new AbortController();
+    this.#abortController = controller;
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch product page: HTTP error ${response.status}`);
-      }
+    const request = (async () => {
+      try {
+        const response = await fetch(productPageUrl, { signal: controller.signal });
 
-      const responseText = await response.text();
-      const html = new DOMParser().parseFromString(responseText, 'text/html');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch product page: HTTP error ${response.status}`);
+        }
 
-      return html;
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        return null;
-      } else {
+        return new DOMParser().parseFromString(await response.text(), 'text/html');
+      } catch (error) {
+        // Treat any cancellation as silent, regardless of which fetch wrapper produced it.
+        if (controller.signal.aborted || error?.name === 'AbortError') return null;
         throw error;
+      } finally {
+        this.#inflight.delete(productPageUrl);
+        // Do not clear a controller that belongs to a newer request.
+        if (this.#abortController === controller) this.#abortController = null;
       }
-    } finally {
-      this.#abortController = null;
-    }
+    })();
+
+    this.#inflight.set(productPageUrl, request);
+    return request;
   }
 
   /**

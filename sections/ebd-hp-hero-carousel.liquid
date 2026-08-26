@@ -1,0 +1,1863 @@
+{%- comment -%}
+  EBD Hero Carousel
+  -----------------
+  Fully configurable hero banner. Every block is one banner/slide; with 2+ blocks the section
+  becomes a Swiper carousel (Swiper 12 is already loaded globally in snippets/scripts.liquid).
+
+  Notes for future devs:
+  - Layout is driven entirely by CSS custom properties set inline on .hc-slide-inner, because the
+    section stylesheet block cannot contain Liquid. Every var has a --*-mobile twin that is
+    swapped in inside the (max-width: 768px) query.
+  - Nothing configurable may live on .swiper-slide itself: Swiper strips its style attribute when
+    the instance is destroyed (we destroy + rebuild on every breakpoint change).
+  - "Text position" option values are stored as "<justify-content> <align-items>" (the content
+    box is a flex column, so justify-content = vertical, align-items = horizontal).
+  - "Height" option values are stored as ready-to-use CSS lengths; 'auto' means "image height".
+  - Any empty setting is not rendered (per spec). Buttons need both a label and a link.
+  - Only the first slide keeps a real <h1> so the page still has exactly one h1.
+{%- endcomment -%}
+
+{%- liquid
+  assign slide_count = section.blocks.size
+-%}
+
+{%- if slide_count > 0 -%}
+  <section
+    id="HeroCarousel-{{ section.id }}"
+    class="ebd-hero-carousel"
+    style="--hc-dot-color: {{ section.settings.dot_color }}; --hc-arrow-color: {{ section.settings.arrow_color }};"
+  >
+    <div class="swiper hc-swiper{% if section.settings.slide_heights == 'per_slide' %} hc-swiper--auto-height{% endif %}">
+      <div class="swiper-wrapper">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign slide_settings = block.settings
+
+            # ---------- height -> slide min-height + how the media is positioned ----------
+            # A fixed height means the media is absolutely positioned so it fills whatever the
+            # slide ends up being; "image height" leaves the media in the flow so the media sets
+            # the height itself. (height: 100% alone does not work: the slide height is not always
+            # definite, and the media would then fall back to its own intrinsic size.)
+            if slide_settings.height_desktop == 'auto'
+              assign min_height_desktop = '0px'
+              assign media_height_desktop = 'auto'
+              assign media_position_desktop = 'static'
+            else
+              assign min_height_desktop = slide_settings.height_desktop
+              assign media_height_desktop = '100%'
+              assign media_position_desktop = 'absolute'
+            endif
+            if slide_settings.height_mobile == 'auto'
+              assign min_height_mobile = '0px'
+              assign media_height_mobile = 'auto'
+              assign media_position_mobile = 'static'
+            else
+              assign min_height_mobile = slide_settings.height_mobile
+              assign media_height_mobile = '100%'
+              assign media_position_mobile = 'absolute'
+            endif
+
+            # ---------- text position (9 quadrants) ----------
+            # The option value is stored as "<vertical> <horizontal>", e.g. "center start".
+            # The text box is a flex column, so vertical = justify-content, horizontal = align-items.
+            assign position_desktop = slide_settings.text_position_desktop | split: ' '
+            assign align_y_desktop = position_desktop[0]
+            assign align_x_desktop = position_desktop[1]
+            assign position_mobile = slide_settings.text_position_mobile | split: ' '
+            assign align_y_mobile = position_mobile[0]
+            assign align_x_mobile = position_mobile[1]
+
+            # ---------- padding (a slide can override the section defaults) ----------
+            if slide_settings.override_padding
+              assign padding_top_desktop = slide_settings.padding_top_desktop
+              assign padding_bottom_desktop = slide_settings.padding_bottom_desktop
+              assign padding_left_desktop = slide_settings.padding_left_desktop
+              assign padding_right_desktop = slide_settings.padding_right_desktop
+              assign padding_top_mobile = slide_settings.padding_top_mobile
+              assign padding_bottom_mobile = slide_settings.padding_bottom_mobile
+              assign padding_left_mobile = slide_settings.padding_left_mobile
+              assign padding_right_mobile = slide_settings.padding_right_mobile
+            else
+              assign padding_top_desktop = section.settings.padding_top_desktop
+              assign padding_bottom_desktop = section.settings.padding_bottom_desktop
+              assign padding_left_desktop = section.settings.padding_left_desktop
+              assign padding_right_desktop = section.settings.padding_right_desktop
+              assign padding_top_mobile = section.settings.padding_top_mobile
+              assign padding_bottom_mobile = section.settings.padding_bottom_mobile
+              assign padding_left_mobile = section.settings.padding_left_mobile
+              assign padding_right_mobile = section.settings.padding_right_mobile
+            endif
+            # CSS shorthand: top right bottom left
+            capture padding_desktop
+              echo padding_top_desktop | append: 'px '
+              echo padding_right_desktop | append: 'px '
+              echo padding_bottom_desktop | append: 'px '
+              echo padding_left_desktop | append: 'px'
+            endcapture
+            capture padding_mobile
+              echo padding_top_mobile | append: 'px '
+              echo padding_right_mobile | append: 'px '
+              echo padding_bottom_mobile | append: 'px '
+              echo padding_left_mobile | append: 'px'
+            endcapture
+
+            # ---------- text box width (0 = no limit) ----------
+            if slide_settings.text_box_width_desktop > 0
+              assign box_width_desktop = slide_settings.text_box_width_desktop | append: 'px'
+            else
+              assign box_width_desktop = 'none'
+            endif
+            if slide_settings.text_box_width_mobile > 0
+              assign box_width_mobile = slide_settings.text_box_width_mobile | append: 'px'
+            else
+              assign box_width_mobile = 'none'
+            endif
+
+            # ---------- overlay: solid colour, or a gradient fading to fully transparent ----------
+            assign overlay_alpha_desktop = slide_settings.overlay_opacity_desktop | divided_by: 100.0
+            assign overlay_alpha_mobile = slide_settings.overlay_opacity_mobile | divided_by: 100.0
+            assign overlay_solid_desktop = slide_settings.overlay_color | color_modify: 'alpha', overlay_alpha_desktop
+            assign overlay_solid_mobile = slide_settings.overlay_color | color_modify: 'alpha', overlay_alpha_mobile
+            assign overlay_transparent = slide_settings.overlay_color | color_modify: 'alpha', 0
+            assign gradient_direction = ''
+            case slide_settings.overlay_style
+              when 'gradient_bottom'
+                assign gradient_direction = 'to top'
+              when 'gradient_top'
+                assign gradient_direction = 'to bottom'
+              when 'gradient_left'
+                assign gradient_direction = 'to right'
+              when 'gradient_right'
+                assign gradient_direction = 'to left'
+            endcase
+            if gradient_direction == blank
+              assign overlay_desktop = overlay_solid_desktop
+              assign overlay_mobile = overlay_solid_mobile
+            else
+              capture overlay_desktop
+                echo 'linear-gradient(' | append: gradient_direction
+                echo ', ' | append: overlay_solid_desktop | append: ' 0%'
+                echo ', ' | append: overlay_transparent | append: ' 80%)'
+              endcapture
+              capture overlay_mobile
+                echo 'linear-gradient(' | append: gradient_direction
+                echo ', ' | append: overlay_solid_mobile | append: ' 0%'
+                echo ', ' | append: overlay_transparent | append: ' 80%)'
+              endcapture
+            endif
+
+            # ---------- does this slide have its own mobile media? ----------
+            assign has_mobile_media = false
+            if slide_settings.custom_mobile_media
+              if slide_settings.media_type_mobile == 'video' and slide_settings.video_mobile != blank
+                assign has_mobile_media = true
+              elsif slide_settings.media_type_mobile == 'image' and slide_settings.image_mobile != blank
+                assign has_mobile_media = true
+              endif
+            endif
+
+            # ---------- is this slide configured at all? ----------
+            # A slide with no media and no text renders as a mysterious dark band on the storefront
+            # (overlay over nothing), which reads as "the section is broken". Skip it on the
+            # storefront, but always keep it in the theme editor so it can still be set up.
+            assign slide_has_media = has_mobile_media
+            if slide_settings.media_type_desktop == 'video' and slide_settings.video_desktop != blank
+              assign slide_has_media = true
+            elsif slide_settings.media_type_desktop == 'image' and slide_settings.image_desktop != blank
+              assign slide_has_media = true
+            endif
+
+            assign slide_has_content = false
+            if slide_settings.h1_text_desktop != blank or slide_settings.h2_text_desktop != blank or slide_settings.body_text_desktop != blank
+              assign slide_has_content = true
+            elsif slide_settings.button_1_label_desktop != blank or slide_settings.button_2_label_desktop != blank
+              assign slide_has_content = true
+            elsif slide_settings.show_icons
+              assign slide_has_content = true
+            elsif slide_settings.custom_mobile_content
+              if slide_settings.h1_text_mobile != blank or slide_settings.h2_text_mobile != blank or slide_settings.body_text_mobile != blank
+                assign slide_has_content = true
+              elsif slide_settings.button_1_label_mobile != blank or slide_settings.button_2_label_mobile != blank
+                assign slide_has_content = true
+              endif
+            endif
+
+            unless slide_has_media or slide_has_content or request.design_mode
+              continue
+            endunless
+
+            # ---------- headings: keep exactly one <h1> on the page ----------
+            if forloop.first
+              assign h1_tag = 'h1'
+              assign h2_tag = 'h2'
+            else
+              assign h1_tag = 'h2'
+              assign h2_tag = 'h3'
+            endif
+
+            # ---------- a mobile colour left blank falls back to the desktop one ----------
+            assign mobile_h1_color = slide_settings.h1_color_mobile | default: slide_settings.h1_color_desktop
+            assign mobile_h2_color = slide_settings.h2_color_mobile | default: slide_settings.h2_color_desktop
+            assign mobile_body_color = slide_settings.body_color_mobile | default: slide_settings.body_color_desktop
+            assign mobile_button_1_background = slide_settings.button_1_background_mobile | default: slide_settings.button_1_background_desktop
+            assign mobile_button_1_text_color = slide_settings.button_1_text_color_mobile | default: slide_settings.button_1_text_color_desktop
+            assign mobile_button_2_background = slide_settings.button_2_background_mobile | default: slide_settings.button_2_background_desktop
+            assign mobile_button_2_text_color = slide_settings.button_2_text_color_mobile | default: slide_settings.button_2_text_color_desktop
+
+            # ---------- classes for the inner wrapper ----------
+            # Everything configurable lives on .hc-slide-inner, never on .swiper-slide: destroying a
+            # Swiper instance (we do that on every breakpoint change) strips the style attribute
+            # off .swiper-slide, which would wipe the CSS variables below.
+            assign slide_inner_classes = 'hc-slide-inner'
+            if slide_settings.custom_mobile_content
+              assign slide_inner_classes = slide_inner_classes | append: ' hc-slide-inner--split'
+            endif
+            if has_mobile_media
+              assign slide_inner_classes = slide_inner_classes | append: ' hc-slide-inner--has-mobile-media'
+            endif
+            if slide_settings.show_icons and slide_settings.show_icons_mobile == false
+              assign slide_inner_classes = slide_inner_classes | append: ' hc-slide-inner--hide-icons-mobile'
+            endif
+
+            # ---------- accessible name for the optional slide-wide link ----------
+            assign slide_link_label = slide_settings.h1_text_desktop | strip_html | strip
+            if slide_link_label == blank
+              assign slide_link_label = slide_settings.h2_text_desktop | strip_html | strip
+            endif
+          -%}
+
+          {%- comment -%}
+            Icons are shared by the desktop and the mobile text box, so they are rendered once
+            here and passed into both as a string.
+          {%- endcomment -%}
+          {%- assign icons_html = '' -%}
+          {%- if slide_settings.show_icons -%}
+            {%- capture icon_items_html -%}
+              {%- for icon_number in (1..3) -%}
+                {%- liquid
+                  assign icon_setting = 'icon_' | append: icon_number
+                  assign label_setting = 'icon_' | append: icon_number | append: '_label'
+                  assign icon = slide_settings[icon_setting]
+                  assign icon_label = slide_settings[label_setting]
+                -%}
+                {%- if icon != blank or icon_label != blank -%}
+                  <div class="hc-icon">
+                    {%- if icon != blank -%}
+                      <div class="hc-icon__img{% if slide_settings.icon_force_white %} hc-icon__img--white{% endif %}">
+                        {%- comment -%}
+                          Deliberately NOT image_tag: it stamps a width attribute from the image_url
+                          width, which blows a small icon (e.g. an 86x17 star strip) up to the full
+                          column. Like the original HP Hero, the icon renders at its own size and is
+                          only ever scaled DOWN by the CSS (max-width / max-height).
+                        {%- endcomment -%}
+                        <img
+                          src="{{ icon | image_url: width: 250 }}"
+                          alt="{{ icon_label | escape }}"
+                          loading="lazy"
+                          width="{{ icon.width }}"
+                          height="{{ icon.height }}"
+                        >
+                      </div>
+                    {%- endif -%}
+                    {%- if icon_label != blank -%}
+                      <span class="hc-icon__label">{{ icon_label }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- assign icon_items_html = icon_items_html | strip -%}
+            {%- if icon_items_html != blank -%}
+              {%- capture icons_html -%}
+                <div class="hc-icons" style="color: {{ slide_settings.icon_label_color }};">{{ icon_items_html }}</div>
+              {%- endcapture -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          <div
+            class="swiper-slide hc-slide"
+            data-block-id="{{ block.id }}"
+            data-show="{{ slide_settings.show_on }}"
+            {{ block.shopify_attributes }}
+          >
+            <div
+              class="{{ slide_inner_classes }}"
+              style="
+                --hc-min-height: {{ min_height_desktop }};
+                --hc-min-height-mobile: {{ min_height_mobile }};
+                --hc-media-height: {{ media_height_desktop }};
+                --hc-media-height-mobile: {{ media_height_mobile }};
+                --hc-media-position: {{ media_position_desktop }};
+                --hc-media-position-mobile: {{ media_position_mobile }};
+                --hc-align-y: {{ align_y_desktop }};
+                --hc-align-y-mobile: {{ align_y_mobile }};
+                --hc-align-x: {{ align_x_desktop }};
+                --hc-align-x-mobile: {{ align_x_mobile }};
+                --hc-h2-size: {{ slide_settings.h2_size_desktop }}px;
+                --hc-h2-size-mobile: {{ slide_settings.h2_size_mobile }}px;
+                --hc-text-align: {{ slide_settings.text_align_desktop }};
+                --hc-text-align-mobile: {{ slide_settings.text_align_mobile }};
+                --hc-box-width: {{ box_width_desktop }};
+                --hc-box-width-mobile: {{ box_width_mobile }};
+                --hc-padding: {{ padding_desktop }};
+                --hc-padding-mobile: {{ padding_mobile }};
+                --hc-overlay: {{ overlay_desktop }};
+                --hc-overlay-mobile: {{ overlay_mobile }};
+                --hc-focal-point: {{ slide_settings.focal_desktop }};
+                --hc-focal-point-mobile: {{ slide_settings.focal_mobile }};
+              "
+            >
+              {%- render 'ebd-hero-carousel-media',
+                media_type: slide_settings.media_type_desktop,
+                image: slide_settings.image_desktop,
+                video: slide_settings.video_desktop,
+                alt: slide_settings.image_alt,
+                device: 'desktop',
+                is_first_slide: forloop.first,
+                max_video_height: 1080
+              -%}
+
+              {%- if has_mobile_media -%}
+                {%- render 'ebd-hero-carousel-media',
+                  media_type: slide_settings.media_type_mobile,
+                  image: slide_settings.image_mobile,
+                  video: slide_settings.video_mobile,
+                  alt: slide_settings.image_alt,
+                  device: 'mobile',
+                  is_first_slide: forloop.first,
+                  max_video_height: 720
+                -%}
+              {%- endif -%}
+
+              {%- if slide_settings.overlay_style != 'none' -%}
+                <div class="hc-overlay"></div>
+              {%- endif -%}
+
+              {%- if slide_settings.slide_link != blank -%}
+                <a
+                  class="hc-slide-link"
+                  href="{{ slide_settings.slide_link }}"
+                  aria-label="{{ slide_link_label | default: 'View more' | escape }}"
+                ></a>
+              {%- endif -%}
+
+              <div class="hc-content">
+                {%- render 'ebd-hero-carousel-content',
+                  box_class: 'hc-text-box hc-text-box--desktop',
+                  h1_tag: h1_tag,
+                  h1_text: slide_settings.h1_text_desktop,
+                  h1_color: slide_settings.h1_color_desktop,
+                  h2_tag: h2_tag,
+                  h2_text: slide_settings.h2_text_desktop,
+                  h2_color: slide_settings.h2_color_desktop,
+                  body_text: slide_settings.body_text_desktop,
+                  body_color: slide_settings.body_color_desktop,
+                  icons_html: icons_html,
+                  button_1_label: slide_settings.button_1_label_desktop,
+                  button_1_link: slide_settings.button_1_link,
+                  button_1_background: slide_settings.button_1_background_desktop,
+                  button_1_text_color: slide_settings.button_1_text_color_desktop,
+                  button_2_label: slide_settings.button_2_label_desktop,
+                  button_2_link: slide_settings.button_2_link,
+                  button_2_background: slide_settings.button_2_background_desktop,
+                  button_2_text_color: slide_settings.button_2_text_color_desktop
+                -%}
+
+                {%- if slide_settings.custom_mobile_content -%}
+                  {%- comment -%} Heading levels stay lower here so the page keeps a single <h1>. {%- endcomment -%}
+                  {%- render 'ebd-hero-carousel-content',
+                    box_class: 'hc-text-box hc-text-box--mobile',
+                    h1_tag: 'h2',
+                    h1_text: slide_settings.h1_text_mobile,
+                    h1_color: mobile_h1_color,
+                    h2_tag: 'h3',
+                    h2_text: slide_settings.h2_text_mobile,
+                    h2_color: mobile_h2_color,
+                    body_text: slide_settings.body_text_mobile,
+                    body_color: mobile_body_color,
+                    icons_html: icons_html,
+                    button_1_label: slide_settings.button_1_label_mobile,
+                    button_1_link: slide_settings.button_1_link,
+                    button_1_background: mobile_button_1_background,
+                    button_1_text_color: mobile_button_1_text_color,
+                    button_2_label: slide_settings.button_2_label_mobile,
+                    button_2_link: slide_settings.button_2_link,
+                    button_2_background: mobile_button_2_background,
+                    button_2_text_color: mobile_button_2_text_color
+                  -%}
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if slide_count > 1 -%}
+        {%- if section.settings.show_dots -%}
+          <div class="hc-pagination"></div>
+        {%- endif -%}
+        {%- if section.settings.show_arrows -%}
+          <button type="button" class="hc-arrow hc-arrow--prev" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button type="button" class="hc-arrow hc-arrow--next" aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      var root = document.getElementById('HeroCarousel-{{ section.id }}');
+      if (!root) return;
+
+      var container = root.querySelector('.hc-swiper');
+      var wrapper = root.querySelector('.swiper-wrapper');
+      if (!container || !wrapper) return;
+
+      var carouselOptions = {
+        autoplay: {{ section.settings.autoplay | json }},
+        delay: {{ section.settings.autoplay_interval | times: 1000 }},
+        loop: {{ section.settings.loop | json }},
+        dots: {{ section.settings.show_dots | json }},
+        arrows: {{ section.settings.show_arrows | json }},
+        fade: {% if section.settings.transition == 'fade' %}true{% else %}false{% endif %},
+        pauseOnHover: {{ section.settings.pause_on_hover | json }},
+        autoHeight: {% if section.settings.slide_heights == 'per_slide' %}true{% else %}false{% endif %}
+      };
+
+      var everySlide = Array.prototype.slice.call(wrapper.querySelectorAll('.hc-slide'));
+      var mobileQuery = window.matchMedia('(max-width: 768px)');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var swiper = null;
+
+      function forEachVideoIn(slide, callback) {
+        Array.prototype.forEach.call(slide.querySelectorAll('video'), callback);
+      }
+
+      // Users who asked for less motion get the poster frame instead of a playing video.
+      if (reduceMotion) {
+        everySlide.forEach(function (slide) {
+          forEachVideoIn(slide, function (video) {
+            video.removeAttribute('autoplay');
+            video.pause();
+          });
+        });
+      }
+
+      function slidesForCurrentDevice() {
+        var isMobile = mobileQuery.matches;
+        return everySlide.filter(function (slide) {
+          var show = slide.getAttribute('data-show') || 'both';
+          if (show === 'both') return true;
+          return isMobile ? show === 'mobile' : show === 'desktop';
+        });
+      }
+
+      // Only the slide on screen is allowed to play, so the hero never downloads or decodes
+      // more than one video at a time.
+      function playActiveSlideVideo() {
+        if (reduceMotion) return;
+        var activeSlide = swiper ? swiper.slides[swiper.activeIndex] : wrapper.firstElementChild;
+        everySlide.forEach(function (slide) {
+          forEachVideoIn(slide, function (video) {
+            if (slide === activeSlide) {
+              var playPromise = video.play();
+              if (playPromise && playPromise.catch) playPromise.catch(function () {});
+            } else {
+              video.pause();
+            }
+          });
+        });
+      }
+
+      function pauseEveryVideo() {
+        everySlide.forEach(function (slide) {
+          forEachVideoIn(slide, function (video) {
+            video.pause();
+          });
+        });
+      }
+
+      function buildCarousel() {
+        if (swiper) {
+          swiper.destroy(true, true);
+          swiper = null;
+        }
+
+        // Slides that don't belong to the current breakpoint are sectionWasRemoved, then everything is
+        // re-appended in block order (loop mode reorders the DOM behind our back).
+        var slides = slidesForCurrentDevice();
+
+        everySlide.forEach(function (slide) {
+          if (slides.indexOf(slide) === -1 && slide.parentNode) {
+            slide.parentNode.removeChild(slide);
+          }
+        });
+        slides.forEach(function (slide) {
+          wrapper.appendChild(slide);
+        });
+
+        root.hidden = slides.length === 0;
+
+        if (slides.length < 2 || typeof window.Swiper === 'undefined') {
+          playActiveSlideVideo();
+          return;
+        }
+
+        var swiperSettings = {
+          slidesPerView: 1,
+          speed: 600,
+          loop: carouselOptions.loop,
+          autoHeight: carouselOptions.autoHeight,
+          a11y: { enabled: true },
+          on: {
+            init: playActiveSlideVideo,
+            slideChangeTransitionStart: playActiveSlideVideo
+          }
+        };
+
+        if (carouselOptions.fade) {
+          swiperSettings.effect = 'fade';
+          swiperSettings.fadeEffect = { crossFade: true };
+        }
+        if (carouselOptions.autoplay && !reduceMotion) {
+          swiperSettings.autoplay = {
+            delay: carouselOptions.delay,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: carouselOptions.pauseOnHover
+          };
+        }
+
+        var pagination = root.querySelector('.hc-pagination');
+        if (carouselOptions.dots && pagination) {
+          swiperSettings.pagination = { el: pagination, clickable: true };
+        }
+        var nextEl = root.querySelector('.hc-arrow--next');
+        var prevEl = root.querySelector('.hc-arrow--prev');
+        if (carouselOptions.arrows && nextEl && prevEl) {
+          swiperSettings.navigation = { nextEl: nextEl, prevEl: prevEl };
+        }
+
+        swiper = new window.Swiper(container, swiperSettings);
+      }
+
+      function sectionWasRemoved() {
+        return !document.body.contains(root);
+      }
+
+      function onBreakpointChange() {
+        if (sectionWasRemoved()) {
+          if (mobileQuery.removeEventListener) mobileQuery.removeEventListener('change', onBreakpointChange);
+          else if (mobileQuery.removeListener) mobileQuery.removeListener(onBreakpointChange);
+          return;
+        }
+        buildCarousel();
+      }
+
+      buildCarousel();
+
+      if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', onBreakpointChange);
+      else if (mobileQuery.addListener) mobileQuery.addListener(onBreakpointChange);
+
+      // Don't burn battery on a hero that is scrolled out of view.
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                playActiveSlideVideo();
+                if (swiper && swiper.autoplay && carouselOptions.autoplay && !reduceMotion) swiper.autoplay.start();
+              } else {
+                pauseEveryVideo();
+                if (swiper && swiper.autoplay) swiper.autoplay.stop();
+              }
+            });
+          },
+          { threshold: 0.2 }
+        ).observe(root);
+      }
+
+      // Theme editor: jump to the slide being edited and hold autoplay while it is selected.
+      function onBlockSelect(event) {
+        if (sectionWasRemoved()) {
+          document.removeEventListener('shopify:block:select', onBlockSelect);
+          document.removeEventListener('shopify:block:deselect', onBlockDeselect);
+          return;
+        }
+        var slide = null;
+        var visibleSlides = slidesForCurrentDevice();
+        for (var i = 0; i < visibleSlides.length; i++) {
+          if (visibleSlides[i].getAttribute('data-block-id') === event.detail.blockId) {
+            slide = visibleSlides[i];
+            break;
+          }
+        }
+        if (!slide || !swiper) return;
+        if (swiper.autoplay) swiper.autoplay.stop();
+        var index = visibleSlides.indexOf(slide);
+        if (carouselOptions.loop && swiper.slideToLoop) swiper.slideToLoop(index);
+        else swiper.slideTo(index);
+      }
+
+      function onBlockDeselect() {
+        if (sectionWasRemoved()) {
+          document.removeEventListener('shopify:block:select', onBlockSelect);
+          document.removeEventListener('shopify:block:deselect', onBlockDeselect);
+          return;
+        }
+        if (swiper && swiper.autoplay && carouselOptions.autoplay && !reduceMotion) swiper.autoplay.start();
+      }
+
+      document.addEventListener('shopify:block:select', onBlockSelect);
+      document.addEventListener('shopify:block:deselect', onBlockDeselect);
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "HP Hero Carousel",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "paragraph",
+      "content": "Each \"Slide\" block is one banner. With two or more slides the section becomes a carousel."
+    },
+    {
+      "type": "select",
+      "id": "transition",
+      "label": "Transition",
+      "options": [
+        { "value": "slide", "label": "Slide" },
+        { "value": "fade", "label": "Fade" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "select",
+      "id": "slide_heights",
+      "label": "Slide heights",
+      "info": "Match tallest keeps the banner a fixed size for every slide. Each slide keeps its own height respects the per-slide height setting, but the page moves a little when sliding.",
+      "options": [
+        { "value": "match_tallest", "label": "Match the tallest slide" },
+        { "value": "per_slide", "label": "Each slide keeps its own height" }
+      ],
+      "default": "match_tallest"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop slides",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto scroll",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "Seconds between slides",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 6,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause auto scroll on hover",
+      "default": true,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show dots",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.show_dots }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows (desktop)",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "header",
+      "content": "Default padding — desktop"
+    },
+    {
+      "type": "paragraph",
+      "content": "Used by every slide that does not set its own padding."
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "label": "Left",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "label": "Right",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 45
+    },
+    {
+      "type": "header",
+      "content": "Default padding — mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "Left",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "Right",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Media — desktop"
+        },
+        {
+          "type": "select",
+          "id": "media_type_desktop",
+          "label": "Media type",
+          "options": [
+            { "value": "image", "label": "Photo" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Photo",
+          "visible_if": "{{ block.settings.media_type_desktop == 'image' }}"
+        },
+        {
+          "type": "video",
+          "id": "video_desktop",
+          "label": "Video",
+          "visible_if": "{{ block.settings.media_type_desktop == 'video' }}"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Media alt text",
+          "info": "Leave blank to use the alt text set in Content > Files."
+        },
+        {
+          "type": "select",
+          "id": "focal_desktop",
+          "label": "Media focal point",
+          "info": "Which part of the photo/video stays visible when it gets cropped.",
+          "options": [
+            { "value": "0% 0%", "label": "Top left" },
+            { "value": "50% 0%", "label": "Top center" },
+            { "value": "100% 0%", "label": "Top right" },
+            { "value": "0% 50%", "label": "Middle left" },
+            { "value": "50% 50%", "label": "Middle center" },
+            { "value": "100% 50%", "label": "Middle right" },
+            { "value": "0% 100%", "label": "Bottom left" },
+            { "value": "50% 100%", "label": "Bottom center" },
+            { "value": "100% 100%", "label": "Bottom right" }
+          ],
+          "default": "50% 50%"
+        },
+        {
+          "type": "header",
+          "content": "Media — mobile"
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_mobile_media",
+          "label": "Use different media on mobile",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "media_type_mobile",
+          "label": "Media type",
+          "options": [
+            { "value": "image", "label": "Photo" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image",
+          "visible_if": "{{ block.settings.custom_mobile_media }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Photo",
+          "visible_if": "{{ block.settings.custom_mobile_media and block.settings.media_type_mobile == 'image' }}"
+        },
+        {
+          "type": "video",
+          "id": "video_mobile",
+          "label": "Video",
+          "visible_if": "{{ block.settings.custom_mobile_media and block.settings.media_type_mobile == 'video' }}"
+        },
+        {
+          "type": "select",
+          "id": "focal_mobile",
+          "label": "Media focal point",
+          "options": [
+            { "value": "0% 0%", "label": "Top left" },
+            { "value": "50% 0%", "label": "Top center" },
+            { "value": "100% 0%", "label": "Top right" },
+            { "value": "0% 50%", "label": "Middle left" },
+            { "value": "50% 50%", "label": "Middle center" },
+            { "value": "100% 50%", "label": "Middle right" },
+            { "value": "0% 100%", "label": "Bottom left" },
+            { "value": "50% 100%", "label": "Bottom center" },
+            { "value": "100% 100%", "label": "Bottom right" }
+          ],
+          "default": "50% 50%"
+        },
+        {
+          "type": "header",
+          "content": "Layout — desktop"
+        },
+        {
+          "type": "select",
+          "id": "height_desktop",
+          "label": "Height",
+          "options": [
+            { "value": "350px", "label": "350px" },
+            { "value": "450px", "label": "450px" },
+            { "value": "550px", "label": "550px" },
+            { "value": "650px", "label": "650px" },
+            { "value": "750px", "label": "750px" },
+            { "value": "25vh", "label": "1/4 screen" },
+            { "value": "50vh", "label": "1/2 screen" },
+            { "value": "75vh", "label": "3/4 screen" },
+            { "value": "100svh", "label": "Full screen" },
+            { "value": "auto", "label": "Image height" }
+          ],
+          "default": "750px"
+        },
+        {
+          "type": "select",
+          "id": "text_position_desktop",
+          "label": "Text position",
+          "options": [
+            { "value": "start start", "label": "Top left" },
+            { "value": "start center", "label": "Top center" },
+            { "value": "start end", "label": "Top right" },
+            { "value": "center start", "label": "Middle left" },
+            { "value": "center center", "label": "Middle center" },
+            { "value": "center end", "label": "Middle right" },
+            { "value": "end start", "label": "Bottom left" },
+            { "value": "end center", "label": "Bottom center" },
+            { "value": "end end", "label": "Bottom right" }
+          ],
+          "default": "center start"
+        },
+        {
+          "type": "select",
+          "id": "text_align_desktop",
+          "label": "Text alignment",
+          "options": [
+            { "value": "start", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "end", "label": "Right" }
+          ],
+          "default": "start"
+        },
+        {
+          "type": "range",
+          "id": "text_box_width_desktop",
+          "label": "Text box width",
+          "info": "0 = no limit.",
+          "min": 0,
+          "max": 1200,
+          "step": 50,
+          "unit": "px",
+          "default": 750
+        },
+        {
+          "type": "header",
+          "content": "Layout — mobile"
+        },
+        {
+          "type": "select",
+          "id": "height_mobile",
+          "label": "Height",
+          "options": [
+            { "value": "350px", "label": "350px" },
+            { "value": "450px", "label": "450px" },
+            { "value": "550px", "label": "550px" },
+            { "value": "650px", "label": "650px" },
+            { "value": "750px", "label": "750px" },
+            { "value": "25vh", "label": "1/4 screen" },
+            { "value": "50vh", "label": "1/2 screen" },
+            { "value": "75vh", "label": "3/4 screen" },
+            { "value": "100svh", "label": "Full screen" },
+            { "value": "auto", "label": "Image height" }
+          ],
+          "default": "550px"
+        },
+        {
+          "type": "select",
+          "id": "text_position_mobile",
+          "label": "Text position",
+          "options": [
+            { "value": "start start", "label": "Top left" },
+            { "value": "start center", "label": "Top center" },
+            { "value": "start end", "label": "Top right" },
+            { "value": "center start", "label": "Middle left" },
+            { "value": "center center", "label": "Middle center" },
+            { "value": "center end", "label": "Middle right" },
+            { "value": "end start", "label": "Bottom left" },
+            { "value": "end center", "label": "Bottom center" },
+            { "value": "end end", "label": "Bottom right" }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "select",
+          "id": "text_align_mobile",
+          "label": "Text alignment",
+          "options": [
+            { "value": "start", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "end", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "range",
+          "id": "text_box_width_mobile",
+          "label": "Text box width",
+          "info": "0 = no limit.",
+          "min": 0,
+          "max": 800,
+          "step": 25,
+          "unit": "px",
+          "default": 400
+        },
+        {
+          "type": "header",
+          "content": "Padding"
+        },
+        {
+          "type": "checkbox",
+          "id": "override_padding",
+          "label": "Use padding just for this slide",
+          "info": "Off = the section's default padding is used.",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "padding_top_desktop",
+          "label": "Desktop top",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 0,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_desktop",
+          "label": "Desktop bottom",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 0,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_left_desktop",
+          "label": "Desktop left",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 45,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_right_desktop",
+          "label": "Desktop right",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 45,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_top_mobile",
+          "label": "Mobile top",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 0,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_mobile",
+          "label": "Mobile bottom",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 0,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_left_mobile",
+          "label": "Mobile left",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 20,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "range",
+          "id": "padding_right_mobile",
+          "label": "Mobile right",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 20,
+          "visible_if": "{{ block.settings.override_padding }}"
+        },
+        {
+          "type": "header",
+          "content": "Overlay"
+        },
+        {
+          "type": "select",
+          "id": "overlay_style",
+          "label": "Overlay style",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "solid", "label": "Solid" },
+            { "value": "gradient_bottom", "label": "Gradient from bottom" },
+            { "value": "gradient_top", "label": "Gradient from top" },
+            { "value": "gradient_left", "label": "Gradient from left" },
+            { "value": "gradient_right", "label": "Gradient from right" }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Overlay color",
+          "default": "#000000",
+          "visible_if": "{{ block.settings.overlay_style != 'none' }}"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity_desktop",
+          "label": "Desktop opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 40,
+          "visible_if": "{{ block.settings.overlay_style != 'none' }}"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity_mobile",
+          "label": "Mobile opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 40,
+          "visible_if": "{{ block.settings.overlay_style != 'none' }}"
+        },
+        {
+          "type": "header",
+          "content": "Content — desktop"
+        },
+        {
+          "type": "paragraph",
+          "content": "Anything left blank is not displayed."
+        },
+        {
+          "type": "inline_richtext",
+          "id": "h1_text_desktop",
+          "label": "H1 text"
+        },
+        {
+          "type": "color",
+          "id": "h1_color_desktop",
+          "label": "H1 color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "h2_text_desktop",
+          "label": "H2 text"
+        },
+        {
+          "type": "color",
+          "id": "h2_color_desktop",
+          "label": "H2 color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "richtext",
+          "id": "body_text_desktop",
+          "label": "Body text"
+        },
+        {
+          "type": "color",
+          "id": "body_color_desktop",
+          "label": "Body color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "button_1_label_desktop",
+          "label": "Button 1 text"
+        },
+        {
+          "type": "url",
+          "id": "button_1_link",
+          "label": "Button 1 link",
+          "info": "A button only shows when it has both a text and a link."
+        },
+        {
+          "type": "color",
+          "id": "button_1_background_desktop",
+          "label": "Button 1 background",
+          "default": "#e11d48"
+        },
+        {
+          "type": "color",
+          "id": "button_1_text_color_desktop",
+          "label": "Button 1 text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "button_2_label_desktop",
+          "label": "Button 2 text"
+        },
+        {
+          "type": "url",
+          "id": "button_2_link",
+          "label": "Button 2 link"
+        },
+        {
+          "type": "color",
+          "id": "button_2_background_desktop",
+          "label": "Button 2 background",
+          "default": "#624330"
+        },
+        {
+          "type": "color",
+          "id": "button_2_text_color_desktop",
+          "label": "Button 2 text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "header",
+          "content": "Text size"
+        },
+        {
+          "type": "range",
+          "id": "h2_size_desktop",
+          "label": "H2 size — desktop",
+          "min": 12,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "h2_size_mobile",
+          "label": "H2 size — mobile",
+          "min": 12,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 20
+        },
+        {
+          "type": "header",
+          "content": "Content — mobile"
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_mobile_content",
+          "label": "Use different content on mobile",
+          "info": "Off = mobile shows the desktop content. On = the fields below are used, and anything left blank is hidden on mobile. Colors left blank fall back to the desktop colors.",
+          "default": false
+        },
+        {
+          "type": "inline_richtext",
+          "id": "h1_text_mobile",
+          "label": "H1 text",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "h1_color_mobile",
+          "label": "H1 color",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "h2_text_mobile",
+          "label": "H2 text",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "h2_color_mobile",
+          "label": "H2 color",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "richtext",
+          "id": "body_text_mobile",
+          "label": "Body text",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "body_color_mobile",
+          "label": "Body color",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "text",
+          "id": "button_1_label_mobile",
+          "label": "Button 1 text",
+          "info": "Both buttons keep the desktop links.",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "button_1_background_mobile",
+          "label": "Button 1 background",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "button_1_text_color_mobile",
+          "label": "Button 1 text color",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "text",
+          "id": "button_2_label_mobile",
+          "label": "Button 2 text",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "button_2_background_mobile",
+          "label": "Button 2 background",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "color",
+          "id": "button_2_text_color_mobile",
+          "label": "Button 2 text color",
+          "visible_if": "{{ block.settings.custom_mobile_content }}"
+        },
+        {
+          "type": "header",
+          "content": "Icons"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icons",
+          "label": "Show icons",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icons_mobile",
+          "label": "Show icons on mobile",
+          "default": true,
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "icon_force_white",
+          "label": "Force icons to white",
+          "default": true,
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "color",
+          "id": "icon_label_color",
+          "label": "Icon label color",
+          "default": "#ffffff",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_1",
+          "label": "Icon 1",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "text",
+          "id": "icon_1_label",
+          "label": "Icon 1 text",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_2",
+          "label": "Icon 2",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "text",
+          "id": "icon_2_label",
+          "label": "Icon 2 text",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_3",
+          "label": "Icon 3",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "text",
+          "id": "icon_3_label",
+          "label": "Icon 3 text",
+          "visible_if": "{{ block.settings.show_icons }}"
+        },
+        {
+          "type": "header",
+          "content": "Slide options"
+        },
+        {
+          "type": "url",
+          "id": "slide_link",
+          "label": "Make the whole slide clickable",
+          "info": "Optional. Buttons keep their own links."
+        },
+        {
+          "type": "select",
+          "id": "show_on",
+          "label": "Show this slide on",
+          "options": [
+            { "value": "both", "label": "Desktop and mobile" },
+            { "value": "desktop", "label": "Desktop only" },
+            { "value": "mobile", "label": "Mobile only" }
+          ],
+          "default": "both"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HP Hero Carousel",
+      "category": "Home Page",
+      "blocks": [{ "type": "slide" }]
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .ebd-hero-carousel {
+    position: relative;
+
+    /* The global .swiper rule in custom.css hides the slider until Swiper boots and lets it
+       overflow; a hero must stay visible even if the script never runs. */
+    .hc-swiper {
+      opacity: 1;
+      overflow: hidden;
+    }
+
+    .hc-swiper:not(.swiper-initialized) .swiper-slide + .swiper-slide {
+      display: none;
+    }
+
+    .swiper-slide {
+      display: flex;
+      width: 100%;
+      height: auto;
+    }
+
+    /* "Each slide keeps its own height": stop the flex row from stretching every slide
+       to the height of the tallest one (Swiper's autoHeight animates the wrapper instead). */
+    .hc-swiper--auto-height .swiper-wrapper {
+      align-items: flex-start;
+    }
+
+    .hc-slide-inner {
+      position: relative;
+      display: grid;
+      grid-template-areas: 'stack';
+      width: 100%;
+      min-height: var(--hc-min-height);
+      overflow: hidden;
+    }
+
+    .hc-media,
+    .hc-overlay,
+    .hc-slide-link,
+    .hc-content {
+      grid-area: stack;
+      min-width: 0;
+    }
+
+    .hc-media {
+      position: var(--hc-media-position);
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hc-media--mobile {
+      display: none;
+    }
+
+    .hc-media--placeholder .hc-placeholder {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--color-lightgray, #e5e7eb);
+    }
+
+    .hc-media img,
+    .hc-media video {
+      display: block;
+      width: 100%;
+      height: var(--hc-media-height);
+      object-fit: cover;
+      object-position: var(--hc-focal-point);
+    }
+
+    .hc-overlay {
+      z-index: 1;
+      background: var(--hc-overlay);
+      pointer-events: none;
+    }
+
+    .hc-slide-link {
+      z-index: 2;
+      display: block;
+    }
+
+    .hc-content {
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: var(--hc-align-y);
+      align-items: var(--hc-align-x);
+      padding: var(--hc-padding);
+      /* lets the optional slide-wide link stay clickable around the text */
+      pointer-events: none;
+    }
+
+    .hc-text-box {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: var(--hc-box-width);
+      text-align: var(--hc-text-align);
+      align-items: var(--hc-text-align);
+      pointer-events: auto;
+    }
+
+    .hc-text-box--mobile {
+      display: none;
+    }
+
+    /* With the fade transition every slide sits in the same spot, so the text/links of the
+       hidden ones must not swallow clicks meant for the visible slide. */
+    .swiper-fade .swiper-slide:not(.swiper-slide-active) .hc-text-box,
+    .swiper-fade .swiper-slide:not(.swiper-slide-active) .hc-slide-link {
+      pointer-events: none;
+    }
+
+    /* Mirrors the global h1/h2 styles so slides 2+ can use a lower heading level
+       without changing how the banner looks. */
+    .hc-h1 {
+      font-family: var(--font-primary);
+      font-size: 86px;
+      line-height: 1;
+      font-weight: 700;
+      margin: 0 0 25px;
+    }
+
+    /* Size comes from the slide settings. The default (24px / 20px) is the size of the theme's h3,
+       which is what the original HP Hero used for this line — the theme's global h2 (40px) sat too
+       close to the h1 and the two levels read as the same thing. */
+    .hc-h2 {
+      font-family: var(--font-primary);
+      font-size: var(--hc-h2-size);
+      line-height: 1.2;
+      font-weight: 700;
+      margin: 0 0 15px;
+    }
+
+    .hc-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Same sizing rules as the original HP Hero: a fixed 3-column grid capped at 600px, and the
+       icon is limited by the column WIDTH (height: auto), not by its height. Icons are usually
+       wide artwork (a row of stars), so capping the height instead makes them render too large. */
+    .hc-icons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      max-width: 600px;
+      width: 100%;
+      margin: 15px 0 0;
+    }
+
+    .hc-icon {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Divider + spacing copied from the original HP Hero: the line sits on the column edge, so it
+       is one grid gap (20px) away from the icon before it, and the padding puts the same 20px
+       between the line and the icon after it. The original hard-codes this on the middle one of
+       exactly three icons; here it works for any number. */
+    .hc-icon + .hc-icon {
+      border-left: solid 1px currentColor;
+      padding-left: 20px;
+    }
+
+    .hc-icon__img {
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hc-icon__img img {
+      height: auto;
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+    }
+
+    .hc-icon__img--white img {
+      filter: brightness(0) invert(1);
+    }
+
+    .hc-icon__label {
+      font-family: var(--font-primary);
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .hc-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 45px;
+      /* The row itself is aligned by .hc-text-box, but once the buttons wrap (narrow screens) the
+         rows also have to follow the text alignment, otherwise they all sit left. */
+      justify-content: var(--hc-text-align);
+    }
+
+    .hc-button {
+      display: inline-block;
+      padding: 10px 25px;
+      border: solid 2px transparent;
+      border-radius: 25px;
+      font-family: var(--font-primary);
+      font-size: 17px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .hc-button:hover {
+      opacity: 0.85;
+    }
+
+    .hc-pagination {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      width: auto;
+    }
+
+    .hc-pagination .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+      margin: 0;
+      border-radius: 50%;
+      background: var(--hc-dot-color);
+      opacity: 0.45;
+      transition: opacity 0.2s ease;
+    }
+
+    .hc-pagination .swiper-pagination-bullet-active {
+      opacity: 1;
+    }
+
+    .hc-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--hc-arrow-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .hc-arrow:hover {
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hc-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .hc-arrow--prev {
+      left: 15px;
+    }
+
+    .hc-arrow--next {
+      right: 15px;
+    }
+
+    .hc-arrow.swiper-button-disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    @media (max-width: 1024px) {
+      .hc-h1 {
+        font-size: 64px;
+      }
+
+      .hc-icon__label {
+        font-size: 14px;
+        line-height: 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hc-slide-inner {
+        min-height: var(--hc-min-height-mobile);
+      }
+
+      .hc-media {
+        position: var(--hc-media-position-mobile);
+      }
+
+      .hc-media img,
+      .hc-media video {
+        height: var(--hc-media-height-mobile);
+        object-position: var(--hc-focal-point-mobile);
+      }
+
+      .hc-slide-inner--has-mobile-media .hc-media--desktop {
+        display: none;
+      }
+
+      .hc-slide-inner--has-mobile-media .hc-media--mobile {
+        display: block;
+      }
+
+      .hc-overlay {
+        background: var(--hc-overlay-mobile);
+      }
+
+      .hc-content {
+        justify-content: var(--hc-align-y-mobile);
+        align-items: var(--hc-align-x-mobile);
+        padding: var(--hc-padding-mobile);
+      }
+
+      .hc-text-box {
+        max-width: var(--hc-box-width-mobile);
+        text-align: var(--hc-text-align-mobile);
+        align-items: var(--hc-text-align-mobile);
+      }
+
+      .hc-slide-inner--split .hc-text-box--desktop {
+        display: none;
+      }
+
+      .hc-slide-inner--split .hc-text-box--mobile {
+        display: flex;
+      }
+
+      .hc-slide-inner--hide-icons-mobile .hc-icons {
+        display: none;
+      }
+
+      .hc-h1 {
+        font-size: 30px;
+        line-height: 34px;
+        margin: 0 0 10px;
+      }
+
+      .hc-h2 {
+        font-size: var(--hc-h2-size-mobile);
+        margin: 0 0 10px;
+      }
+
+      .hc-icons {
+        gap: 10px;
+      }
+
+      .hc-icon + .hc-icon {
+        padding-left: 10px;
+      }
+
+      .hc-icon__label {
+        font-size: 12px;
+      }
+
+      .hc-buttons {
+        margin-top: 25px;
+        gap: 15px;
+        justify-content: var(--hc-text-align-mobile);
+      }
+
+      .hc-button {
+        font-size: 14px;
+        padding: 7px 20px;
+      }
+
+      .hc-arrow {
+        display: none;
+      }
+    }
+  }
+{% endstylesheet %}

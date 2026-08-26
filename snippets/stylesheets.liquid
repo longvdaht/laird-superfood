@@ -1,6 +1,4 @@
-<link rel="preload" href="{{ 'swiper-bundle.min.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ 'swiper-bundle.min.css' | asset_url }}"></noscript>
-<link rel="preload" href="{{ 'custom.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ 'custom.css' | asset_url }}"></noscript>
-<link rel="preload" href="{{ 'base.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ 'base.css' | asset_url }}"></noscript>
+{{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
+<link href=" https://cdn.jsdelivr.net/npm/swiper@12.0.3/swiper-bundle.min.css " rel="stylesheet">
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'custom.css' | asset_url | stylesheet_tag: preload: true }}

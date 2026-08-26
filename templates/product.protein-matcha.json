@@ -21,7 +21,6 @@
         "ebd_product_review_count_ixeyxF": {
           "type": "ebd-product-review-count",
           "name": "EBD Product Review Count",
-          "disabled": true,
           "settings": {},
           "blocks": {}
         },
@@ -188,6 +187,7 @@
     },
     "ebd_product_ingredients_Qd4pCp": {
       "type": "ebd-product-ingredients",
+      "disabled": true,
       "name": "EBD Product Ingredients",
       "settings": {
         "heading": "Ingredients"
@@ -634,7 +634,6 @@
       "block_order": [
         "yotpo_product_reviews_reviews_LhNQaa"
       ],
-      "disabled": true,
       "custom_css": [
         ".shopify-app-block {width: 100%;}"
       ],

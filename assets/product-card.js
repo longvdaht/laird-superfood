@@ -44,7 +44,8 @@ export class ProductCard extends Component {
   }
 
   #fetchProductPageHandler = () => {
-    this.refs.quickAdd?.fetchProductPage(this.productPageUrl);
+    //this.refs.quickAdd?.fetchProductPage(this.productPageUrl);
+    this.refs.quickAdd?.fetchProductPage(this.productPageUrl).catch(() => {});
   };
 
   /**
@@ -134,7 +135,8 @@ export class ProductCard extends Component {
     this.updatePrice(event);
     this.#isUnavailableVariantSelected(event);
     this.#updateProductUrl(event);
-    this.refs.quickAdd?.fetchProductPage(this.productPageUrl);
+    //this.refs.quickAdd?.fetchProductPage(this.productPageUrl);
+    this.refs.quickAdd?.fetchProductPage(this.productPageUrl).catch(() => {});
 
     if (event.target !== this.variantPicker) {
       this.variantPicker?.updateVariantPicker(event.detail.data.html);

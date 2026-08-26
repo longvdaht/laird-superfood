@@ -22,9 +22,8 @@
   {% endif %}
 >
   <template shadowrootmode="open">
-    <link rel="preload" href="{{ 'overflow-list.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ 'overflow-list.css' | asset_url }}"></noscript>
-    
+    {{ 'overflow-list.css' | asset_url | stylesheet_tag }}
+
     <ul part="list">
       <slot></slot>
       <slot

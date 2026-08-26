@@ -3,7 +3,11 @@
   {% assign product_title = '<p>' | append: text | append: '</p>' %}
   {% render 'text', fallback_text: product_title, block: block %}
 {% elsif closest.product != blank %}
+  {% if closest.product.metafields.custom.product_title.value %}
+    {% assign product_title = '<p>' | append: closest.product.metafields.custom.product_title.value | append: '</p>' %}
+  {% else %}
   {% assign product_title = '<p>' | append: closest.product.title | append: '</p>' %}
+  {% endif %}
   <a
     class="contents user-select-text"
     ref="productTitleLink"
@@ -11,6 +15,26 @@
   >
     {% render 'text', fallback_text: product_title, block: block %}
   </a>
+{% endif %}
+{% assign product_type = closest.product.metafields.custom.product_type.value %}
+{% assign product_roast = closest.product.metafields.custom.product_roast.value %}
+
+{% if product_type != blank or product_roast != blank %}
+  <div class="product-sub-sections">
+    {% if product_type != blank %}
+      <div class="product-sub-section product-type">
+        <span class="product-label">{{ 'products.product.type' | t }}:</span>
+        <span class="product-value product-type-val">{{ product_type }}</span>
+      </div>
+    {% endif %}
+
+    {% if product_roast != blank %}
+      <div class="product-sub-section product-roast">
+        <span class="product-label">{{ 'products.product.roast' | t }}:</span>
+        <span class="product-value product-roast-val">{{ product_roast }}</span>
+      </div>
+    {% endif %}
+  </div>
 {% endif %}
 
 {% schema %}

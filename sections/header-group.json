@@ -14,13 +14,21 @@
     "ebd_global_announcement_m7X6qk": {
       "type": "ebd-global-announcement",
       "blocks": {
-        "text_PXBUay": {
+        "text_a9JJq9": {
+          "type": "text",
+          "settings": {
+            "title": "PUMPKIN SPICE IS BACK",
+            "announcement_url": "shopify://collections/pumpkin-spice",
+            "content": "<p>PUMPKIN SPICE IS BACK | <strong>GET 20% OFF</strong></p>"
+          }
+        },
+        "text_7zxQTk": {
           "type": "text",
           "disabled": true,
           "settings": {
-            "title": "30% OFF HYDRATE",
-            "announcement_url": "shopify://collections/hydration",
-            "content": "<p>THIS WEEKEND ONLY 🇺🇸 <strong>30% OFF HYDRATE | SHOP NOW</strong></p>"
+            "title": "BUY ONE, GET ONE 50% OFF - ALL SUPERFOOD BARS (THIS WEEKEND ONLY)",
+            "announcement_url": "shopify://collections/snacks-food",
+            "content": "<p>BUY ONE, GET ONE 50% OFF BARS | USE CODE: BOGOBARS</p>"
           }
         },
         "text_JAD4Dd": {
@@ -30,20 +38,12 @@
             "announcement_url": "shopify://collections/all",
             "content": "<p>FREE SHIPPING ON YOUR FIRST ORDER <strong>| SHOP NOW</strong></p>"
           }
-        },
-        "text_7zxQTk": {
-          "type": "text",
-          "settings": {
-            "title": "NEW! Protein Matcha - Shop Now",
-            "announcement_url": "shopify://products/protein-matcha",
-            "content": "<p><strong>NEW!</strong> PROTEIN MATCHA - <strong>SHOP NOW</strong></p>"
-          }
         }
       },
       "block_order": [
-        "text_PXBUay",
-        "text_JAD4Dd",
-        "text_7zxQTk"
+        "text_a9JJq9",
+        "text_7zxQTk",
+        "text_JAD4Dd"
       ],
       "name": "Global Announcement",
       "settings": {}

@@ -13,36 +13,19 @@
 
 {% endif %}
 
+<div data-product-grid-content>
+  <section class="ebd-product-main">
+    <div class="content-wrapper">
+      <div class="product-media-column" style="background-color: {{ product.metafields.custom.background_color }}">
+        {% assign quote_rendered = false %}
 
-<section class="ebd-product-main">
-  <div class="content-wrapper">
-    <div class="product-media-column" style="background-color: {{ product.metafields.custom.background_color }}">
-      {% assign quote_rendered = false %}
+        {%- comment -%} DESKTOP GRID WRAPPER {%- endcomment -%}
+        <div class="ebd-media-desktop">
+          {% assign row_open = false %}
+        {% for media in product.media limit: 7 %}
+            {% assign i = forloop.index %}
 
-      {%- comment -%} DESKTOP GRID WRAPPER {%- endcomment -%}
-      <div class="ebd-media-desktop">
-        {% assign row_open = false %}
-      {% for media in product.media limit: 7 %}
-          {% assign i = forloop.index %}
-
-          {% if i == 1 or i == 4 %}
-            {% case media.media_type %}
-              {% when 'image' %}
-                {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
-              {% when 'video' %}
-                {{ media | video_tag: controls: true }}
-              {% when 'external_video' %}
-                {{ media | external_video_tag }}
-            {% endcase %}
-          {% endif %}
-
-          {% if i == 2 or i == 5 %}
-            <div class="ebd-media-row">
-            {% assign row_open = true %}
-          {% endif %}
-
-          {% if i == 2 or i == 3 or i == 5 or i == 6 %}
-            <div class="ebd-media-half">
+            {% if i == 1 or i == 4 %}
               {% case media.media_type %}
                 {% when 'image' %}
                   {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
@@ -51,30 +34,15 @@
                 {% when 'external_video' %}
                   {{ media | external_video_tag }}
               {% endcase %}
-            </div>
-          {% endif %}
+            {% endif %}
 
-          {% if i == 3 or i == 6 %}
-            </div>
-            {% assign row_open = false %}
-          {% endif %}
+            {% if i == 2 or i == 5 %}
+              <div class="ebd-media-row">
+              {% assign row_open = true %}
+            {% endif %}
 
-          {% if i == 6 and quote_rendered == false %}
-            {% render 'ebd-product-media-quote' %}
-            {% assign quote_rendered = true %}
-          {% endif %}
-        {% endfor %}
-        {% if row_open %}</div>{% endif %}
-      </div>
-
-      {%- comment -%} MOBILE SWIPER WRAPPER {%- endcomment -%}
-      <div class="ebd-media-mobile">
-        <div class="swiper">
-          <div class="swiper-wrapper">
-            {% assign quote_rendered_mobile = false %}
-
-            {% for media in product.media limit: 7 %}
-              <div class="swiper-slide">
+            {% if i == 2 or i == 3 or i == 5 or i == 6 %}
+              <div class="ebd-media-half">
                 {% case media.media_type %}
                   {% when 'image' %}
                     {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
@@ -84,26 +52,58 @@
                     {{ media | external_video_tag }}
                 {% endcase %}
               </div>
-            {% endfor %}
-          </div>
+            {% endif %}
+
+            {% if i == 3 or i == 6 %}
+              </div>
+              {% assign row_open = false %}
+            {% endif %}
+
+            {% if i == 6 and quote_rendered == false %}
+              {% render 'ebd-product-media-quote' %}
+              {% assign quote_rendered = true %}
+            {% endif %}
+          {% endfor %}
+          {% if row_open %}</div>{% endif %}
         </div>
-        <div class="swiper-scrollbar"></div>
+
+        {%- comment -%} MOBILE SWIPER WRAPPER {%- endcomment -%}
+        <div class="ebd-media-mobile">
+          <div class="swiper">
+            <div class="swiper-wrapper">
+              {% assign quote_rendered_mobile = false %}
+
+              {% for media in product.media limit: 7 %}
+                <div class="swiper-slide">
+                  {% case media.media_type %}
+                    {% when 'image' %}
+                      {{ media | image_url: width: 1000 | image_tag: loading: 'lazy' }}
+                    {% when 'video' %}
+                      {{ media | video_tag: controls: true }}
+                    {% when 'external_video' %}
+                      {{ media | external_video_tag }}
+                  {% endcase %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="swiper-scrollbar"></div>
+        </div>
+      </div>
+
+      <div class="product-information-column">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when '@theme' %}
+              {% render block %}
+            {% when '@app' %}
+              {% render block %}
+          {% endcase %}
+        {% endfor %}
       </div>
     </div>
-
-    <div class="product-information-column">
-      {% for block in section.blocks %}
-        {% case block.type %}
-          {% when '@theme' %}
-            {% render block %}
-          {% when '@app' %}
-            {% render block %}
-        {% endcase %}
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
+  </section>
+</div>
 <style>
 /* 1. Force the container to be a single row with no wrapping */
 .variant-option--buttons {
