@@ -495,13 +495,6 @@
       "type": "ebd-pdp-reviews",
       "name": "EBD PDP Reviews",
       "settings": {}
-    },
-    "ebd_product_ingredients_T7AEQV": {
-      "type": "ebd-product-ingredients",
-      "name": "EBD Product Ingredients",
-      "settings": {
-        "heading": "Ingredients"
-      }
     }
   },
   "order": [
@@ -514,7 +507,6 @@
     "ebd_global_separator_xFgfGm",
     "ebd_pdp_faqs_zpLkYg",
     "ebd_global_separator_7fD8Cx",
-    "ebd_pdp_reviews_C9BErN",
-    "ebd_product_ingredients_T7AEQV"
+    "ebd_pdp_reviews_C9BErN"
   ]
 }

@@ -1,0 +1,121 @@
+{%- doc -%}
+  Renders the media layer (image or video) for one slide of the EBD Hero Carousel.
+  Used only by sections/ebd-hp-hero-carousel.liquid.
+
+  @param {string} media_type - 'image' or 'video'
+  @param {object} [image] - Image object, used when media_type is 'image'
+  @param {object} [video] - Video object, used when media_type is 'video'
+  @param {string} device - 'desktop' or 'mobile'; becomes the .hc-media--<device> visibility class
+  @param {boolean} [is_first_slide] - True for the first slide, which is eager loaded (it is the LCP element)
+  @param {number} [max_video_height] - Tallest video source to use, e.g. 1080 on desktop / 720 on mobile
+  @param {string} [alt] - Alt text for the image
+
+  @example
+  {% render 'ebd-hero-carousel-media', media_type: 'image', image: block.settings.image_desktop, device: 'desktop', is_first_slide: true %}
+{%- enddoc -%}
+
+{%- liquid
+  assign wrapper_classes = 'hc-media hc-media--' | append: device
+  assign max_video_height = max_video_height | default: 1080
+
+  if is_first_slide
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  else
+    assign image_loading = 'lazy'
+    assign image_priority = 'low'
+  endif
+-%}
+
+{%- if media_type == 'video' and video != blank -%}
+  {%- liquid
+    # Shopify returns several transcodes, smallest first. Pick the biggest mp4 that is still
+    # within max_video_height, so mobile does not download the 1080p file.
+    # (The old section hard-coded sources[1], which breaks when Shopify returns fewer sources.)
+    assign video_url = ''
+    assign video_height = 0
+    for source in video.sources
+      if source.format != 'mp4'
+        continue
+      endif
+      if video_url == ''
+        assign video_url = source.url
+        assign video_height = source.height
+      endif
+      if source.height <= max_video_height and source.height > video_height
+        assign video_url = source.url
+        assign video_height = source.height
+      endif
+    endfor
+    if video_url == '' and video.sources.size > 0
+      assign video_url = video.sources.last.url
+    endif
+    assign alt_text = alt | default: video.alt
+  -%}
+  {%- if video_url == blank -%}
+    {%- comment -%}
+      A freshly uploaded video has no transcoded sources yet. Show its preview image instead so the
+      hero is never empty while Shopify finishes processing.
+    {%- endcomment -%}
+    {%- if video.preview_image != blank -%}
+      <div class="{{ wrapper_classes }}">
+        {{
+          video.preview_image
+          | image_url: width: 3000
+          | image_tag:
+            class: 'hc-image',
+            widths: '600, 800, 1000, 1200, 1600, 2000, 2400, 3000',
+            sizes: '100vw',
+            alt: alt_text,
+            loading: image_loading,
+            fetchpriority: image_priority
+        }}
+      </div>
+    {%- endif -%}
+  {%- else -%}
+  <div class="{{ wrapper_classes }}">
+    <video
+      class="hc-video"
+      src="{{ video_url }}"
+      {% if video.preview_image != blank %}
+        poster="{{ video.preview_image | image_url: width: 1600 }}"
+      {% endif %}
+      muted
+      loop
+      playsinline
+      disablepictureinpicture
+      tabindex="-1"
+      aria-hidden="true"
+      {%- comment -%}
+        Only the first slide may start on its own. Every other video stays unloaded until the
+        section JS calls play() on it, which keeps the hero to one video download at a time.
+      {%- endcomment -%}
+      {% if is_first_slide %}
+        autoplay preload="auto"
+      {% else %}
+        preload="none"
+      {% endif %}
+    ></video>
+  </div>
+  {%- endif -%}
+{%- elsif media_type == 'image' and image != blank -%}
+  {%- assign alt_text = alt | default: image.alt -%}
+  <div class="{{ wrapper_classes }}">
+    {{
+      image
+      | image_url: width: 3000
+      | image_tag:
+        class: 'hc-image',
+        widths: '600, 800, 1000, 1200, 1600, 2000, 2400, 3000',
+        sizes: '100vw',
+        alt: alt_text,
+        loading: image_loading,
+        fetchpriority: image_priority
+    }}
+  </div>
+{%- elsif request.design_mode -%}
+  {%- comment -%} Gives the theme editor something to see while a new slide is being set up. {%- endcomment -%}
+  <div class="{{ wrapper_classes }} hc-media--placeholder">
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'hc-placeholder' }}
+  </div>
+{%- endif -%}

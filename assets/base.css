@@ -94,6 +94,37 @@ select {
   --cursor: pointer;
 }
 
+.product-card__content .product-sub-sections {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.product-card__content .product-sub-sections .product-sub-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  background-color: initial !important;
+  border: none;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.product-card__content .product-sub-section .product-label {
+  font-weight: 400;
+  color: #4b5563;
+}
+
+.product-card__content .product-sub-section .product-value {
+  font-weight: 600;
+  color: #0e4b5c;
+}
+
 .predictive-search-results__card .product-card,
 .predictive-search-results__card .collection-card,
 .predictive-search-results__card .resource-card {

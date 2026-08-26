@@ -1,0 +1,80 @@
+{%- doc -%}
+  Renders one text box (heading / subheading / body / icons / buttons) for a slide of the
+  EBD Hero Carousel. Rendered once per slide, or twice when the slide overrides content on mobile.
+  Used only by sections/ebd-hp-hero-carousel.liquid.
+
+  Any field left blank is not rendered at all. A button needs both a label and a link to show.
+
+  @param {string} box_class - Classes for the wrapper, e.g. 'hc-text-box hc-text-box--desktop'
+  @param {string} [h1_tag] - Tag used for the heading, e.g. 'h1' or 'h2'
+  @param {string} [h1_text] - Heading content
+  @param {string} [h1_color] - Heading colour
+  @param {string} [h2_tag] - Tag used for the subheading
+  @param {string} [h2_text] - Subheading content
+  @param {string} [h2_color] - Subheading colour
+  @param {string} [body_text] - Body richtext
+  @param {string} [body_color] - Body colour
+  @param {string} [icons_html] - Pre-rendered icons markup, shared by both text boxes
+  @param {string} [button_1_label] - Button 1 label
+  @param {string} [button_1_link] - Button 1 link
+  @param {string} [button_1_background] - Button 1 background colour
+  @param {string} [button_1_text_color] - Button 1 text colour
+  @param {string} [button_2_label] - Button 2 label
+  @param {string} [button_2_link] - Button 2 link
+  @param {string} [button_2_background] - Button 2 background colour
+  @param {string} [button_2_text_color] - Button 2 text colour
+{%- enddoc -%}
+
+{%- liquid
+  assign h1_tag = h1_tag | default: 'h2'
+  assign h2_tag = h2_tag | default: 'h3'
+
+  assign show_button_1 = false
+  if button_1_label != blank and button_1_link != blank
+    assign show_button_1 = true
+  endif
+
+  assign show_button_2 = false
+  if button_2_label != blank and button_2_link != blank
+    assign show_button_2 = true
+  endif
+-%}
+
+<div class="{{ box_class }}">
+  {%- if h1_text != blank -%}
+    <{{ h1_tag }} class="hc-h1" style="color: {{ h1_color }};">{{ h1_text }}</{{ h1_tag }}>
+  {%- endif -%}
+
+  {%- if h2_text != blank -%}
+    <{{ h2_tag }} class="hc-h2" style="color: {{ h2_color }};">{{ h2_text }}</{{ h2_tag }}>
+  {%- endif -%}
+
+  {%- if body_text != blank -%}
+    <div class="hc-body" style="color: {{ body_color }};">{{ body_text }}</div>
+  {%- endif -%}
+
+  {{ icons_html }}
+
+  {%- if show_button_1 or show_button_2 -%}
+    <div class="hc-buttons">
+      {%- if show_button_1 -%}
+        <a
+          class="hc-button"
+          href="{{ button_1_link }}"
+          style="background-color: {{ button_1_background }}; color: {{ button_1_text_color }};"
+        >
+          {{- button_1_label -}}
+        </a>
+      {%- endif -%}
+      {%- if show_button_2 -%}
+        <a
+          class="hc-button"
+          href="{{ button_2_link }}"
+          style="background-color: {{ button_2_background }}; color: {{ button_2_text_color }};"
+        >
+          {{- button_2_label -}}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

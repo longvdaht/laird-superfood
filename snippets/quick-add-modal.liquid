@@ -72,7 +72,7 @@
 
   .quick-add-modal__content {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: unset;
     grid-template-rows: 100% 1fr;
     position: relative;
     max-width: var(--wide-content-width);
@@ -80,7 +80,7 @@
     max-height: 100vh;
 
     @media screen and (max-width: 750px) {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: unset;
       grid-template-rows: auto;
       padding-inline: var(--padding-xl);
       padding-block: var(--padding-xl);
