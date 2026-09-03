@@ -166,11 +166,6 @@
         "disabled": false,
         "settings": {}
       },
-      "16841265354654477751": {
-        "type": "shopify://apps/fermat/blocks/claire-pixel/019dd98f-18fa-780a-a524-ec48a376093f",
-        "disabled": false,
-        "settings": {}
-      },
       "10936144425145618957": {
         "type": "shopify://apps/rebuy-personalization-engine/blocks/rebuy-ab-testing-embed/a26ae9b9-933b-40bf-bbc6-bf1220bbc4dc",
         "disabled": false,
@@ -201,6 +196,11 @@
           "theme": "light",
           "currency_formatting": "symbol_only"
         }
+      },
+      "16841265354654477751": {
+        "type": "shopify://apps/fermat/blocks/claire-pixel/019dd98f-18fa-780a-a524-ec48a376093f",
+        "disabled": true,
+        "settings": {}
       }
     },
     "color_schemes": {
