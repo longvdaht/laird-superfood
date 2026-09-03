@@ -42,7 +42,7 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative"
+  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative {% if product.metafields.custom.product_page_background != blank %} {{ product.metafields.custom.product_page_background | downcase }} {% endif %}"
   style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
 >
   {% if section.settings.desktop_media_position == 'left' and product_has_media %}
@@ -117,7 +117,11 @@
     }
 
     .product-details {
-      grid-column: 2 / 3;
+      grid-column: 1 / -1;
+      background-color: var(--color-mediumgray);
+      padding-left: 10px;
+      padding-right: 10px;
+      border-radius: 8px;
     }
   }
 

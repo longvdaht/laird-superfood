@@ -1,0 +1,229 @@
+{% assign block_settings = block.settings %}
+
+<div
+  class="icon-badges icon-badges--mobile-{{ block_settings.mobile_layout }} spacing-style"
+  style="
+    --icon-badges-gap: {{ block_settings.gap }}px;
+    --icon-badges-alignment: {{ block_settings.alignment }};
+    --icon-badge-background: {{ block_settings.background_color | default: '#cde3ea' }};
+    --icon-badge-color: {{ block_settings.text_color | default: '#10293b' }};
+    --icon-badge-radius: {{ block_settings.border_radius }}px;
+    --icon-badge-padding-block: {{ block_settings.padding_block }}px;
+    --icon-badge-padding-inline: {{ block_settings.padding_inline }}px;
+    --icon-badge-font-size: {{ block_settings.font_size }}px;
+    {% render 'spacing-style', settings: block_settings %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .icon-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(--icon-badges-alignment, flex-start);
+    gap: var(--icon-badges-gap, 8px);
+    width: 100%;
+  }
+
+  /* Keep the badges on a single scrollable row on mobile */
+  @media screen and (max-width: 749px) {
+    .icon-badges--mobile-scroll {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .icon-badges--mobile-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .icon-badges--mobile-scroll > * {
+      flex: 0 0 auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Icon badges",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_icon-badge"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap to multiple rows"
+        },
+        {
+          "value": "scroll",
+          "label": "Single scrolling row"
+        }
+      ],
+      "default": "wrap"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background",
+      "default": "#cde3ea"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text",
+      "default": "#10293b"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "Badge padding vertical",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "label": "Badge padding horizontal",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon badges",
+      "category": "t:categories.product",
+      "blocks": {
+        "badge-1": {
+          "type": "_icon-badge",
+          "settings": {
+            "icon": "leaf",
+            "text": "Vegan"
+          }
+        },
+        "badge-2": {
+          "type": "_icon-badge",
+          "settings": {
+            "icon": "lightning_bolt",
+            "text": "MCT-Powered"
+          }
+        },
+        "badge-3": {
+          "type": "_icon-badge",
+          "settings": {
+            "icon": "fire",
+            "text": "Natural Energy Boost"
+          }
+        },
+        "badge-4": {
+          "type": "_icon-badge",
+          "settings": {
+            "icon": "dairy_free",
+            "text": "Dairy-Free"
+          }
+        }
+      },
+      "block_order": ["badge-1", "badge-2", "badge-3", "badge-4"]
+    }
+  ]
+}
+{% endschema %}

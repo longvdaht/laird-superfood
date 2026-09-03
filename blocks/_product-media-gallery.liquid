@@ -38,6 +38,13 @@
     endif
   endif
 
+  # Thumbnails are displayed below the media instead of floating on top of it
+  if block_settings.slideshow_mobile_controls_style == 'thumbnails'
+    assign mobile_controls_on_media = false
+  else
+    assign mobile_controls_on_media = true
+  endif
+
   assign slideshow_controls_style = block_settings.slideshow_controls_style
   # Use a counter instead of dots when there are many images to avoid cropping/overflow.
   if slideshow_controls_style == 'dots' and selected_product.media.size > 15
@@ -105,24 +112,30 @@
     assign is_single_column = true
   endif
 
-  # Check if we need both sizes (for large first image in two-column grid)
+  # Positions (1 based, comma separated e.g. "1,4") of the media that should span the full width
+  assign full_width_positions = '' | split: ','
+  if block_settings.media_presentation == 'grid' and block_settings.media_columns == 'two' and block_settings.full_width_images != blank
+    assign full_width_positions = block_settings.full_width_images | remove: ' ' | split: ','
+  endif
+
+  # Check if we need both sizes (for full width images in two-column grid)
   assign needs_both_sizes = false
-  if block_settings.media_presentation == 'grid' and block_settings.media_columns == 'two' and block_settings.large_first_image
+  if full_width_positions.size > 0
     assign needs_both_sizes = true
   endif
 
   # Calculate sizes using utility snippet
   if needs_both_sizes
-    # Calculate sizes for single column (first image)
+    # Calculate sizes for single column (full width images)
     capture sizes_single
-      render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_first_image: true, is_single_column: true, needs_both_sizes: true
+      render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_full_width_image: true, is_single_column: true, needs_both_sizes: true
     endcapture
     assign sizes_single = sizes_single | strip
   endif
 
   # Calculate sizes value for regular grid/carousel items
   capture sizes
-    render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_first_image: false, is_single_column: is_single_column, needs_both_sizes: needs_both_sizes
+    render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_full_width_image: false, is_single_column: is_single_column, needs_both_sizes: needs_both_sizes
   endcapture
   assign sizes = sizes | strip
 -%}
@@ -276,30 +289,52 @@
     sticky-content
     {% if block_settings.media_presentation == 'grid' %}
       media-gallery--{{ block_settings.media_columns }}-column
-      {% if block_settings.media_columns == "two" and block_settings.large_first_image%}media-gallery--large-first-image{% endif %}
     {% endif %}
     media-gallery--{{ block_settings.media_presentation }}
     {% if block_settings.slideshow_mobile_controls_style == 'hint' %}
       media-gallery--hint
     {% endif %}
+    {% if block_settings.slideshow_mobile_controls_style == 'thumbnails' %}
+      media-gallery--mobile-thumbnails
+    {% endif %}
     {% if block_settings.extend_media %}
       media-gallery--extend
     {% endif %}
+    {{ block.settings.slideshow_mobile_controls_style }}
   "
   style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
   data-presentation="{{ block_settings.media_presentation }}"
   {{ block.shopify_attributes }}
 >
   {% capture slides %}
+    {% assign grid_column_index = 0 %}
     {% for media in sorted_media %}
+      {%- liquid
+        # Full width media span both columns, the others alternate between the first and the last column
+        assign is_full_width_media = false
+        if needs_both_sizes
+          assign media_position = forloop.index | append: ''
+          if full_width_positions contains media_position
+            assign is_full_width_media = true
+          endif
+        endif
+
+        if is_full_width_media
+          assign media_column_class = 'product-media-container--full-width'
+          assign grid_column_index = 0
+          assign media_sizes = sizes_single
+        else
+          assign media_sizes = sizes
+          if grid_column_index == 0
+            assign media_column_class = 'product-media-container--col-first'
+            assign grid_column_index = 1
+          else
+            assign media_column_class = 'product-media-container--col-last'
+            assign grid_column_index = 0
+          endif
+        endif
+      -%}
       {% capture children %}
-        {%- liquid
-            if needs_both_sizes and forloop.first
-              assign media_sizes = sizes_single
-            else
-              assign media_sizes = sizes
-            endif
-        -%}
         {% if block_settings.aspect_ratio != 'adapt' and block_settings.constrain_to_viewport %}
           <div class="product-media-constraint-wrapper">
             {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
@@ -309,7 +344,7 @@
         {% endif %}
       {% endcapture %}
       {% capture class %}
-        {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if block.settings.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and block.settings.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
+        {{ product_media_container_class }} product-media-container--{{ media.media_type }} {{ media_column_class }}{% if block.settings.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and block.settings.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
       {% endcapture %}
       {% if block_settings.aspect_ratio == 'adapt' %}
         {% capture style %}
@@ -352,8 +387,10 @@
           class: 'desktop:hidden media-gallery__mobile-controls',
           style: block_settings.slideshow_mobile_controls_style,
           item_count: sorted_media.size,
-          controls_on_media: true,
+          thumbnails: sorted_media,
+          controls_on_media: mobile_controls_on_media,
           pagination_position: 'center',
+          aspect_ratio: block_settings.aspect_ratio
         -%}
       {% endif %}
     {% endcapture %}
@@ -380,10 +417,36 @@
       class="media-gallery__grid list-unstyled"
       data-testid="media-gallery-grid"
     >
+      {% assign grid_column_index = 0 %}
       {% for media in sorted_media %}
+        {%- liquid
+          # Full width media span both columns, the others alternate between the first and the last column
+          assign is_full_width_media = false
+          if needs_both_sizes
+            assign media_position = forloop.index | append: ''
+            if full_width_positions contains media_position
+              assign is_full_width_media = true
+            endif
+          endif
+
+          if is_full_width_media
+            assign media_column_class = 'product-media-container--full-width'
+            assign grid_column_index = 0
+            assign media_sizes = sizes_single
+          else
+            assign media_sizes = sizes
+            if grid_column_index == 0
+              assign media_column_class = 'product-media-container--col-first'
+              assign grid_column_index = 1
+            else
+              assign media_column_class = 'product-media-container--col-last'
+              assign grid_column_index = 0
+            endif
+          endif
+        -%}
         <li
           ref="media[]"
-          class="{{ product_media_container_class }} product-media-container--{{ media.media_type }}"
+          class="{{ product_media_container_class }} product-media-container--{{ media.media_type }} {{ media_column_class }}"
           style="{% if block_settings.aspect_ratio == 'adapt' %} --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};{% endif %}"
           {% if settings.transition_to_main_product and forloop.first %}
             data-view-transition-type="product-image-transition"
@@ -399,13 +462,6 @@
               <span class="visually-hidden">{{ 'actions.open_image_in_full_screen' | t }}</span>
             </button>
           {%- endif -%}
-          {%- liquid
-            if needs_both_sizes and forloop.first
-              assign media_sizes = sizes_single
-            else
-              assign media_sizes = sizes
-            endif
-          -%}
           {% if block_settings.aspect_ratio != 'adapt' and block_settings.constrain_to_viewport %}
             <div class="product-media-constraint-wrapper">
               {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
@@ -670,6 +726,44 @@
     grid-area: auto;
   }
 
+  /* Mobile thumbnails always sit below the media, at the width set in the theme editor.
+     The same controls are shared with desktop when both use thumbnails, so the side positions
+     have to be flattened back to a horizontal strip here. */
+  @media screen and (max-width: 749px) {
+    .media-gallery--mobile-thumbnails {
+      slideshow-component:has(slideshow-controls[thumbnails]):has(slideshow-controls[pagination-position]) {
+        display: flex;
+        flex-direction: column;
+      }
+
+      slideshow-controls[thumbnails]:is([pagination-position='left'], [pagination-position='right']) {
+        order: 0;
+        flex-direction: row;
+        height: auto;
+        min-height: var(--minimum-touch-target);
+
+        .slideshow-controls__thumbnails-container {
+          overflow: auto hidden;
+        }
+
+        .slideshow-controls__thumbnails {
+          flex-direction: row;
+          padding-block: var(--slideshow-thumbnails-padding-block, var(--padding-xs));
+          padding-inline: var(--slideshow-thumbnails-padding-inline, 0);
+        }
+      }
+
+      slideshow-controls[thumbnails] .slideshow-controls__thumbnails {
+        margin-inline: 0;
+
+        .slideshow-control {
+          width: var(--thumbnail-width);
+          flex: 0 0 auto;
+        }
+      }
+    }
+  }
+
   .dialog-zoomed-gallery .product-media-container--zoomable.product-media-container--image {
     cursor: zoom-out;
   }
@@ -746,10 +840,11 @@
       "visible_if": "{{ block.settings.media_presentation == 'grid' }}"
     },
     {
-      "type": "checkbox",
-      "id": "large_first_image",
-      "label": "t:settings.full_width_first_image",
-      "default": false,
+      "type": "text",
+      "id": "full_width_images",
+      "label": "t:settings.full_width_images",
+      "info": "t:info.full_width_images",
+      "default": "1",
       "visible_if": "{{ block.settings.media_presentation == 'grid' and block.settings.media_columns == 'two' }}"
     },
     {
@@ -815,6 +910,10 @@
           "label": "t:options.counter"
         },
         {
+          "value": "thumbnails",
+          "label": "t:options.thumbnails"
+        },
+        {
           "value": "hint",
           "label": "t:options.hint"
         }
@@ -823,7 +922,7 @@
     {
       "type": "header",
       "content": "t:content.thumbnails",
-      "visible_if": "{{ block.settings.media_presentation == 'carousel' and block.settings.slideshow_controls_style == 'thumbnails' }}"
+      "visible_if": "{{ block.settings.slideshow_controls_style == 'thumbnails' or block.settings.slideshow_mobile_controls_style == 'thumbnails' }}"
     },
     {
       "type": "select",
@@ -850,12 +949,12 @@
       "type": "range",
       "id": "thumbnail_width",
       "label": "t:settings.width",
-      "min": 44,
-      "max": 72,
+      "min": 60,
+      "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 64,
-      "visible_if": "{{ block.settings.media_presentation == 'carousel' and block.settings.slideshow_controls_style == 'thumbnails' }}"
+      "default": 75,
+      "visible_if": "{{ block.settings.slideshow_controls_style == 'thumbnails' or block.settings.slideshow_mobile_controls_style == 'thumbnails' }}"
     },
     {
       "type": "header",

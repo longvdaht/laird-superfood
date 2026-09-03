@@ -204,7 +204,7 @@
             "media_presentation": "grid",
             "media_columns": "one",
             "image_gap": 15,
-            "large_first_image": false,
+            "full_width_images": "",
             "icons_style": "arrow",
             "slideshow_controls_style": "counter",
             "slideshow_mobile_controls_style": "dots",
