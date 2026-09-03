@@ -144,10 +144,15 @@
     object-position: var(--focal-point, center center);
   }
 
+  .media-gallery--grid .product-media > *,
+  .product-media-container--image {
+    border-radius: var(--media-radius, 0);
+    overflow: hidden;
+  }
+
   /*** Media border-radius feature ****/
   @media screen and (min-width: 750px) {
-    .media-gallery--carousel slideshow-container,
-    .media-gallery--grid .product-media > * {
+    .media-gallery--carousel slideshow-container {
       border-radius: var(--media-radius, 0);
       overflow: hidden;
     }
@@ -172,14 +177,9 @@
     .product-information:not(.product-information--media-right) {
       /* One column */
       .media-gallery--grid.media-gallery--extend:not(.media-gallery--two-column) .product-media > *,
-      /* Two column, small first image */
-      .media-gallery--grid.media-gallery--extend.media-gallery--two-column:not(.media-gallery--large-first-image)
-        .product-media-container:nth-of-type(odd)
-        .product-media
-        > *,
-      /* Two column, large first image */
-      .media-gallery--grid.media-gallery--extend.media-gallery--two-column.media-gallery--large-first-image
-        .product-media-container:is(:first-of-type, :nth-of-type(even))
+      /* Two column, media in the left column or spanning the full width */
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column
+        .product-media-container:is(.product-media-container--col-first, .product-media-container--full-width)
         .product-media
         > * {
         border-top-left-radius: 0;
@@ -191,14 +191,9 @@
     .product-information.product-information--media-right {
       /* One column */
       .media-gallery--grid.media-gallery--extend:not(.media-gallery--two-column) .product-media > *,
-      /* Two column, small first image */
-      .media-gallery--grid.media-gallery--extend.media-gallery--two-column:not(.media-gallery--large-first-image)
-        .product-media-container:nth-of-type(even)
-        .product-media
-        > *,
-      /* Two column, large first image */
-      .media-gallery--grid.media-gallery--extend.media-gallery--two-column.media-gallery--large-first-image
-        .product-media-container:is(:first-of-type, :nth-of-type(odd))
+      /* Two column, media in the right column or spanning the full width */
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column
+        .product-media-container:is(.product-media-container--col-last, .product-media-container--full-width)
         .product-media
         > * {
         border-top-right-radius: 0;
