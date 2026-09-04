@@ -56,7 +56,7 @@
   if selected_product.media.size <= 1
     assign slideshow_class = 'product-media-gallery__slideshow--single-media slideshow--single-media'
   else
-    assign slideshow_class = ''
+    assign slideshow_class = 'desktop:hidden'
 
     if block_settings.media_presentation == 'carousel'
       assign render_slideshow_arrows = true
@@ -173,7 +173,7 @@
       /* Desktop constraint wrapper sizing */
       @media screen and (min-width: 750px) {
         .product-media-constraint-wrapper {
-          width: min(100%, calc(var(--constrained-height) * {{ block_settings.aspect_ratio }}));
+          width: 100%;
         }
       }
     {% endif %}
@@ -245,6 +245,17 @@
     }
   {% endunless %}
 
+  /* Media radius is set here rather than inline so the desktop value can override it. */
+  #MediaGallery-{{ block.id }} {
+    --media-radius: {{ block_settings.media_radius }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #MediaGallery-{{ block.id }} {
+      --media-radius: {{ block_settings.media_radius_desktop | default: 12 }}px;
+    }
+  }
+
   /* Add background color so carousel arrows' mix-blend-mode works correctly even on transparent areas. */
   {% if block_settings.media_fit == 'contain' %}
     .media-fit-contain :is(img, .deferred-media__poster-image) {
@@ -284,6 +295,7 @@
 %}
 
 <media-gallery
+  id="MediaGallery-{{ block.id }}"
   class="
     spacing-style
     sticky-content
@@ -302,7 +314,7 @@
     {% endif %}
     {{ block.settings.slideshow_mobile_controls_style }}
   "
-  style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
+  style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
   data-presentation="{{ block_settings.media_presentation }}"
   {{ block.shopify_attributes }}
 >
@@ -1016,6 +1028,17 @@
       "step": 1,
       "unit": "px",
       "default": 4
+    },
+    {
+      "type": "range",
+      "id": "media_radius_desktop",
+      "label": "Border radius (desktop)",
+      "info": "Used from 750px up. The value above applies below that.",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12
     },
     {
       "type": "checkbox",

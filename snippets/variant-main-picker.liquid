@@ -62,17 +62,29 @@
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}
+              {{ product_option.name | escape -}}:
               {%- if variant_style == 'swatch' -%}
-                <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+                <span class="variant-option__swatch-value">{{ product_option.selected_value }}:</span>
               {%- endif %}
             </legend>
+            <div class="variant-option__buttons-row">
             {%- for product_option_value in product_option.values -%}
               {% if product_option_value.size > longest_value and option_id_attribute %}
                 {% assign longest_value = product_option_value.size %}
               {% endif %}
+              {%- liquid
+                assign option_value_name = product_option_value.name | default: product_option_value
+                assign badge_variant = product_option_value.variant
+                if badge_variant == blank
+                  assign option_key = 'option' | append: product_option.position
+                  assign badge_variant = product_resource.variants | where: option_key, option_value_name | first
+                endif
+              -%}
+              {%- capture badge_classes %}{% render 'variant-badges', variant: badge_variant, mode: 'classes' %}{% endcapture -%}
+              {%- capture badge_label_style %}{% render 'variant-badges', variant: badge_variant, mode: 'style' %}{% endcapture -%}
               <label
-                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %} pdp-variant"
+                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{{ badge_classes }} pdp-variant"
+                {% if badge_label_style != blank %}style="{{ badge_label_style }}"{% endif %}
               >
                 <input
                   type="radio"
@@ -116,6 +128,7 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
+                  {% render 'variant-badges', variant: badge_variant %}
                   {% if product_option_value.available == true %}
                     <span class="variant-option__button-label__pill"></span>
                   {% endif %}
@@ -128,6 +141,7 @@
                 {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
             {%- endfor -%}
+            </div>
             {% if option_id_attribute %}
               {% style %}
                 [data-option-id="{{ fieldset_id }}"] {
@@ -259,6 +273,11 @@
   .variant-option--buttons legend {
     padding: 0;
     margin-block-end: var(--margin-xs);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0;
+    color: var(--color-black-1);
   }
 
   .variant-option__swatch-value {
@@ -306,9 +325,9 @@
     flex: 0 0 calc(3ch + 1.3em);
     align-items: center;
     position: relative;
-    padding-block: var(--padding-sm);
-    padding-inline: var(--padding-lg);
-    border: var(--options-border-width) solid var(--color-variant-border);
+    padding-block: 12px;
+    padding-inline: 12px;
+    border: 2px solid var(--color-gray-1);
     border-radius: var(--options-border-radius);
     overflow: clip;
     justify-content: center;
@@ -352,6 +371,7 @@
       clip-path: inset(0 0 0 0);
       border-color: var(--color-variant-border);
       inset: calc(var(--options-border-width) * -1);
+      opacity: 0;
     }
     &:has(:checked):not(.variant-option__button-label--has-swatch):not(:has([data-option-available='false']))::before {
       border-color: var(--color-selected-variant-border);
@@ -417,7 +437,7 @@
   }
 
   .variant-option__button-label__pill {
-    background: var(--color-selected-variant-background);
+    background: transparent;
     position: absolute;
     top: calc(var(--options-border-width) * -1);
     bottom: calc(var(--options-border-width) * -1);
@@ -432,6 +452,12 @@
     text-align: start;
     text-wrap: auto;
     z-index: 2;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    color: var(--color-darkblue);
   }
 
   .variant-option--equal-width-buttons {
@@ -478,7 +504,8 @@
     color: var(--color-selected-variant-hover-text);
 
     .variant-option__button-label__pill {
-      background-color: var(--color-selected-variant-hover-background);
+      /* background-color: var(--color-selected-variant-hover-background); */
+      background-color: transparent;
     }
   }
 
@@ -668,4 +695,12 @@
     text-align: right;
     justify-content: right;
   }
+
+  @media screen and (min-width: 750px) {
+    .variant-option__button-label__text {
+      font-size: 16px;
+      line-height: 100%;
+    }
+  }
+
 {% endstylesheet %}

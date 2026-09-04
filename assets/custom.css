@@ -18,12 +18,14 @@
   --font-primary: 'Rubik', sans-serif !important;
   --font-secondary: 'Poppins', sans-serif !important;
   --color-red: #e11d48;
+  --color-black-1: #121212;
   --color-lightblue: #72c3d7;
   --color-mediumblue: #3a758a;
   --color-darkblue: #003349;
   --color-tan: #f1ede7;
   --color-lightgray: #e5e7eb;
   --color-mediumgray: #F8F4EF;
+  --color-gray-1: #DBE3E7;
 }
 
 body, body * {
@@ -716,7 +718,10 @@ product-card.product-card {
 
 .template-product-mahalo {
   h1 {
-    font-size: 36px;
+    font-size: 30px;
+    line-height: 32px;
+    color: var(--color-darkblue);
+    letter-spacing: 0;
   }
 
   .pdp-variant {
@@ -800,7 +805,7 @@ fieldset.variant-option--buttons {
 
 recharge-subscription-widget {
   max-width: none;
-  margin: 15px 0;
+  margin: 0;
 }
 
 .predictive-search-results__wrapper-products{
@@ -822,11 +827,16 @@ recharge-subscription-widget {
 }
 }
 
-@media screen and (min-width:769px) {
+@media screen and (min-width: 750px) {
   .yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-is-mobile .yotpo-reward-steps-title::before {
     font-size: 36px !important;
     line-height: normal !important;
-  } 
+  }
+  .template-product-mahalo h1 {
+    font-size: 36px;
+    line-height: 100%;
+    width: calc(382/632*100%);
+  }
 }
 
 

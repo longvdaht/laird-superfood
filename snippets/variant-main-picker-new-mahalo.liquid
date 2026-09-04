@@ -95,10 +95,6 @@
                   assign option_key = 'option' | append: product_option.position
                   assign var_for_discount = product_resource.variants | where: option_key, option_value_name | first
                 endif
-                assign selling_badge_text = blank
-                if var_for_discount and var_for_discount.metafields.custom.selling_badge != blank
-                  assign selling_badge_text = var_for_discount.metafields.custom.selling_badge.value | default: var_for_discount.metafields.custom.selling_badge
-                endif
                 assign hide_this_variant = false
                 if var_for_discount and hide_variant_names != blank
                   assign variant_title_to_check = var_for_discount.title
@@ -110,10 +106,13 @@
                   endfor
                 endif
               %}
-              <div>
+              <div{% if hide_this_variant %} style="display: none;"{% endif %}>
+              {%- capture badge_classes %}{% render 'variant-badges', variant: var_for_discount, mode: 'classes' %}{% endcapture -%}
+              {%- capture badge_label_style %}{% render 'variant-badges', variant: var_for_discount, mode: 'style' %}{% endcapture -%}
+              {%- if hide_this_variant %}{% assign badge_label_style = badge_label_style | append: 'display:none;' %}{% endif -%}
               <label
-                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{% if selling_badge_text != blank %} variant-option__button-label--has-selling-badge{% endif %}{% if selling_badge_text == 'BEST VALUE' %} variant-option__button-label--best-value{% endif %} pdp-variant"
-                {% if hide_this_variant %}style="display: none;"{% endif %}
+                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{{ badge_classes }} pdp-variant"
+                {% if badge_label_style != blank %}style="{{ badge_label_style }}"{% endif %}
               >
                 <input
                   type="radio"
@@ -200,11 +199,7 @@
                       endif
                     endif
                   %}
-                  {% if selling_badge_text != blank %}
-                    <span class="variant-option__button-label__selling-badge">
-                      {{ selling_badge_text | escape }}
-                    </span>
-                  {% endif %}
+                  {% render 'variant-badges', variant: var_for_discount %}
                   {% if product_option_value.available == true %}
                     <span class="variant-option__button-label__pill"></span>
                   {% endif %}

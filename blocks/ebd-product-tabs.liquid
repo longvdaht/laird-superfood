@@ -96,26 +96,48 @@
 
 {% stylesheet %}
   .product-tabs {
-    margin-top: 15px;
+    margin-top: 0;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    border-top: 1.5px solid var(--color-gray-1);
     .tab-toggles {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       .tab {
-        font-size: 18px;
         font-weight: 600;
-        color: var(--color-mediumblue);
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0px;
+        text-align: center;
+        color: rgba(var(--color-black-1), .81);
         cursor: pointer;
-
+        border-bottom: 2px solid var(--color-gray-1);
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         &.active {
-          color: var(--color-darkblue);
+          background-color: var(--color-darkblue);
+          color: var(--color-white);
+          border-color: var(--color-darkblue);
+        }
+        &:first-child {
+          border-top-left-radius: 8px;
+        }
+        &:last-child {
+          border-top-right-radius: 8px;
         }
       }
     }
     .tab-content {
       .tab-content-single {
         display: none;
-
+        padding: 24px 20px 12px;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: 0;
+        color: rgba(var(--color-black-1), .81);
         &.active {
           display: block;
         }
@@ -125,11 +147,38 @@
 
   a.prop-65-warning {
     display: inline-block;
-    margin-top: 15px;
-    font-size: 13px;
-    color: #2b2b2b;
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 0px;
+    text-align: left;
+    width: 100%;
+    color: rgba(var(--color-black-1), .81);
     text-decoration: underline;
     font-weight: 400;
+    padding: 0 20px 24px;
+  }
+
+  @media (min-width: 750px) {
+    .product-tabs {
+      .tab-toggles {
+        .tab {
+          font-size: 16px;
+          line-height: 18px;
+        }
+      }
+      .tab-content {
+        .tab-content-single {
+          padding: 36px 20px 12px;
+        }
+      }
+    }
+
+    a.prop-65-warning {
+      font-size: 13px;
+      line-height: 100%;
+      letter-spacing: 0px;
+      padding: 0 20px 36px;
+    }
   }
 {% endstylesheet %}
 

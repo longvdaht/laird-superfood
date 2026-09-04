@@ -42,13 +42,21 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative {% if product.metafields.custom.product_page_background != blank %} {{ product.metafields.custom.product_page_background | downcase }} {% endif %}"
-  style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
+  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} product-information--custom-mobile-padding{% endif %} {% if product.metafields.custom.product_page_background != blank %} {{ product.metafields.custom.product_page_background | downcase }} {% endif %}"
+  style="
+    {% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;
+    {%- if section.settings.custom_mobile_padding -%}
+      --padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] }}px;
+      --padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] }}px;
+    {%- endif -%}
+  "
 >
   {% if section.settings.desktop_media_position == 'left' and product_has_media %}
     {% assign product_href = '#ProductInformation-' | append: section.id %}
     {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
   {% endif %}
+  {% content_for 'blocks' %}
+
   <div
     class="{{ product_grid_class }}"
     data-product-grid-content
@@ -83,8 +91,6 @@
       {% endif %}
     {% endfor %}
   </div>
-
-  {% content_for 'blocks' %}
 </div>
 
 {% stylesheet %}
@@ -110,6 +116,13 @@
     min-width: 100%;
   }
 
+  .product-details {
+    background-color: var(--color-mediumgray);
+    border-radius: 12px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
   /* Mobile styles */
   @media screen and (max-width: 749px) {
     .product-information__media {
@@ -118,7 +131,6 @@
 
     .product-details {
       grid-column: 1 / -1;
-      background-color: var(--color-mediumgray);
       padding-left: 10px;
       padding-right: 10px;
       border-radius: 8px;
@@ -129,6 +141,12 @@
   @media screen and (min-width: 750px) {
     .product-information__grid {
       grid-column: 2;
+    }
+
+    .section--page-width .product-information__grid {
+      max-width: 1440px;
+      margin: auto;
+      width: 100%;
     }
 
     /* Position when there is no media */
@@ -147,11 +165,11 @@
         grid-template-columns: 1fr min(50vw, var(--sidebar-width));
 
         .product-information__media {
-          padding-right: calc(var(--gap, 0) / 2);
+          padding-right: calc(var(--gap, 0) * 2);
         }
 
         .product-details {
-          padding-left: calc(var(--gap, 0) / 2);
+          padding-left: calc(var(--gap, 0) * 2);
         }
 
         &:has(.media-gallery--extend) {
@@ -164,12 +182,12 @@
         grid-template-columns: min(50vw, var(--sidebar-width)) 1fr;
 
         .product-information__media {
-          padding-left: calc(var(--gap, 0) / 2);
+          padding-left: calc(var(--gap, 0) * 2);
           order: 1;
         }
 
         .product-details {
-          padding-right: calc(var(--gap, 0) / 2);
+          padding-right: calc(var(--gap, 0) * 2);
           order: 0;
         }
 
@@ -279,6 +297,110 @@
     max-width: var(--sidebar-width);
   }
 
+  /* Swatch rows keep their original layout: the wrapper stays out of the way */
+  .product-information .variant-option--swatches .variant-option__buttons-row {
+    display: contents;
+  }
+
+  /* One equal column per visible option: 4 options give 4 columns, 3 give 3. */
+  .product-information .variant-option--buttons:not(.variant-option--swatches) {
+    display: block;
+  }
+
+  .product-information .variant-option--buttons:not(.variant-option--swatches) legend {
+    width: 100%;
+    margin-block-end: 12px;
+  }
+
+  .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__buttons-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__buttons-row .variant-option__button-label {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Badges shown above a variant button (see snippets/variant-badges.liquid) */
+  /* Reserve room for the badge on the whole row so the buttons stay aligned */
+  .product-information .variant-option__buttons-row:has(.variant-option__button-label--has-selling-badge) {
+    padding-block-start: 0;
+  }
+
+  .product-information .variant-option__button-label--has-selling-badge {
+    position: relative;
+    overflow: visible;
+  }
+
+  .product-information .variant-option__button-label__selling-badge {
+    position: absolute;
+    left: 50%;
+    z-index: 3;
+    max-width: calc(100% + 16px);
+    pointer-events: none;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 8px;
+    min-height: 18px;
+    border-radius: 4px;
+    background: var(--variant-badge-background, var(--color-rose-46, #ea0044));
+    color: var(--variant-badge-text-color, var(--color-white-solid, #fff));
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: var(--letter-spacing-0_3, 0);
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* The first badge sits above the button, the second below it */
+  .product-information .variant-option__button-label__selling-badge--top {
+    top: 0;
+    transform: translate(-50%, -70%);
+  }
+
+  .product-information .variant-option__button-label__selling-badge--bottom {
+    bottom: 0;
+    transform: translate(-50%, 70%);
+  }
+
+  /* The variant buttons draw their outline with pseudo elements (see custom.css), so
+     tint those too and match their specificity. */
+  .product-information .variant-option__button-label--badge-highlight,
+  .product-information fieldset.variant-option--buttons label.variant-option__button-label--badge-highlight::before,
+  .product-information fieldset.variant-option--buttons label.variant-option__button-label--badge-highlight::after {
+    border-color: var(--variant-badge-border-color, var(--color-rose-46, #ea0044));
+  }
+
+  /* Section setting: separate top and bottom padding on mobile */
+  @media screen and (max-width: 749px) {
+    .product-information--custom-mobile-padding.spacing-style {
+      padding-block: calc(var(--padding-block-start-mobile, 0px) + var(--section-top-offset, 0px))
+        var(--padding-block-end-mobile, 0px);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-information__grid--limit-details .product-details > .group-block {
+      max-width: 100%;
+      padding-top: 36px;
+    }
+    .rating-wrapper-link {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
   /* If the header is sticky, make product details content stick underneath the header */
   body:has(#header-group #header-component[data-sticky-state='active']) .product-details.sticky-content--desktop {
     --sticky-header-offset: var(--header-height);
@@ -289,6 +411,9 @@
 {
   "name": "t:names.product_information",
   "blocks": [
+    {
+      "type": "breadcrumbs"
+    },
     {
       "type": "@app"
     }
@@ -380,6 +505,33 @@
       "type": "range",
       "id": "padding-block-end",
       "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_padding",
+      "label": "Use different top and bottom padding on mobile",
+      "info": "When off, mobile uses the values above.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-mobile",
+      "label": "Top (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-mobile",
+      "label": "Bottom (mobile)",
       "min": 0,
       "max": 100,
       "step": 1,

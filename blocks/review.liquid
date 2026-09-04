@@ -99,8 +99,8 @@
           <span class="rating-count-separator">|</span>
         {%- endif -%}
         {%- if block_settings.show_number -%}
-          {{- rating_count }}
-          {{ 'content.reviews' | t }}
+          ({{- rating_count }}
+          {{ 'content.reviews' | t }})
         {%- endif -%}
       </p>
     {%- endif -%}
@@ -138,7 +138,7 @@
   }
 
   .rating-color--primary {
-    --star-fill-color: var(--color-primary);
+    --star-fill-color: var(--color-mediumblue);
     --star-fill-color-rgb: var(--color-primary-rgb);
   }
 

@@ -1,0 +1,309 @@
+{%- doc -%}
+  Renders a breadcrumb trail.
+
+  On a product page the middle crumb is the collection the product was reached through.
+  When the product was not opened from a collection URL it falls back to the product
+  metafield `custom.breadcrumb_collection` (a collection reference), and then to the
+  product's first collection that is not `all` or `frontpage`.
+
+  The last crumb uses the product metafield `custom.breadcrumb_title` when set, so a long
+  product title can be shortened without changing the product name.
+{%- enddoc -%}
+
+{% liquid
+  assign block_settings = block.settings
+
+  assign product_resource = closest.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  assign separator = block_settings.separator | default: '|'
+
+  # The collection crumb, in order of preference.
+  assign breadcrumb_collection = blank
+  if product_resource != blank and block_settings.show_collection
+    if collection != blank and collection.handle != 'all'
+      assign breadcrumb_collection = collection
+    elsif product_resource.metafields.custom.breadcrumb_collection != blank
+      assign breadcrumb_collection = product_resource.metafields.custom.breadcrumb_collection.value
+    else
+      for product_collection in product_resource.collections
+        if product_collection.handle == 'all' or product_collection.handle == 'frontpage'
+          continue
+        endif
+        assign breadcrumb_collection = product_collection
+        break
+      endfor
+    endif
+  endif
+
+  # The last crumb.
+  if product_resource != blank
+    assign current_title = product_resource.metafields.custom.breadcrumb_title | append: '' | strip
+    if current_title == blank
+      assign current_title = product_resource.title
+    endif
+  else
+    assign current_title = page_title
+  endif
+
+  assign breadcrumb_style = ''
+  if block_settings.text_color != blank
+    assign breadcrumb_style = breadcrumb_style | append: '--breadcrumb-color:' | append: block_settings.text_color | append: ';'
+  endif
+  if block_settings.current_color != blank
+    assign breadcrumb_style = breadcrumb_style | append: '--breadcrumb-current-color:' | append: block_settings.current_color | append: ';'
+  endif
+  assign breadcrumb_style = breadcrumb_style | append: '--breadcrumb-font-size:' | append: block_settings.font_size | append: 'px;'
+%}
+
+{% if current_title != blank %}
+  <nav
+    class="breadcrumbs breadcrumbs--{{ block_settings.alignment }}"
+    aria-label="Breadcrumb"
+    style="{{ breadcrumb_style }}"
+    {{ block.shopify_attributes }}
+  >
+    <ol class="breadcrumbs__list">
+      {% if block_settings.show_home %}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ routes.root_url }}">
+            {{- block_settings.home_label | default: 'Home' -}}
+          </a>
+        </li>
+      {% endif %}
+
+      {% if breadcrumb_collection != blank %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <a class="breadcrumbs__link" href="{{ breadcrumb_collection.url }}">
+            {{- breadcrumb_collection.title -}}
+          </a>
+        </li>
+      {% endif %}
+
+      <li class="breadcrumbs__item">
+        {% if block_settings.show_home or breadcrumb_collection != blank %}
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+        {% endif %}
+        <span class="breadcrumbs__current" aria-current="page">{{ current_title }}</span>
+      </li>
+    </ol>
+  </nav>
+
+  {% if block_settings.show_structured_data %}
+    {% liquid
+      assign crumb_position = 0
+      capture structured_data_items
+        if block_settings.show_home
+          assign crumb_position = crumb_position | plus: 1
+          echo '{"@type":"ListItem","position":'
+          echo crumb_position
+          echo ',"name":'
+          echo block_settings.home_label | default: 'Home' | json
+          echo ',"item":'
+          echo shop.url | append: routes.root_url | json
+          echo '},'
+        endif
+        if breadcrumb_collection != blank
+          assign crumb_position = crumb_position | plus: 1
+          echo '{"@type":"ListItem","position":'
+          echo crumb_position
+          echo ',"name":'
+          echo breadcrumb_collection.title | json
+          echo ',"item":'
+          echo shop.url | append: breadcrumb_collection.url | json
+          echo '},'
+        endif
+        assign crumb_position = crumb_position | plus: 1
+        echo '{"@type":"ListItem","position":'
+        echo crumb_position
+        echo ',"name":'
+        echo current_title | json
+        echo '}'
+      endcapture
+    %}
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{{ structured_data_items }}]}
+    </script>
+  {% endif %}
+{% endif %}
+
+{% stylesheet %}
+  .breadcrumbs {
+    width: 100%;
+    color: var(--breadcrumb-color, currentcolor);
+    font-size: var(--breadcrumb-font-size, 16px);
+    line-height: 1.4;
+    grid-column: 1 / -1;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--breadcrumb-gap, 12px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs--center .breadcrumbs__list {
+    justify-content: center;
+  }
+
+  .breadcrumbs--right .breadcrumbs__list {
+    justify-content: flex-end;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: var(--breadcrumb-gap, 8px);
+    min-width: 0;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0;
+    font-size: var(--breadcrumb-font-size, 16px);
+  }
+
+  .breadcrumbs__separator {
+    opacity: var(--breadcrumb-separator-opacity, 0.8);
+    user-select: none;
+  }
+
+  .breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
+    opacity: var(--breadcrumb-link-opacity, 0.8);
+    transition: opacity 0.15s ease;
+    font-size: var(--breadcrumb-font-size, 16px);
+  }
+
+  .breadcrumbs__link:hover,
+  .breadcrumbs__link:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .breadcrumbs__current {
+    color: var(--breadcrumb-current-color, inherit);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* On narrow screens the trail scrolls sideways instead of wrapping */
+  @media screen and (max-width: 749px) {
+    .breadcrumbs {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .breadcrumbs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .breadcrumbs__list {
+      flex-wrap: nowrap;
+      width: max-content;
+      min-width: 100%;
+      --breadcrumb-gap: 8px;
+    }
+
+    .breadcrumbs__current {
+      white-space: nowrap;
+    }
+  }
+
+  @media (min-width: 750px) {
+    .breadcrumbs {
+      max-width: 1360px;
+      margin: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "On a product page the middle crumb is the collection the product was opened from. Set the product metafield custom.breadcrumb_collection to pin a specific collection, and custom.breadcrumb_title to shorten the last crumb."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Show home link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home label",
+      "default": "Home"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection",
+      "label": "Show collection",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "|"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_structured_data",
+      "label": "Add BreadcrumbList structured data",
+      "info": "Turn off if an SEO app already outputs breadcrumb structured data.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Leave empty to inherit the surrounding text color."
+    },
+    {
+      "type": "color",
+      "id": "current_color",
+      "label": "Current page color"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 11,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
