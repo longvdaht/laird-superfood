@@ -17,10 +17,18 @@
 {% stylesheet %}
   h3.product-type {
     text-transform: uppercase;
-    font-size: 20px;
-    line-height: 20px;
+    font-size: 16px;
+    line-height: 18px;
     color: var(--color-mediumblue);
     margin-bottom: 0;
     letter-spacing: 1px;
+    padding-top: 8px;
+  }
+  @media screen and (min-width: 750px) {
+    h3.product-type {
+      padding-top: 0;
+      font-size: 20px;
+      line-height: 20px;
+    } 
   }
 {% endstylesheet %}

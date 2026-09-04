@@ -1,0 +1,99 @@
+{%- doc -%}
+  Renders the badges shown around a variant button.
+
+  Badges are set on the variant metafield `custom.badges`, a list of `variant_badge`
+  metaobjects with the fields `label`, `background_color`, `text_color` and
+  `highlight_border`. At most two are shown: the first sits above the button, the
+  second below it, because there is not enough room for both on top. The legacy
+  single text metafield `custom.selling_badge` is used when no metaobject badge is
+  set on the variant.
+
+  @param {object} variant - The variant the badges belong to.
+  @param {string} [mode] - `markup` (default) renders the badges, `classes` returns the
+    modifier classes for the variant label, `style` returns its inline custom properties.
+{%- enddoc -%}
+
+{%- liquid
+  assign badge_mode = mode | default: 'markup'
+
+  assign variant_badges = blank
+  assign variant_badge_count = 0
+  if variant != blank and variant.metafields.custom.badges != blank
+    assign variant_badges = variant.metafields.custom.badges.value
+    assign variant_badge_count = variant_badges.size
+  endif
+
+  assign legacy_badge_text = ''
+  if variant_badge_count == 0 and variant != blank and variant.metafields.custom.selling_badge != blank
+    assign legacy_badge_text = variant.metafields.custom.selling_badge.value | default: variant.metafields.custom.selling_badge
+  endif
+
+  # Badges without a label are skipped, so count the ones that actually render.
+  assign shown_badge_count = 0
+  assign badge_border_color = ''
+  if variant_badge_count > 0
+    for variant_badge in variant_badges limit: 2
+      assign badge_label = variant_badge.label | append: '' | strip
+      if badge_label == blank
+        continue
+      endif
+      assign shown_badge_count = shown_badge_count | plus: 1
+      assign badge_highlight = variant_badge.highlight_border | append: ''
+      if badge_highlight == 'true' and badge_border_color == ''
+        assign badge_border_color = variant_badge.background_color | append: ''
+      endif
+    endfor
+  elsif legacy_badge_text != blank
+    assign shown_badge_count = 1
+  endif
+-%}
+
+{%- case badge_mode -%}
+  {%- when 'classes' -%}
+    {%- if shown_badge_count > 0 %} variant-option__button-label--has-selling-badge{% endif -%}
+    {%- if shown_badge_count > 1 %} variant-option__button-label--has-selling-badge-bottom{% endif -%}
+    {%- if legacy_badge_text == 'BEST VALUE' %} variant-option__button-label--best-value{% endif -%}
+    {%- if badge_border_color != blank %} variant-option__button-label--badge-highlight{% endif -%}
+
+  {%- when 'style' -%}
+    {%- if badge_border_color != blank -%}
+      --variant-badge-border-color:{{ badge_border_color }};
+    {%- endif -%}
+
+  {%- else -%}
+    {%- if variant_badge_count > 0 -%}
+      {%- assign rendered_badges = 0 -%}
+      {%- for variant_badge in variant_badges limit: 2 -%}
+        {%- liquid
+          assign badge_label = variant_badge.label | append: '' | strip
+          if badge_label == blank
+            continue
+          endif
+
+          assign rendered_badges = rendered_badges | plus: 1
+          assign badge_position = 'top'
+          if rendered_badges > 1
+            assign badge_position = 'bottom'
+          endif
+
+          assign badge_background = variant_badge.background_color | append: '' | strip
+          assign badge_text_color = variant_badge.text_color | append: '' | strip
+          assign badge_style = ''
+          if badge_background != blank
+            assign badge_style = badge_style | append: '--variant-badge-background:' | append: badge_background | append: ';'
+          endif
+          if badge_text_color != blank
+            assign badge_style = badge_style | append: '--variant-badge-text-color:' | append: badge_text_color | append: ';'
+          endif
+        -%}
+        <span
+          class="variant-option__button-label__selling-badge variant-option__button-label__selling-badge--{{ badge_position }}"
+          {% if badge_style != blank %}style="{{ badge_style }}"{% endif %}
+        >{{ badge_label | escape }}</span>
+      {%- endfor -%}
+    {%- elsif legacy_badge_text != blank -%}
+      <span
+        class="variant-option__button-label__selling-badge variant-option__button-label__selling-badge--top"
+      >{{ legacy_badge_text | escape }}</span>
+    {%- endif -%}
+{%- endcase -%}
