@@ -882,14 +882,23 @@
     justify-content: right;
   }
   .variant-option__button-label__text-wrap{
-     display: flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
 
   }
-  span.variant-option__button-label__subtext{
-    font-size: 12px!important;
-    font-weight: 300;
+  .variant-option__button-label__subtext{
+    pointer-events: none;
+    text-align: start;
+    text-wrap: auto;
+    z-index: 2;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    color: var(--color-darkblue);
+    font-weight: 600;
   }
 {% endstylesheet %}
