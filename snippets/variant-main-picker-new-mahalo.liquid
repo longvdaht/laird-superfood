@@ -244,7 +244,10 @@
 </div>
                   
                 {% endif %}
-                {% render 'strikethrough-variant', product_option: product_option_value %}
+                {% render 'strikethrough-variant',
+                  product_option: product_option_value,
+                  corner_to_corner: true
+                %}
                 {% if var_for_discount %}
                       {% liquid
                         assign subtext_label = var_for_discount.title

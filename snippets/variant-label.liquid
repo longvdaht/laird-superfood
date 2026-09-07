@@ -1,0 +1,67 @@
+{%- doc -%}
+  Renders the name to show for an option value in the variant picker, which is not always the
+  name of the option value itself: the same `1 - 8oz` can read `1 Bag` on one product and
+  something else on another.
+
+  Resolved from the most specific source to the most general one:
+
+  1. `variant.metafields.custom.variant_label` – a single line text set on the variant itself.
+  2. `product.metafields.custom.variant_labels` – a JSON object on the product that maps a
+     variant title, or an option value, to the name to show:
+
+       {
+         "1 - 8oz": "1 Bag",
+         "3 Pack - 16oz": "3 Bags"
+       }
+
+     Keys are matched ignoring case and spaces, so `1-8oz` matches the variant `1 - 8oz`.
+  3. `fallback` – the option value as Shopify has it.
+
+  @param {string} fallback - The name to show when nothing overrides it.
+  @param {object} [variant] - The variant the option value belongs to.
+  @param {object} [product_resource] - The product, used when the variant is unknown.
+
+  @example
+  {% capture variant_display_label %}
+    {% render 'variant-label', variant: badge_variant, product_resource: product_resource, fallback: option_value_name %}
+  {% endcapture %}
+{%- enddoc -%}
+
+{%- liquid
+  assign display_label = ''
+
+  if variant != blank
+    assign own_label = variant.metafields.custom.variant_label
+    if own_label != blank
+      assign display_label = own_label.value | default: own_label | append: '' | strip
+    endif
+  endif
+
+  if display_label == blank
+    assign label_product = product_resource | default: variant.product
+    assign label_map = label_product.metafields.custom.variant_labels.value
+
+    if label_map != blank
+      # Everything a key of the map is allowed to point at, normalized the way the keys are.
+      assign variant_keys = fallback
+      assign variant_keys = variant_keys | append: ',' | append: variant.title
+      assign variant_keys = variant_keys | append: ',' | append: variant.option1
+      assign variant_keys = variant_keys | append: ',' | append: variant.option2
+      assign variant_keys = variant_keys | append: ',' | append: variant.option3
+      assign variant_keys = variant_keys | downcase | replace: ' ', '' | split: ','
+
+      for label_pair in label_map
+        assign map_key = label_pair.first | append: '' | downcase | replace: ' ', ''
+        if map_key != blank and variant_keys contains map_key
+          assign display_label = label_pair.last | append: '' | strip
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  if display_label == blank
+    assign display_label = fallback | append: '' | strip
+  endif
+-%}
+{{- display_label | escape -}}

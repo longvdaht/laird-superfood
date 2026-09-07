@@ -1,0 +1,355 @@
+{%- doc -%}
+  Renders the flavor option of a product as a Swiper carousel.
+
+  Each option value is shown as a round product image (taken from the child product of the
+  combined listing) with the option value as its label. The options are plain radio inputs with
+  the same data attributes as the other variant options, so selection, combined listing
+  navigation and unavailable states are handled by `variant-picker.js`.
+
+  Swiper is loaded globally in `snippets/scripts.liquid`.
+
+  @param {object} product_resource - The product object.
+  @param {object} product_option - The option to render, as returned by `options_with_values`.
+  @param {number} fieldset_index - The index of the option within the variant picker.
+  @param {object} [block] - The block object.
+
+  @example
+  {% render 'variant-flavor-carousel',
+    product_resource: product_resource,
+    product_option: product_option,
+    fieldset_index: fieldset_index,
+    block: block
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign initial_slide = 0
+  for product_option_value in product_option.values
+    if product_option_value.selected
+      assign initial_slide = forloop.index0
+    endif
+  endfor
+-%}
+
+<script
+  src="{{ 'variant-flavor-carousel.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<fieldset
+  class="variant-option variant-option--flavors"
+  data-fieldset-index="{{ fieldset_index }}"
+  ref="fieldsets[]"
+>
+  <legend>
+    {{- product_option.name | escape -}}:
+  </legend>
+
+  <flavor-carousel
+    class="flavor-carousel"
+    data-initial-slide="{{ initial_slide }}"
+    data-selected-value="{{ product_option.selected_value | escape }}"
+  >
+    <div class="flavor-carousel__arrows" ref="arrows">
+      <button
+        type="button"
+        class="flavor-carousel__arrow flavor-carousel__arrow--previous"
+        aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+        ref="previous"
+      >
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </button>
+      <button
+        type="button"
+        class="flavor-carousel__arrow flavor-carousel__arrow--next"
+        aria-label="{{ 'accessibility.slideshow_next' | t }}"
+        ref="next"
+      >
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </button>
+    </div>
+
+    <div class="swiper flavor-carousel__swiper" ref="carousel">
+      <div class="swiper-wrapper">
+        {%- for product_option_value in product_option.values -%}
+          {%- liquid
+            assign option_value_name = product_option_value.name | default: product_option_value
+            assign child_product = product_option_value.variant.product
+
+            # The flavor image, in order of preference: the dedicated swatch image of the child
+            # product, the variant image, the featured image of the child product.
+            assign flavor_image = ''
+            assign swatch_images = child_product.metafields.custom.swatch_color.value
+            if swatch_images != blank
+              assign flavor_image = swatch_images[0]
+            endif
+            if flavor_image == blank
+              assign flavor_image = product_option_value.variant.featured_media
+            endif
+            if flavor_image == blank
+              assign flavor_image = child_product.featured_media
+            endif
+            if flavor_image == blank
+              assign flavor_image = product_option_value.swatch.image
+            endif
+
+            # The color behind the image: the swatch of the option value, falling back to the
+            # background color of the child product.
+            assign flavor_background = ''
+            if product_option_value.swatch.color
+              assign flavor_background = 'rgb(' | append: product_option_value.swatch.color.rgb | append: ')'
+            endif
+            assign background_metafield = child_product.metafields.custom.background_color
+            if flavor_background == blank and background_metafield != blank
+              assign flavor_background = background_metafield.value | default: background_metafield | append: '' | strip
+            endif
+          -%}
+          <label
+            class="swiper-slide flavor-option{% unless product_option_value.available %} flavor-option--unavailable{% endunless %}"
+            style="--flavor-background: {{ flavor_background | default: 'var(--color-gray-1)' }};"
+          >
+            <input
+              type="radio"
+              class="flavor-option__input"
+              name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+              value="{{ product_option_value | escape }}"
+              aria-label="{{ option_value_name | escape }}"
+              {% if product_option_value.available == false %}
+                aria-disabled="true"
+              {% endif %}
+              data-previous-checked="false"
+              data-fieldset-index="{{ fieldset_index }}"
+              data-input-index="{{ forloop.index0 }}"
+              data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+              data-option-value-id="{{ product_option_value.id }}"
+              data-option-available="{{ product_option_value.available }}"
+              data-connected-product-url="{{ product_option_value.product_url }}"
+              {% if product_option_value.variant.id %}
+                data-variant-id="{{ product_option_value.variant.id }}"
+              {% endif %}
+              {% if product_option_value.selected %}
+                data-current-checked="true"
+                checked
+              {% else %}
+                data-current-checked="false"
+              {% endif %}
+            >
+            <span class="flavor-option__media">
+              {%- if flavor_image != blank -%}
+                <img
+                  class="flavor-option__image"
+                  src="{{ flavor_image | image_url: width: 240 }}"
+                  srcset="
+                    {{ flavor_image | image_url: width: 160 }} 160w,
+                    {{ flavor_image | image_url: width: 240 }} 240w
+                  "
+                  sizes="76px"
+                  alt="{{ option_value_name | escape }}"
+                  width="240"
+                  height="240"
+                  loading="lazy"
+                >
+              {%- endif -%}
+              {%- unless product_option_value.available -%}
+                <span class="flavor-option__strikethrough"></span>
+              {%- endunless -%}
+            </span>
+            <span class="flavor-option__label">{{ option_value_name | escape }}</span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </div>
+  </flavor-carousel>
+</fieldset>
+
+{% stylesheet %}
+  .variant-option--flavors {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: none;
+    /* a fieldset defaults to min-width: min-content, which would make it as wide as every
+       option put together instead of letting the carousel scroll */
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .variant-option--flavors legend {
+    padding: 0;
+    margin-block-end: 0;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0;
+    color: var(--color-black-1);
+  }
+
+  .flavor-carousel {
+    display: block;
+    min-width: 0;
+  }
+
+  .flavor-carousel__swiper {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .flavor-carousel__arrows {
+    position: absolute;
+    top: -28px;
+    right: 0;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .flavor-carousel__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--color-darkblue);
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--color-darkblue);
+    cursor: pointer;
+  }
+
+  .flavor-carousel__arrow:hover {
+    border-color: var(--color-darkblue);
+  }
+
+  .flavor-carousel__arrow svg {
+    --icon-stroke-width: 1.5px;
+
+    width: 16px;
+    height: 16px;
+  }
+
+  .flavor-carousel__arrow--previous svg {
+    transform: rotate(180deg);
+  }
+
+  /* set by Swiper when the carousel is at one of its ends */
+  .flavor-carousel__arrow--disabled {
+    opacity: var(--opacity-50, 0.5);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* set by Swiper when every option fits and there is nothing to slide */
+  .flavor-carousel__arrow--locked {
+    display: none;
+  }
+
+  .flavor-carousel__swiper .swiper-wrapper {
+    align-items: flex-start;
+  }
+
+  .flavor-carousel__swiper .swiper-slide {
+    width: var(--flavor-size);
+    height: auto;
+    padding-top: 12px;
+  }
+
+  .flavor-option {
+    --flavor-size: 76px;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .flavor-option__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .flavor-option__media {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: var(--flavor-size);
+    height: var(--flavor-size);
+    border: 2px solid transparent;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--flavor-background, var(--color-gray-1));
+    background-clip: padding-box;
+  }
+
+  .flavor-option__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .flavor-option__label {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--color-darkblue);
+    pointer-events: none;
+  }
+
+  .flavor-option:hover .flavor-option__media {
+    border-color: var(--color-gray-1);
+  }
+
+  .flavor-option:has(:checked) .flavor-option__media,
+  .flavor-option:has(:focus-visible) .flavor-option__media {
+    border-color: var(--color-darkblue);
+  }
+
+  /* unavailable options stay selectable so the back in stock form can be shown */
+  .flavor-option--unavailable .flavor-option__image {
+    opacity: var(--opacity-50, 0.5);
+  }
+
+  .flavor-option--unavailable .flavor-option__media::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgb(255 255 255 / 45%);
+  }
+
+  .flavor-option--unavailable .flavor-option__label {
+    color: rgb(var(--color-variant-text-rgb) / var(--opacity-60));
+  }
+
+  .flavor-option__strikethrough {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top right,
+      transparent calc(50% - 1px),
+      var(--color-gray-1) calc(50% - 1px),
+      var(--color-gray-1) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    );
+  }
+
+  @media screen and (min-width: 750px) {
+    .flavor-option__label {
+      font-size: 16px;
+      line-height: 115%;
+    }
+  }
+{% endstylesheet %}
