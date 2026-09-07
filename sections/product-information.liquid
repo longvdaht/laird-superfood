@@ -143,7 +143,8 @@
       grid-column: 2;
     }
 
-    .section--page-width .product-information__grid {
+    .section--page-width .product-information__grid,
+    .section--page-width .new-product-information__grid {
       max-width: 1440px;
       margin: auto;
       width: 100%;
@@ -330,7 +331,7 @@
   /* Badges shown above a variant button (see snippets/variant-badges.liquid) */
   /* Reserve room for the badge on the whole row so the buttons stay aligned */
   .product-information .variant-option__buttons-row:has(.variant-option__button-label--has-selling-badge) {
-    padding-block-start: 0;
+    padding-block-start: 8px;
   }
 
   .product-information .variant-option__button-label--has-selling-badge {

@@ -1,12 +1,37 @@
 {%- doc -%}
   Renders the badges shown around a variant button.
 
-  Badges are set on the variant metafield `custom.badges`, a list of `variant_badge`
-  metaobjects with the fields `label`, `background_color`, `text_color` and
-  `highlight_border`. At most two are shown: the first sits above the button, the
-  second below it, because there is not enough room for both on top. The legacy
-  single text metafield `custom.selling_badge` is used when no metaobject badge is
-  set on the variant.
+  At most two badges are shown, because that is all the room there is: the first sits above the
+  button, the second below it.
+
+  They are resolved from the most specific source to the most general one. The first source that
+  has something to say for this variant decides, so a product can override a store wide badge:
+
+  1. `variant.metafields.custom.badges` – a list of `variant_badge` metaobjects set on the
+     variant itself. For one off exceptions.
+  2. `product.metafields.custom.variant_rules` – a list of `variant_rule` metaobjects, for rules
+     that only apply to one product.
+  3. The `variant_rule` metaobject entries of the store – the same rules, written once for the
+     whole catalog, so "1 - 8oz is the Top Pick" does not have to be repeated on every sibling
+     product. The definition needs storefront access to be readable here.
+  4. `variant_badge` entries that were given a `match` field of their own, which is the same
+     thing without a separate `variant_rule` definition.
+  5. `variant.metafields.custom.selling_badge` – legacy single text badge.
+
+  A `variant_rule` entry has:
+  - `match` – one or more variant titles or option values, separated by commas. Matching ignores
+    case and spaces, so `1-8oz` matches the variant `1 Pack - 8oz`.
+  - `badges` – a list of `variant_badge` references to show for those variants.
+  - `variant_label`, `hidden` – used by the variant picker, not by this snippet.
+
+  Within one source every matching rule contributes its badges, so a variant covered by both a
+  rule for `1 - 16oz, 1 - 8oz` and a rule for `1 - 8oz` ends up with the badges of both. Rules
+  shared by several variants are read first, so the shared badge keeps the top spot and the one
+  added for a single variant goes below the button. To decide the order yourself, put both
+  badges in the `badges` list of a single rule instead.
+
+  A `variant_badge` has the fields `label`, `background_color`, `text_color` and
+  `highlight_border`.
 
   @param {object} variant - The variant the badges belong to.
   @param {string} [mode] - `markup` (default) renders the badges, `classes` returns the
@@ -16,35 +41,148 @@
 {%- liquid
   assign badge_mode = mode | default: 'markup'
 
-  assign variant_badges = blank
-  assign variant_badge_count = 0
-  if variant != blank and variant.metafields.custom.badges != blank
-    assign variant_badges = variant.metafields.custom.badges.value
-    assign variant_badge_count = variant_badges.size
+  assign badge_one = blank
+  assign badge_two = blank
+
+  if variant != blank
+    # Metaobject lists only answer to iteration, `values[0]` returns nothing, so the badges are
+    # picked up with a loop into the two slots the layout has room for.
+    assign own_badges = variant.metafields.custom.badges.value
+    for own_badge in own_badges
+      if badge_one == blank
+        assign badge_one = own_badge
+      elsif badge_two == blank
+        assign badge_two = own_badge
+      endif
+    endfor
+
+    if badge_one == blank
+      assign product_rules = variant.product.metafields.custom.variant_rules.value
+
+      assign store_rules = shop.metaobjects.variant_rule.values
+      if store_rules == blank
+        assign store_rules = shop.metaobjects.product_variant_rule.values
+      endif
+
+      assign store_badges = shop.metaobjects.variant_badge.values
+
+      # Everything a rule is allowed to match on, normalized the way the rule is.
+      assign variant_keys = variant.title
+      assign variant_keys = variant_keys | append: ',' | append: variant.option1
+      assign variant_keys = variant_keys | append: ',' | append: variant.option2
+      assign variant_keys = variant_keys | append: ',' | append: variant.option3
+      assign variant_keys = variant_keys | downcase | replace: ' ', '' | split: ','
+
+      for tier in (1..3)
+        # An earlier source already decided for this variant.
+        if badge_one != blank
+          break
+        endif
+
+        if tier == 1
+          assign tier_rules = product_rules
+        elsif tier == 2
+          assign tier_rules = store_rules
+        else
+          assign tier_rules = store_badges
+        endif
+
+        if tier_rules == blank
+          continue
+        endif
+
+        # Pass 1 reads the rules shared by several variants, pass 2 the ones written for a
+        # single variant, so the shared badge ends up on top.
+        for pass in (1..2)
+          for badge_rule in tier_rules
+            assign rule_keys = badge_rule.match | append: '' | downcase | replace: ' ', '' | split: ','
+
+            assign rule_matched = false
+            if pass == 1 and rule_keys.size > 1
+              assign rule_matched = true
+            endif
+            if pass == 2 and rule_keys.size == 1
+              assign rule_matched = true
+            endif
+
+            if rule_matched
+              assign rule_matched = false
+              for rule_key in rule_keys
+                if rule_key != blank and variant_keys contains rule_key
+                  assign rule_matched = true
+                  break
+                endif
+              endfor
+            endif
+
+            if rule_matched
+              assign rule_badges = badge_rule.badges.value | default: badge_rule.badges
+              assign taken_from_rule = 0
+
+              for rule_badge in rule_badges
+                if badge_one == blank
+                  assign badge_one = rule_badge
+                  assign taken_from_rule = taken_from_rule | plus: 1
+                elsif badge_two == blank
+                  assign badge_two = rule_badge
+                  assign taken_from_rule = taken_from_rule | plus: 1
+                endif
+              endfor
+
+              # A rule without a `badges` list is the badge itself: a `variant_badge` entry that
+              # was given a `match` field.
+              if taken_from_rule == 0 and badge_rule.label != blank
+                if badge_one == blank
+                  assign badge_one = badge_rule
+                elsif badge_two == blank
+                  assign badge_two = badge_rule
+                endif
+              endif
+            endif
+          endfor
+        endfor
+      endfor
+    endif
+  endif
+
+  # Badges without a label are not shown, so close the gap they would leave.
+  assign badge_one_label = badge_one.label | append: '' | strip
+  assign badge_two_label = badge_two.label | append: '' | strip
+
+  if badge_one_label == blank
+    assign badge_one = badge_two
+    assign badge_one_label = badge_two_label
+    assign badge_two = blank
+    assign badge_two_label = ''
+  endif
+  if badge_two_label == blank
+    assign badge_two = blank
   endif
 
   assign legacy_badge_text = ''
-  if variant_badge_count == 0 and variant != blank and variant.metafields.custom.selling_badge != blank
+  if badge_one_label == blank and variant != blank and variant.metafields.custom.selling_badge != blank
     assign legacy_badge_text = variant.metafields.custom.selling_badge.value | default: variant.metafields.custom.selling_badge
+    assign legacy_badge_text = legacy_badge_text | append: '' | strip
   endif
 
-  # Badges without a label are skipped, so count the ones that actually render.
   assign shown_badge_count = 0
-  assign badge_border_color = ''
-  if variant_badge_count > 0
-    for variant_badge in variant_badges limit: 2
-      assign badge_label = variant_badge.label | append: '' | strip
-      if badge_label == blank
-        continue
-      endif
-      assign shown_badge_count = shown_badge_count | plus: 1
-      assign badge_highlight = variant_badge.highlight_border | append: ''
-      if badge_highlight == 'true' and badge_border_color == ''
-        assign badge_border_color = variant_badge.background_color | append: ''
-      endif
-    endfor
-  elsif legacy_badge_text != blank
+  if badge_one_label != blank
     assign shown_badge_count = 1
+  endif
+  if badge_two_label != blank
+    assign shown_badge_count = 2
+  endif
+  if legacy_badge_text != blank
+    assign shown_badge_count = 1
+  endif
+
+  assign badge_border_color = ''
+  assign highlight_one = badge_one.highlight_border | append: ''
+  assign highlight_two = badge_two.highlight_border | append: ''
+  if badge_one_label != blank and highlight_one == 'true'
+    assign badge_border_color = badge_one.background_color | append: '' | strip
+  elsif badge_two_label != blank and highlight_two == 'true'
+    assign badge_border_color = badge_two.background_color | append: '' | strip
   endif
 -%}
 
@@ -61,24 +199,22 @@
     {%- endif -%}
 
   {%- else -%}
-    {%- if variant_badge_count > 0 -%}
-      {%- assign rendered_badges = 0 -%}
-      {%- for variant_badge in variant_badges limit: 2 -%}
+    {%- if badge_one_label != blank -%}
+      {%- for badge_index in (1..2) -%}
         {%- liquid
-          assign badge_label = variant_badge.label | append: '' | strip
-          if badge_label == blank
-            continue
-          endif
-
-          assign rendered_badges = rendered_badges | plus: 1
-          assign badge_position = 'top'
-          if rendered_badges > 1
+          if badge_index == 1
+            assign badge_entry = badge_one
+            assign badge_label = badge_one_label
+            assign badge_position = 'top'
+          else
+            assign badge_entry = badge_two
+            assign badge_label = badge_two_label
             assign badge_position = 'bottom'
           endif
 
-          assign badge_background = variant_badge.background_color | append: '' | strip
-          assign badge_text_color = variant_badge.text_color | append: '' | strip
           assign badge_style = ''
+          assign badge_background = badge_entry.background_color | append: '' | strip
+          assign badge_text_color = badge_entry.text_color | append: '' | strip
           if badge_background != blank
             assign badge_style = badge_style | append: '--variant-badge-background:' | append: badge_background | append: ';'
           endif
@@ -86,10 +222,12 @@
             assign badge_style = badge_style | append: '--variant-badge-text-color:' | append: badge_text_color | append: ';'
           endif
         -%}
-        <span
-          class="variant-option__button-label__selling-badge variant-option__button-label__selling-badge--{{ badge_position }}"
-          {% if badge_style != blank %}style="{{ badge_style }}"{% endif %}
-        >{{ badge_label | escape }}</span>
+        {%- if badge_label != blank -%}
+          <span
+            class="variant-option__button-label__selling-badge variant-option__button-label__selling-badge--{{ badge_position }}"
+            {% if badge_style != blank %}style="{{ badge_style }}"{% endif %}
+          >{{ badge_label | escape }}</span>
+        {%- endif -%}
       {%- endfor -%}
     {%- elsif legacy_badge_text != blank -%}
       <span
