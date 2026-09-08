@@ -82,7 +82,7 @@
             assign flavor_image = ''
             assign swatch_images = child_product.metafields.custom.swatch_color.value
             if swatch_images != blank
-              assign flavor_image = swatch_images[0]
+              assign flavor_image = swatch_images | first
             endif
             if flavor_image == blank
               assign flavor_image = product_option_value.variant.featured_media
