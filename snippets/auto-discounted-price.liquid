@@ -1,0 +1,96 @@
+{%- liquid 
+  assign target = product
+  assign price = target.price | default: 1999
+  assign price_min = product.price_min
+  assign available = target.available | default: false
+
+  assign money_auto_discounted_price = target.metafields.app--168074346497.min_auto_discounted_price.value | default: price_min
+
+  if product.metafields.app--168074346497.discount_percentage.value > 0.01
+    assign deducted_percentage = 1.0 | minus: product.metafields.app--168074346497.discount_percentage.value
+    assign money_auto_discounted_price = target.price | divided_by: 100.0 | times: deducted_percentage | times: 100.0 | ceil
+  endif
+
+  if shop.metafields.app--168074346497.discount_percentage.value > 0.01
+    assign deducted_percentage = 1.0 | minus: shop.metafields.app--168074346497.discount_percentage.value
+    assign money_auto_discounted_price = target.price | divided_by: 100.0 | times: deducted_percentage | times: 100.0 | ceil
+  endif
+
+  assign from_text = ''
+
+  if product.price_varies
+    assign from_text = 'From'
+  endif
+
+  # Percent off, derived from the actual prices so it also covers
+  # the shop-wide and min_auto_discounted_price cases
+  assign percent_off = 0
+  if price > 0 and money_auto_discounted_price < price
+    assign percent_off = price | minus: money_auto_discounted_price | times: 100.0 | divided_by: price | round
+  endif
+-%}
+
+{% if money_auto_discounted_price < price %}
+
+
+{%- unless target == null -%}
+<div
+  data-product-id="{{ product.id }}"
+  class="
+    yagi-price-container
+    price
+    {%- if available == false %} price--sold-out{% endif -%}
+  {%- if price > money_auto_discounted_price %} price--on-sale{% endif -%}
+  {%- if product.price_varies == false and product.compare_at_price_varies %} price--no-compare{% endif -%}
+  ">
+
+  <div class="price__container">
+    <div class="price__sale">
+      <span>
+        <s class="price-item price-item--regular yagi-original-price">
+          {% if target.compare_at_price and target.compare_at_price > target.price %}
+            {% if settings.currency_code_enabled %}
+              {{ target.compare_at_price | money_with_currency }}
+            {% else %}
+              {{ target.compare_at_price | money }}
+            {% endif %}
+          {% else %}
+            {% if settings.currency_code_enabled %}
+              {{ target.price | money_with_currency }}
+            {% else %}
+              {{ target.price | money }}
+            {% endif %}
+          {% endif %}
+        </s>
+      </span>
+
+      <span class="price-item price-item--sale price-item--last yagi-discounted-price">
+        {{ from_text }}
+        {% if settings.currency_code_enabled %}
+          {{ money_auto_discounted_price | money_with_currency }}
+        {% else %}
+          {{ money_auto_discounted_price | money }}
+        {% endif %}
+      </span>
+
+      {%- if percent_off > 0 -%}
+        <span class="yagi-sale-badge">Sale {{ percent_off }}% off</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+</div>
+
+{% endunless %}
+
+{% endif %}
+
+{% stylesheet %}
+  /* Hide the theme's own price when the auto-discounted price is rendered.
+     The snippet is always output as the next sibling of the price container,
+     see snippets/price.liquid. Hidden rather than removed so that
+     product-price.js / product-card.js can still morph it on variant change. */
+  [ref='priceContainer']:has(+ .yagi-price-container) {
+    display: none;
+  }
+{% endstylesheet %}

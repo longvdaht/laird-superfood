@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
 @keyframes floralMove {
   0 {
@@ -6,7 +6,7 @@
   }
 
   50% {
-    transform: rotate(15deg)
+    transform: rotate(15deg);
   }
 
   100%: {
@@ -15,8 +15,8 @@
 }
 
 :root {
-  --font-primary: 'Rubik', sans-serif !important;
-  --font-secondary: 'Poppins', sans-serif !important;
+  --font-primary: "Rubik", sans-serif !important;
+  --font-secondary: "Poppins", sans-serif !important;
   --color-red: #e11d48;
   --color-lightblue: #72c3d7;
   --color-mediumblue: #3a758a;
@@ -25,7 +25,8 @@
   --color-lightgray: #e5e7eb;
 }
 
-body, body * {
+body,
+body * {
   font-family: var(--font-primary);
 }
 
@@ -193,9 +194,7 @@ a.btn {
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 7px 20px;
-
   }
-  
 }
 
 p {
@@ -215,9 +214,9 @@ p {
     border-radius: 50px;
     padding: 10px 25px;
     font-weight: 600;
-    transition: .2s;
+    transition: 0.2s;
     font-size: 18px;
-    
+
     &:hover {
       border: solid 2px #e11d48;
       color: #e11d48;
@@ -231,7 +230,8 @@ p {
   }
 }
 
-ul, ol {
+ul,
+ol {
   margin: 0;
   padding: 0 0 0 25px;
   li {
@@ -256,7 +256,7 @@ ul, ol {
 
 .swiper {
   opacity: 0;
-  transition: opacity .2s ease;
+  transition: opacity 0.2s ease;
   position: relative;
   overflow: visible;
 
@@ -264,7 +264,7 @@ ul, ol {
     width: 75%;
     max-width: 750px;
     bottom: -25px;
-    left: 50%; 
+    left: 50%;
     transform: translate(-50%);
     border-radius: 50px;
     height: 8px;
@@ -279,11 +279,8 @@ ul, ol {
         background-color: var(--color-darkblue);
       }
     }
-
-
   }
 }
-
 
 .swiper-scrollbar.swiper-scrollbar-horizontal {
   z-index: 1;
@@ -306,7 +303,6 @@ ul, ol {
   color: var(--color-mediumblue);
 }
 
-
 header-menu.header-menu {
   li.menu-list__list-item {
     margin-right: 25px;
@@ -323,7 +319,7 @@ header-menu.header-menu {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;  
+  height: 100vh;
   width: 100vw;
   overflow: scroll;
   max-width: 550px;
@@ -351,7 +347,6 @@ header-menu.header-menu {
       left: 0;
       border: none;
       background: none;
-    
     }
 
     a.mobile-menu-logo {
@@ -410,7 +405,7 @@ header-menu.header-menu {
       margin-bottom: 15px;
 
       &#subsubmenu-1 {
-        a.mobile-menu-subsublink:last-of-type {        
+        a.mobile-menu-subsublink:last-of-type {
           color: #e11d48;
         }
       }
@@ -447,12 +442,11 @@ header-menu.header-menu {
   gap: 5px;
   position: relative;
   left: 20px;
-  
+
   .bar {
     width: 100%;
     height: 2px;
     background-color: white;
-
   }
 }
 
@@ -496,7 +490,9 @@ a.performers {
       }
       .category-grid {
         display: grid;
-        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+        grid-template-columns:
+          minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)
+          minmax(0, 1fr);
         gap: 25px 35px;
 
         .category-card {
@@ -513,7 +509,7 @@ a.performers {
               position: absolute;
               top: 55%;
               left: 50%;
-              transform: translate(-50%,-55%) scale(0.3);
+              transform: translate(-50%, -55%) scale(0.3);
               opacity: 0;
               transition: 0.4s;
               z-index: 0;
@@ -531,7 +527,7 @@ a.performers {
             .image-wrapper {
               img.floral-image {
                 opacity: 0.7;
-                transform: translate(-50%,-55%) scale(0.9);
+                transform: translate(-50%, -55%) scale(0.9);
               }
             }
           }
@@ -641,8 +637,6 @@ a.performers {
         gap: 25px;
       }
     }
-
-
   }
 }
 
@@ -666,7 +660,6 @@ product-card.product-card {
     span.price {
       font-weight: 600;
       color: var(--color-darkblue);
-
     }
   }
 
@@ -739,7 +732,11 @@ product-card.product-card {
   .grid {
     display: block;
 
-    h2, h3, h4, h5, h6 {
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       color: var(--color-darkblue);
     }
   }
@@ -757,7 +754,7 @@ header.account-actions__header {
   h2.account-actions__title {
     font-size: 22px;
     color: var(--color-darkblue);
-  } 
+  }
 }
 
 nav.account-actions__nav {
@@ -771,21 +768,22 @@ nav.account-actions__nav {
 
 fieldset.variant-option--buttons {
   display: flex;
-  
+
   label.variant-option__button-label {
     border-radius: 7px;
 
-    &:before, &:after {
+    &:before,
+    &:after {
       clip-path: none;
       border: solid 1px var(--color-darkblue);
     }
   }
 }
 
-
-
 /* Legacy default page content, removing page title */
-.handle-page-dedicated-to-qr-codes-for-laird-superfood, .handle-terms-of-use, .handle-cookie-notice {
+.handle-page-dedicated-to-qr-codes-for-laird-superfood,
+.handle-terms-of-use,
+.handle-cookie-notice {
   h1 {
     display: none;
   }
@@ -802,30 +800,98 @@ recharge-subscription-widget {
   margin: 15px 0;
 }
 
-.predictive-search-results__wrapper-products{
-
+.predictive-search-results__wrapper-products {
   @media (max-width: 768px) {
-    grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) !important;
   }
 }
 
-
-
-@media screen and (max-width:768px) {
-  .yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-is-mobile .yotpo-reward-steps-title::before {
+@media screen and (max-width: 768px) {
+  .yotpo-widget-my-rewards-widget.yotpo-widget-override-css
+    .yotpo-is-mobile
+    .yotpo-reward-steps-title::before {
     font-size: 26px !important;
     line-height: normal !important;
-  } 
+  }
   .rebuy-cart__flyout-subtotal {
     margin: 6px 0px !important;
-}
+  }
 }
 
-@media screen and (min-width:769px) {
-  .yotpo-widget-my-rewards-widget.yotpo-widget-override-css .yotpo-is-mobile .yotpo-reward-steps-title::before {
+@media screen and (min-width: 769px) {
+  .yotpo-widget-my-rewards-widget.yotpo-widget-override-css
+    .yotpo-is-mobile
+    .yotpo-reward-steps-title::before {
     font-size: 36px !important;
     line-height: normal !important;
-  } 
+  }
+}
+/* Yagi custom css */
+.product-details .yagi-price-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+.yagi-price-container .price__sale {
+  text-align: center;
+}
+.yagi-price-container {
+  /* .price sets white-space: nowrap in base.css, which would keep the badge
+       on the same line as the price */
+  white-space: normal;
+  text-align: center;
 }
 
+.yagi-price-container .yagi-original-price {
+  margin-inline-end: 0.35em;
+}
 
+.yagi-price-container .yagi-discounted-price {
+  color: var(--color-red, #e83d6f);
+  font-weight: 700;
+}
+
+.yagi-price-container .yagi-sale-badge {
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
+  padding-block: 0.15em;
+  padding-inline: 0.5em;
+  border-radius: var(--badge-border-radius, 4px);
+  background: var(--color-red, #e83d6f);
+  color: #fff;
+  font-size: var(--font-size--xs, 0.75rem);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Yagi custom css — HP product cards (Laird's Favorites)
+   Cards here are left aligned, so override the centred default and keep the
+   badge on the same line as the price. Selectors carry the section's own
+   nesting chain (.ebd-hp-product-cards .swiper-slide .slide-wrapper .details
+   .text p.price) so they win over the section's {% stylesheet %} block. */
+.ebd-hp-product-cards .swiper-slide .slide-wrapper .details .text p.price:has(+ .yagi-price-container) {
+  display: none;
+}
+
+.ebd-hp-product-cards .details .text .yagi-price-container,
+.ebd-hp-product-cards .details .text .yagi-price-container .price__sale {
+  text-align: left;
+}
+
+.ebd-hp-product-cards .details .text .yagi-price-container .price__sale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.ebd-hp-product-cards .details .text .yagi-price-container .yagi-original-price {
+  margin-inline-end: 0;
+}
+
+.ebd-hp-product-cards .details .text .yagi-price-container .yagi-sale-badge {
+  display: inline-block;
+  margin-inline: 0;
+}

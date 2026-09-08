@@ -36,6 +36,7 @@
                 <div class="text">
                   <h4 class="title darkblue">{{ product.title }}</h4>
                   <p class="price">{{ product.variants.first.price | money }}</p>
+                  {% render 'auto-discounted-price', product: product %}
                 </div>
                 <p class="btn">SHOP NOW</p>
               </div>
