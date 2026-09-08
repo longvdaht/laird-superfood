@@ -28,6 +28,7 @@
                     NEW LOOK
                   </div>
                 {% endif %}
+                {% render 'auto-discounted-price', product: product, badge_only: true %}
               </div>
               <div class="media">
                 <img src="{{ product.featured_image | img_url: '750x' }}" alt="{{ product.title }}" class="product-image">
@@ -36,6 +37,7 @@
                 <div class="text">
                   <h4 class="title darkblue">{{ product.title }}</h4>
                   <p class="price">{{ product.variants.first.price | money }}</p>
+                  {% render 'auto-discounted-price', product: product %}
                 </div>
                 <p class="btn">SHOP NOW</p>
               </div>
