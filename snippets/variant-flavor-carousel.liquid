@@ -75,14 +75,25 @@
         {%- for product_option_value in product_option.values -%}
           {%- liquid
             assign option_value_name = product_option_value.name | default: product_option_value
-            assign child_product = product_option_value.variant.product
+
+            # In a combined listing only the option value of the product being viewed has a
+            # `variant`, the other ones just carry a `product_url`, so the child product is
+            # looked up by the handle in that url.
+            assign child_product = blank
+            if product_option_value.product_url != blank
+              assign child_handle = product_option_value.product_url | split: '?' | first | split: '/' | last
+              assign child_product = all_products[child_handle]
+            endif
+            if child_product == blank
+              assign child_product = product_option_value.variant.product | default: product_resource
+            endif
 
             # The flavor image, in order of preference: the dedicated swatch image of the child
             # product, the variant image, the featured image of the child product.
             assign flavor_image = ''
             assign swatch_images = child_product.metafields.custom.swatch_color.value
             if swatch_images != blank
-              assign flavor_image = swatch_images[0]
+              assign flavor_image = swatch_images | first
             endif
             if flavor_image == blank
               assign flavor_image = product_option_value.variant.featured_media
