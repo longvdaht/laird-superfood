@@ -2073,6 +2073,12 @@
     "settings": [
       {
         "type": "checkbox",
+        "id": "show_product_card_rating",
+        "label": "Show rating on product cards",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "quick_add",
         "label": "t:settings.quick_add",
         "default": true

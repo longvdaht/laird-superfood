@@ -36,6 +36,7 @@
               <div class="details">
                 <div class="text">
                   <h4 class="title darkblue">{{ product.title }}</h4>
+                  {% render 'product-card-rating', product: product %}
                   <div class="price-wrapper">
                     {% if block.settings.subscription == true %}
                       {% assign discounted_price = product.variants.first.price | times: 0.80 %}
