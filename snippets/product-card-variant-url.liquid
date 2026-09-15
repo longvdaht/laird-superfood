@@ -17,11 +17,32 @@
     if product.featured_media
       for variant in product.variants
         if variant.featured_media.id == product.featured_media.id
-          assign variant_to_link = variant
+          capture featured_variant_hidden
+            render 'variant-hidden', variant: variant, product_resource: product
+          endcapture
+          if featured_variant_hidden == blank
+            assign variant_to_link = variant
+          endif
           break
         endif
       endfor
     endif
   endunless
+
+  # A card must never link straight at a variant that is hidden - see `variant-hidden`.
+  capture variant_to_link_hidden
+    render 'variant-hidden', variant: variant_to_link, product_resource: product
+  endcapture
+  if variant_to_link_hidden != blank
+    for variant in product.variants
+      capture candidate_hidden
+        render 'variant-hidden', variant: variant, product_resource: product
+      endcapture
+      if candidate_hidden == blank
+        assign variant_to_link = variant
+        break
+      endif
+    endfor
+  endif
 %}
 {{- variant_to_link.url -}}

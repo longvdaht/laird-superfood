@@ -60,6 +60,64 @@
           endif
         -%}
 
+        {%- capture visible_values -%}
+          {%- render 'variant-visible-values', product_resource: product_resource, product_option: product_option -%}
+        {%- endcapture -%}
+        {%- liquid
+          # Values hidden through `custom.variant_hidden` or `custom.hidden_variants` are left out
+          # of the markup entirely, so `rendered_index` counts the inputs that do make it into the
+          # DOM: `variant-picker.js` indexes the radios of a fieldset by their position in it.
+          assign visible_values = visible_values | strip | split: '|'
+          assign visible_value_ids = visible_values[0] | split: ','
+          assign selected_value_id = visible_values[1]
+          assign rendered_index = 0
+
+          assign selected_value_name = product_option.selected_value
+          for option_value in product_option.values
+            assign option_value_id = option_value.id | append: ''
+            if option_value_id == selected_value_id
+              assign selected_value_name = option_value.name | default: option_value
+              break
+            endif
+          endfor
+        -%}
+
+        {%- capture option_hidden -%}
+          {%- render 'variant-option-hidden', product_resource: product_resource, product_option: product_option -%}
+        {%- endcapture -%}
+        {%- if option_hidden != blank -%}
+          {%- comment -%}
+            The whole option is hidden, label included, but the picker still has to resolve it, so
+            the selected value stays behind as a checked input that is never shown.
+          {%- endcomment -%}
+          {%- assign hidden_fieldset_index = forloop.index0 -%}
+          <fieldset class="variant-option" data-fieldset-index="{{ hidden_fieldset_index }}" ref="fieldsets[]" hidden style="display: none;">
+            {%- for product_option_value in product_option.values -%}
+              {%- assign value_id = product_option_value.id | append: '' -%}
+              {%- if value_id == selected_value_id -%}
+                <input
+                  type="radio"
+                  name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+                  value="{{ product_option_value | escape }}"
+                  data-previous-checked="false"
+                  data-fieldset-index="{{ hidden_fieldset_index }}"
+                  data-input-index="0"
+                  data-input-id="{{ product_option.position }}-0"
+                  data-option-value-id="{{ product_option_value.id }}"
+                  data-option-available="{{ product_option_value.available }}"
+                  data-connected-product-url="{{ product_option_value.product_url }}"
+                  {% if product_option_value.variant.id %}
+                    data-variant-id="{{ product_option_value.variant.id }}"
+                  {% endif %}
+                  data-current-checked="true"
+                  checked
+                >
+              {%- endif -%}
+            {%- endfor -%}
+          </fieldset>
+          {%- continue -%}
+        {%- endif -%}
+
         {%- if is_flavor_option -%}
           {%- render 'variant-flavor-carousel',
             product_resource: product_resource,
@@ -78,11 +136,15 @@
             <legend>
               {{ product_option.name | escape -}}:
               {%- if variant_style == 'swatch' -%}
-                <span class="variant-option__swatch-value">{{ product_option.selected_value }}:</span>
+                <span class="variant-option__swatch-value">{{ selected_value_name }}:</span>
               {%- endif %}
             </legend>
             <div class="variant-option__buttons-row">
             {%- for product_option_value in product_option.values -%}
+              {%- assign value_id = product_option_value.id | append: '' -%}
+              {%- unless visible_value_ids contains value_id -%}
+                {%- continue -%}
+              {%- endunless -%}
               {%- liquid
                 assign option_value_name = product_option_value.name | default: product_option_value
                 assign badge_variant = product_option_value.variant
@@ -123,15 +185,15 @@
                   {% endif %}
                   data-previous-checked="false"
                   data-fieldset-index="{{ fieldset_index }}"
-                  data-input-index="{{ forloop.index0 }}"
-                  data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                  data-input-index="{{ rendered_index }}"
+                  data-input-id="{{ product_option.position }}-{{ rendered_index }}"
                   data-option-value-id="{{ product_option_value.id }}"
                   data-option-available="{{ product_option_value.available }}"
                   data-connected-product-url="{{ product_option_value.product_url }}"
                   {% if product_option_value.variant.id %}
                     data-variant-id="{{ product_option_value.variant.id }}"
                   {% endif %}
-                  {% if product_option_value.selected %}
+                  {% if value_id == selected_value_id %}
                     data-current-checked="true"
                     checked
                   {% else %}
@@ -168,6 +230,7 @@
                   corner_to_corner: true
                 %}
               </label>
+              {%- assign rendered_index = rendered_index | plus: 1 -%}
             {%- endfor -%}
             </div>
             {% if option_id_attribute %}
@@ -209,13 +272,17 @@
                 class="variant-option__select"
               >
                 {%- for product_option_value in product_option.values -%}
+                  {%- assign value_id = product_option_value.id | append: '' -%}
+                  {%- unless visible_value_ids contains value_id -%}
+                    {%- continue -%}
+                  {%- endunless -%}
                   <option
                     value="{{ product_option_value | escape }}"
                     data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
                     data-option-value-id="{{ product_option_value.id }}"
                     data-variant-id="{{ product_option_value.variant.id }}"
                     data-connected-product-url="{{ product_option_value.product_url }}"
-                    {% if product_option_value.selected %}
+                    {% if value_id == selected_value_id %}
                       selected="selected"
                     {% endif %}
                   >
@@ -241,7 +308,7 @@
       {%- endfor -%}
 
       <script type="application/json">
-        {{ product_resource.selected_or_first_available_variant | json }}
+        {% render 'variant-visible-selected', product_resource: product_resource %}
       </script>
     </form>
   </variant-picker>

@@ -22,13 +22,30 @@
   %}
 {%- enddoc -%}
 
+{%- capture visible_values -%}
+  {%- render 'variant-visible-values', product_resource: product_resource, product_option: product_option -%}
+{%- endcapture -%}
 {%- liquid
+  # Hidden values are left out of the carousel entirely, so the initial slide and the radio
+  # indexes `variant-picker.js` reads both count only the slides that are rendered.
+  assign visible_values = visible_values | strip | split: '|'
+  assign visible_value_ids = visible_values[0] | split: ','
+  assign selected_value_id = visible_values[1]
+
   assign initial_slide = 0
+  assign selected_value_name = product_option.selected_value
+  assign rendered_index = 0
   for product_option_value in product_option.values
-    if product_option_value.selected
-      assign initial_slide = forloop.index0
+    assign option_value_id = product_option_value.id | append: ''
+    if visible_value_ids contains option_value_id
+      if option_value_id == selected_value_id
+        assign initial_slide = rendered_index
+        assign selected_value_name = product_option_value.name | default: product_option_value
+      endif
+      assign rendered_index = rendered_index | plus: 1
     endif
   endfor
+  assign rendered_index = 0
 -%}
 
 <script
@@ -49,7 +66,7 @@
   <flavor-carousel
     class="flavor-carousel"
     data-initial-slide="{{ initial_slide }}"
-    data-selected-value="{{ product_option.selected_value | escape }}"
+    data-selected-value="{{ selected_value_name | escape }}"
   >
     <div class="flavor-carousel__arrows" ref="arrows">
       <button
@@ -73,6 +90,10 @@
     <div class="swiper flavor-carousel__swiper" ref="carousel">
       <div class="swiper-wrapper">
         {%- for product_option_value in product_option.values -%}
+          {%- assign value_id = product_option_value.id | append: '' -%}
+          {%- unless visible_value_ids contains value_id -%}
+            {%- continue -%}
+          {%- endunless -%}
           {%- liquid
             assign option_value_name = product_option_value.name | default: product_option_value
 
@@ -131,15 +152,15 @@
               {% endif %}
               data-previous-checked="false"
               data-fieldset-index="{{ fieldset_index }}"
-              data-input-index="{{ forloop.index0 }}"
-              data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+              data-input-index="{{ rendered_index }}"
+              data-input-id="{{ product_option.position }}-{{ rendered_index }}"
               data-option-value-id="{{ product_option_value.id }}"
               data-option-available="{{ product_option_value.available }}"
               data-connected-product-url="{{ product_option_value.product_url }}"
               {% if product_option_value.variant.id %}
                 data-variant-id="{{ product_option_value.variant.id }}"
               {% endif %}
-              {% if product_option_value.selected %}
+              {% if value_id == selected_value_id %}
                 data-current-checked="true"
                 checked
               {% else %}
@@ -168,6 +189,7 @@
             </span>
             <span class="flavor-option__label">{{ option_value_name | escape }}</span>
           </label>
+          {%- assign rendered_index = rendered_index | plus: 1 -%}
         {%- endfor -%}
       </div>
     </div>
