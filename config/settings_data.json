@@ -67,6 +67,7 @@
     "inputs_border_radius": 4,
     "popover_border_radius": 14,
     "popover_border": "none",
+    "pre_order_note": "This item is on pre-order and will be shipped on 20 Sept",
     "currency_code_enabled_product_pages": false,
     "currency_code_enabled_product_cards": false,
     "currency_code_enabled_cart_items": false,
@@ -196,11 +197,6 @@
           "theme": "light",
           "currency_formatting": "symbol_only"
         }
-      },
-      "16841265354654477751": {
-        "type": "shopify://apps/fermat/blocks/claire-pixel/019dd98f-18fa-780a-a524-ec48a376093f",
-        "disabled": true,
-        "settings": {}
       }
     },
     "color_schemes": {
