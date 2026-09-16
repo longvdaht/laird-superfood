@@ -283,7 +283,10 @@
       const priceText = getSelectedVariantPriceText(sectionEl);
       if (!priceText) return;
 
-      textEl.textContent = `Add To Cart - ${priceText}`;
+      // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
+      const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
+
+      textEl.textContent = `${baseLabel} - ${priceText}`;
     };
 
     sections.forEach((sectionEl) => {
