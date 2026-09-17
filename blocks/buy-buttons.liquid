@@ -290,7 +290,12 @@
 {% stylesheet %}
   .buy-buttons-block {
     width: 100%;
+    margin-bottom: -24px;
   }
+
+  span.buy-buttons-block {
+    margin-top: 0 !important;
+  } 
 
   .product-form-buttons {
     display: flex;
@@ -313,6 +318,13 @@
   .product-form-buttons--stacked
     > *:not(.quantity-selector, .quantity-rules, .quantity-label, .pre-order-note) {
     flex-basis: 51%; /* Force the buttons to be on separate rows */
+  }
+
+  /* When a quantity selector is present it shares the row with add to cart, so the button fills
+     whatever is left instead of being pushed onto its own row. Accelerated checkout keeps its
+     51% basis and still wraps below. */
+  .product-form-buttons--stacked:has(.quantity-selector) > *:has(.add-to-cart-button) {
+    flex: 1 1 auto;
   }
 
   /* The pre-order note takes a row of its own, directly under the button it explains. */
@@ -514,6 +526,12 @@
   .pickup-location__close-button {
     top: calc(var(--padding-2xl) - (var(--icon-size-xs) / 2));
     right: calc(var(--padding-2xl) - var(--icon-size-xs));
+  }
+
+  @media (min-width: 750px) {
+    .pre-order-note {
+      text-align: center;
+    }
   }
 {% endstylesheet %}
 

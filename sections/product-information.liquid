@@ -34,6 +34,25 @@
     when 'content-full-width'
       assign content_width = 'full-width'
   endcase
+
+  # Product page background. Preferred: a hex color picked on the product
+  # (metafield custom.product_page_background_color) that fades into the page background.
+  # Legacy: custom.product_page_background holding keyword classes (red gradient, gold gradient, ...).
+  assign pdp_background_class = product.metafields.custom.product_page_background | downcase | strip
+  assign pdp_background_color = product.metafields.custom.product_page_background_color | strip
+
+  # The legacy text metafield may also hold a hex, so merchants can switch without a new field
+  if pdp_background_color == blank
+    assign pdp_background_first_char = pdp_background_class | slice: 0
+    if pdp_background_first_char == "#"
+      assign pdp_background_color = pdp_background_class
+      assign pdp_background_class = ""
+    endif
+  endif
+
+  if pdp_background_color != blank
+    assign pdp_background_class = "gradient"
+  endif
 %}
 
 <script type="application/ld+json">
@@ -42,12 +61,15 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} product-information--custom-mobile-padding{% endif %} {% if product.metafields.custom.product_page_background != blank %} {{ product.metafields.custom.product_page_background | downcase }} {% endif %}"
+  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} product-information--custom-mobile-padding{% endif %} {% if pdp_background_class != blank %} {{ pdp_background_class }}{% endif %}"
   style="
     {% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;
     {%- if section.settings.custom_mobile_padding -%}
       --padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] }}px;
       --padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] }}px;
+    {%- endif -%}
+    {%- if pdp_background_color != blank -%}
+      --pdp-gradient-color: {{ pdp_background_color }};
     {%- endif -%}
   "
 >
@@ -92,6 +114,19 @@
     {% endfor %}
   </div>
 </div>
+
+{%- comment -%}
+  Mahalo runs its own custom purchase options UI: the Recharge widget is hidden and proxied
+  behind our markup, with the copy coming from this section's settings. new-mahalo still uses
+  the older hard-coded snippet. Add a template suffix here to roll this one out further.
+{%- endcomment -%}
+{%- if template.suffix == 'mahalo' -%}
+  {%- render 'purchase-options-mahalo', product: closest.product, section: section -%}
+  {% render 'purchase-options-sync',
+    root_selector: '.product-information',
+    show_price_in_button: section.settings.po_show_price_in_button
+  %}
+{%- endif -%}
 
 {% stylesheet %}
   .product-information {
@@ -402,9 +437,275 @@
     }
   }
 
+  /* Grid items stretch by default, which leaves the sticky column no room to travel */
+  @media screen and (min-width: 750px) {
+    .product-details.sticky-content--desktop {
+      align-self: start;
+    }
+  }
+
   /* If the header is sticky, make product details content stick underneath the header */
   body:has(#header-group #header-component[data-sticky-state='active']) .product-details.sticky-content--desktop {
     --sticky-header-offset: var(--header-height);
+  }
+
+  /* Custom purchase options (snippets/purchase-options-mahalo.liquid) */
+  .new-purchase-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+  }
+
+  .new-purchase-options .new-po-legend {
+    color: var(--lairdsuperfood-com-black, var(--color-black-solid, #000)) !important;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0) !important;
+    font-family: var(--font-family-Font-1, Rubik) !important;
+    font-size: 14px !important;
+    font-style: normal !important;
+    font-weight: var(--font-weight-700, 700) !important;
+    line-height: 20px !important;
+    padding: 0;
+    margin: 0 0 4px 0;
+    display: none;
+  }
+
+  .new-po-option {
+    border: 1px solid var(--color-azure-88, #888888);
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .new-po-option--onetime .new-po-price--compare {
+    display: none;
+  }
+
+  .new-po-option:has(.new-po-radio-input:checked) {
+    border-width: 2px;
+    border-color: var(--color-azure-14, #003349);
+    background: #FFFFFF;
+  }
+
+  .new-po-option__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .new-po-option:has(.new-po-radio-input:checked) .new-po-option__row {
+    /* Keep the content from shifting when the border grows from 1.5px to 2px */
+    padding: 15.5px 17.5px;
+  }
+
+  .new-po-radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .new-po-radio-indicator {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--color-azure-88, #DBE3E7);
+    background: #fff;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+
+  .new-po-radio-input:checked ~ .new-po-radio-indicator {
+    border-color: var(--color-azure-14, #003349);
+  }
+
+  .new-po-radio-input:checked ~ .new-po-radio-indicator::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--color-azure-14, #003349);
+  }
+
+  .new-po-option__title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    color: var(--lairdsuperfood-com-prussian-blue, var(--color-azure-14, #003349));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  .new-po-discount-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: var(--color-rose-46, #EA0044);
+    color: var(--color-white-solid, #FFF);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+    white-space: nowrap;
+  }
+
+  .new-po-prices {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .new-po-price {
+    font-family: var(--font-family-Font-1, Rubik);
+    font-style: normal;
+  }
+
+  .new-po-price--compare {
+    color: var(--lairdsuperfood-com-bismark, var(--color-azure-42, #595959));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-size: var(--font-size-16, 16px);
+    font-weight: 400;
+    line-height: var(--font-size-24, 16px);
+    text-decoration-line: line-through;
+  }
+
+  .new-po-price--sub,
+  .new-po-price--regular {
+    color: var(--lairdsuperfood-com-prussian-blue, var(--color-azure-14, #003349));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+  }
+
+  .new-po-option__body {
+    padding: 0 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .new-po-benefits-extra[hidden] {
+    display: none !important;
+  }
+
+  .new-po-benefits-list,
+  .new-po-benefits-extra {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .new-po-benefits-extra {
+    margin-top: -4px;
+  }
+
+  .new-po-benefit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--lairdsuperfood-com-prussian-blue, var(--color-azure-14, #003349));
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: var(--font-size-16, 16px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: var(--font-size-24, 24px);
+  }
+
+  .new-po-check-icon {
+    color: var(--color-azure-14, #003349);
+    flex-shrink: 0;
+  }
+
+  .new-po-see-more {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--color-azure-10, #012332);
+    font-family: var(--font-family-Font-1, Rubik);
+    font-size: var(--font-size-14, 14px);
+    font-style: normal;
+    font-weight: 600;
+    line-height: var(--font-size-24, 24px);
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-skip-ink: auto;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .new-po-see-more:hover {
+    opacity: 0.85;
+  }
+
+  .new-po-frequency {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .new-po-frequency__label {
+    display: none;
+  }
+
+  .new-po-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .new-po-frequency-select {
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    border: 2px solid var(--color-azure-88, #DBE3E7);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--lairdsuperfood-com-prussian-blue, var(--color-azure-14, #003349));
+    font-size: var(--font-size-16, 16px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: var(--font-size-24, 24px);
+    cursor: pointer;
+  }
+
+  .new-po-frequency-select:focus {
+    outline: 2px solid var(--color-azure-14, #003349);
+    outline-offset: 2px;
+  }
+
+  .new-po-select-arrow {
+    position: absolute;
+    right: 16px;
+    pointer-events: none;
+    color: var(--color-azure-14, #003349);
+    display: flex;
+    align-items: center;
   }
 {% endstylesheet %}
 
@@ -538,6 +839,68 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Purchase options"
+    }, {
+      "type": "text",
+      "id": "po_legend",
+      "label": "Purchase options label",
+      "default": "Frequency",
+      "info": "Leave empty to hide it."
+    }, {
+      "type": "text",
+      "id": "po_subscribe_title",
+      "label": "Subscribe option title",
+      "default": "Subscribe & Save"
+    }, {
+      "type": "text",
+      "id": "po_badge_text",
+      "label": "Discount badge",
+      "default": "Save [discount]%",
+      "info": "[discount] is replaced with the subscription discount. Leave empty to hide the badge."
+    }, {
+      "type": "textarea",
+      "id": "po_benefits",
+      "label": "Subscription benefits",
+      "default": "Free shipping on orders over $35\nSave [discount]% on every order, additional 10% off third subscription\nPriority stock, we hold inventory for subscribers first\nEasy to manage, cancel anytime",
+      "info": "One benefit per line. Use [discount] for the subscription discount."
+    }, {
+      "type": "checkbox",
+      "id": "po_show_more_benefits",
+      "label": "Show the \"See more benefits\" toggle",
+      "default": false
+    }, {
+      "type": "textarea",
+      "id": "po_benefits_extra",
+      "label": "Benefits behind the toggle",
+      "default": "Additional 10% off third subscription\nLow inventory? We hold stock for subscribers first\nExclusive subscriber-only access to new products\n[discount]% off every order, forever",
+      "info": "One benefit per line. The toggle is hidden when this is empty.",
+      "visible_if": "{{ section.settings.po_show_more_benefits }}"
+    }, {
+      "type": "text",
+      "id": "po_see_more_label",
+      "label": "Toggle label (collapsed)",
+      "default": "See more subscription benefits +",
+      "visible_if": "{{ section.settings.po_show_more_benefits }}"
+    }, {
+      "type": "text",
+      "id": "po_see_less_label",
+      "label": "Toggle label (expanded)",
+      "default": "See fewer benefits -",
+      "visible_if": "{{ section.settings.po_show_more_benefits }}"
+    }, {
+      "type": "text",
+      "id": "po_onetime_title",
+      "label": "One-time purchase title",
+      "default": "One-Time Purchase"
+    }, {
+      "type": "checkbox",
+      "id": "po_show_price_in_button",
+      "label": "Show the selected price on the add to cart button",
+      "info": "Appends the subscription or one-time price, e.g. \"Add to cart - $19.20\".",
+      "default": false
     }
   ],
   "presets": []

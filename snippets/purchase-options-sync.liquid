@@ -1,0 +1,280 @@
+{%- comment -%}
+  Wires a custom purchase options fieldset (purchase-options-mahalo.liquid for mahalo,
+  new-purchase-options-new-mahalo.liquid for new-mahalo) to the Recharge subscription widget:
+  hides the app widget, moves our markup into its place and proxies every selection into the
+  widget shadow DOM. Also keeps the add to cart label in sync.
+
+  Accepts:
+  - root_selector: CSS selector of the product section root, e.g. '.new-product-information'
+  - show_price_in_button: pass false to keep the add to cart label as Liquid rendered it.
+    Omitted, the selected price is appended, which is what new-mahalo has always done.
+{%- endcomment -%}
+
+<script>
+  (() => {
+    const ROOT_SELECTOR = {{ root_selector | default: '.new-product-information' | json }};
+    const SHOW_PRICE_IN_BUTTON = {{ show_price_in_button | json }} !== false;
+
+    const priceMapCache = new WeakMap();
+
+    const getPriceMap = (poEl) => {
+      if (!poEl) return null;
+      if (priceMapCache.has(poEl)) return priceMapCache.get(poEl);
+
+      let map = null;
+      const mapEl = poEl.querySelector('[data-po-variant-prices]');
+      if (mapEl) {
+        try {
+          map = JSON.parse(mapEl.textContent);
+        } catch (e) {
+          map = null;
+        }
+      }
+      priceMapCache.set(poEl, map);
+      return map;
+    };
+
+    // The new-mahalo variant picker carries prices as data attributes. Other pickers do not,
+    // so fall back to the variant price map the fieldset renders from Liquid.
+    const readVariantPrices = (sectionEl, poEl) => {
+      if (!sectionEl) return null;
+
+      const checked = sectionEl.querySelector('.variant-picker input[type="radio"][data-variant-id]:checked');
+      if (checked && checked.hasAttribute('data-variant-price-text')) {
+        return {
+          regular: checked.getAttribute('data-variant-price-text') || '',
+          compare: checked.getAttribute('data-variant-compare-price-text') || '',
+          sub: checked.getAttribute('data-variant-sub-price-text') || '',
+        };
+      }
+
+      const map = getPriceMap(poEl);
+      if (!map) return null;
+
+      const variantId =
+        (checked && checked.getAttribute('data-variant-id')) ||
+        sectionEl.querySelector('product-form-component input[ref="variantId"]')?.value;
+      const entry = variantId ? map[String(variantId)] : null;
+      if (!entry) return null;
+
+      return { regular: entry.price || '', compare: entry.compare || '', sub: entry.sub || '' };
+    };
+
+    (() => {
+      const initPurchaseOptions = () => {
+        document.querySelectorAll('.new-purchase-options').forEach((poEl) => {
+          const sectionEl = document.querySelector(ROOT_SELECTOR);
+          if (!sectionEl) return;
+
+          const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
+          if (!rcWidget) return;
+
+          const getRcShadow = () => rcWidget.shadowRoot;
+          const getRcPlansShadow = () => {
+            const s1 = getRcShadow();
+            if (!s1) return null;
+            const rcPlans = s1.querySelector('rc-selling-plans');
+            return rcPlans ? rcPlans.shadowRoot : null;
+          };
+
+          const hideRcWidget = () => {
+            rcWidget.style.setProperty('display', 'none', 'important');
+          };
+
+          const syncFrequency = (planId) => {
+            const s2 = getRcPlansShadow();
+            if (!s2) return;
+            const radio = s2.querySelector(`input[value="${planId}"]`);
+            if (radio && !radio.checked) radio.click();
+          };
+
+          const syncPurchaseOption = (value) => {
+            const s1 = getRcShadow();
+            if (!s1) return;
+            const radio = s1.querySelector(`input[name="purchaseOption"][value="${value}"]`);
+            if (radio && !radio.checked) radio.click();
+          };
+
+          rcWidget.parentNode.insertBefore(poEl, rcWidget);
+          hideRcWidget();
+          poEl.style.display = '';
+
+          const freqSelect = poEl.querySelector('.new-po-frequency-select');
+          if (freqSelect) {
+            freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
+            setTimeout(() => {
+              if (freqSelect.value) syncFrequency(freqSelect.value);
+            }, 200);
+          }
+
+          poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
+            radio.addEventListener('change', () => {
+              if (radio.checked) {
+                syncPurchaseOption(radio.value);
+                const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
+                if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
+              }
+            });
+          });
+
+          const seeMoreBtn = poEl.querySelector('.new-po-see-more');
+          const extraList  = poEl.querySelector('.new-po-benefits-extra');
+          if (seeMoreBtn && extraList) {
+            // Labels come from the section settings, so a merchant can reword them.
+            const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
+            const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
+            seeMoreBtn.addEventListener('click', () => {
+              const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
+              seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
+              if (!expanded) {
+                extraList.removeAttribute('hidden');
+                seeMoreBtn.textContent = lessLabel;
+              } else {
+                extraList.setAttribute('hidden', '');
+                seeMoreBtn.textContent = moreLabel;
+              }
+            });
+          }
+
+          const roundPrice = (priceStr) => {
+            if (!priceStr) return priceStr;
+            return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+          };
+
+          const updatePrices = () => {
+            const prices = readVariantPrices(sectionEl, poEl);
+            if (!prices) return;
+
+            const regularText  = roundPrice(prices.regular);
+            const compareText  = roundPrice(prices.compare);
+            const subText      = roundPrice(prices.sub || prices.regular);
+            const hasCompare   = compareText !== '';
+
+            poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
+              el.textContent   = regularText;
+              el.style.display = '';
+            });
+            poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
+              el.textContent = subText;
+            });
+
+            poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
+              el.textContent   = compareText;
+              el.style.display = hasCompare ? '' : 'none';
+            });
+            poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
+              el.textContent = regularText;
+            });
+          };
+
+          updatePrices();
+
+          sectionEl.addEventListener('change', (e) => {
+            if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+              updatePrices();
+            }
+          });
+
+          sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
+            updatePrices();
+          });
+        });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPurchaseOptions);
+      } else {
+        initPurchaseOptions();
+      }
+    })();
+
+    (() => {
+      // When off, the button keeps whatever label Liquid rendered ("Add to cart", "Pre-Order").
+      if (!SHOW_PRICE_IN_BUTTON) return;
+
+      const sections = document.querySelectorAll(ROOT_SELECTOR);
+      if (!sections.length) return;
+
+      const isSubscriptionSelected = (sectionEl) => {
+        const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
+        return subRadio ? subRadio.checked : false;
+      };
+
+      const roundPriceCart = (priceStr) => {
+        if (!priceStr) return priceStr;
+        return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+      };
+
+      const getSelectedVariantPriceText = (sectionEl) => {
+        const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
+        const prices = readVariantPrices(sectionEl, poEl);
+        if (!prices) return null;
+
+        if (isSubscriptionSelected(sectionEl) && prices.sub) return roundPriceCart(prices.sub);
+
+        return roundPriceCart(prices.regular) || null;
+      };
+
+      const updateAddToCartText = (sectionEl) => {
+        const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
+        if (!textEl) return;
+
+        const priceText = getSelectedVariantPriceText(sectionEl);
+        if (!priceText) return;
+
+        // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
+        const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
+
+        textEl.textContent = `${baseLabel} - ${priceText}`;
+      };
+
+      sections.forEach((sectionEl) => {
+        updateAddToCartText(sectionEl);
+
+        let isSyncing = false;
+        const safeSync = () => {
+          if (isSyncing) return;
+          isSyncing = true;
+          updateAddToCartText(sectionEl);
+          setTimeout(() => {
+            updateAddToCartText(sectionEl);
+            isSyncing = false;
+          }, 60);
+        };
+
+        sectionEl.addEventListener('change', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLInputElement)) return;
+          if (target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+            safeSync();
+          }
+          if (target.matches('.new-po-radio-input')) {
+            safeSync();
+          }
+        });
+
+        sectionEl.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          if (target.closest('.variant-option__button-label')) {
+            safeSync();
+          }
+        });
+
+        document.addEventListener('change', (event) => {
+          const target = event.target;
+          if (target instanceof HTMLInputElement && target.matches('.new-po-radio-input')) {
+            safeSync();
+          }
+        });
+
+        const formContainer = sectionEl.querySelector('product-form-component');
+        if (formContainer) {
+          const observer = new MutationObserver(() => safeSync());
+          observer.observe(formContainer, { childList: true, subtree: true, characterData: true, attributes: true });
+        }
+      });
+    })();
+
+  })();
+</script>
