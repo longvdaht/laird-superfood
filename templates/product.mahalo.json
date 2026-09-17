@@ -311,6 +311,25 @@
               },
               "block_order": []
             },
+            "ebd_pdp_guarantee_6R9Wp3": {
+              "type": "ebd-pdp-guarantee",
+              "name": "EBD PDP Guarantee",
+              "settings": {
+                "heading": "30 Day Happiness Guarantee",
+                "text": "<p>We know you'll love our products - we're so confident that we offer a 30-day guarantee on all orders, from the time you receive it at home.</p>",
+                "background_color": "#FFFFFF",
+                "border_color": "#3A758A",
+                "icon_background_color": "#003349",
+                "icon_color": "#FFFFFF",
+                "heading_color": "#003349",
+                "text_color": "#000000",
+                "margin_top": 0,
+                "margin_bottom": 0,
+                "margin_top_mobile": 0,
+                "margin_bottom_mobile": 0
+              },
+              "blocks": {}
+            },
             "ebd_product_tabs_mhFjE9": {
               "type": "ebd-product-tabs",
               "name": "EBD Product Tabs",
@@ -324,6 +343,7 @@
             "recharge_subscriptions_subscription_widget_v2_tQWAyW",
             "expertvoice_ev_pdp_deal_block_U63Qmw",
             "buy_buttons_eYQEYi",
+            "ebd_pdp_guarantee_6R9Wp3",
             "ebd_product_tabs_mhFjE9"
           ]
         }
@@ -342,7 +362,17 @@
         "padding-block-end": 65,
         "custom_mobile_padding": true,
         "padding-block-start-mobile": 20,
-        "padding-block-end-mobile": 20
+        "padding-block-end-mobile": 20,
+        "po_legend": "Frequency",
+        "po_subscribe_title": "Subscribe & Save",
+        "po_badge_text": "Save [discount]%",
+        "po_benefits": "Free shipping on orders over $35\nSave [discount]% on every order, additional 10% off third subscription\nPriority stock, we hold inventory for subscribers first\nEasy to manage, cancel anytime",
+        "po_show_more_benefits": false,
+        "po_benefits_extra": "Additional 10% off third subscription\nLow inventory? We hold stock for subscribers first\nExclusive subscriber-only access to new products\n[discount]% off every order, forever",
+        "po_see_more_label": "See more subscription benefits +",
+        "po_see_less_label": "See fewer benefits -",
+        "po_onetime_title": "One-Time Purchase",
+        "po_show_price_in_button": false
       }
     },
     "ebd_pdp_info_50_50_6Lb9ch": {
