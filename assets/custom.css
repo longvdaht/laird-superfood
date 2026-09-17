@@ -837,8 +837,12 @@ recharge-subscription-widget {
   .template-product-mahalo h1 {
     font-size: 36px;
     line-height: 100%;
-    width: calc(382/632*100%);
   }
 }
 
+@media (min-width: 1200px) {
+  .template-product-mahalo h1 {
+    width: calc(382/632*100%);
+  }
+}
 
