@@ -34,6 +34,25 @@
     when 'content-full-width'
       assign content_width = 'full-width'
   endcase
+
+  # Product page background. Preferred: a hex color picked on the product
+  # (metafield custom.product_page_background_color) that fades into the page background.
+  # Legacy: custom.product_page_background holding keyword classes (red gradient, gold gradient, ...).
+  assign pdp_background_class = closest.product.metafields.custom.product_page_background | downcase | strip
+  assign pdp_background_color = closest.product.metafields.custom.product_page_background_color | strip
+
+  # The legacy text metafield may also hold a hex, so merchants can switch without a new field
+  if pdp_background_color == blank
+    assign pdp_background_first_char = pdp_background_class | slice: 0
+    if pdp_background_first_char == "#"
+      assign pdp_background_color = pdp_background_class
+      assign pdp_background_class = ""
+    endif
+  endif
+
+  if pdp_background_color != blank
+    assign pdp_background_class = "gradient"
+  endif
 %}
 
 <script type="application/ld+json">
@@ -42,12 +61,15 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="new-product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} new-product-information--custom-mobile-padding{% endif %}"
+  class="new-product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} new-product-information--custom-mobile-padding{% endif %}{% if pdp_background_class != blank %} {{ pdp_background_class }}{% endif %}"
   style="
     {% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;
     {%- if section.settings.custom_mobile_padding -%}
       --padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] }}px;
       --padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] }}px;
+    {%- endif -%}
+    {%- if pdp_background_color != blank -%}
+      --pdp-gradient-color: {{ pdp_background_color }};
     {%- endif -%}
   "
 >
@@ -112,231 +134,9 @@
     }
   })();
 
-  (() => {
-    const initPurchaseOptions = () => {
-      document.querySelectorAll('.new-purchase-options').forEach((poEl) => {
-        const sectionEl = document.querySelector('.new-product-information');
-        if (!sectionEl) return;
-
-        const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
-        if (!rcWidget) return;
-
-        const getRcShadow = () => rcWidget.shadowRoot;
-        const getRcPlansShadow = () => {
-          const s1 = getRcShadow();
-          if (!s1) return null;
-          const rcPlans = s1.querySelector('rc-selling-plans');
-          return rcPlans ? rcPlans.shadowRoot : null;
-        };
-
-        const hideRcWidget = () => {
-          rcWidget.style.setProperty('display', 'none', 'important');
-        };
-
-        const syncFrequency = (planId) => {
-          const s2 = getRcPlansShadow();
-          if (!s2) return;
-          const radio = s2.querySelector(`input[value="${planId}"]`);
-          if (radio && !radio.checked) radio.click();
-        };
-
-        const syncPurchaseOption = (value) => {
-          const s1 = getRcShadow();
-          if (!s1) return;
-          const radio = s1.querySelector(`input[name="purchaseOption"][value="${value}"]`);
-          if (radio && !radio.checked) radio.click();
-        };
-
-        rcWidget.parentNode.insertBefore(poEl, rcWidget);
-        hideRcWidget();
-        poEl.style.display = '';
-
-        const freqSelect = poEl.querySelector('.new-po-frequency-select');
-        if (freqSelect) {
-          freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
-          setTimeout(() => {
-            if (freqSelect.value) syncFrequency(freqSelect.value);
-          }, 200);
-        }
-
-        poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
-          radio.addEventListener('change', () => {
-            if (radio.checked) {
-              syncPurchaseOption(radio.value);
-              const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
-              if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
-            }
-          });
-        });
-
-        const seeMoreBtn = poEl.querySelector('.new-po-see-more');
-        const extraList  = poEl.querySelector('.new-po-benefits-extra');
-        if (seeMoreBtn && extraList) {
-          seeMoreBtn.addEventListener('click', () => {
-            const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
-            seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
-            if (!expanded) {
-              extraList.removeAttribute('hidden');
-              seeMoreBtn.textContent = 'See fewer benefits -';
-            } else {
-              extraList.setAttribute('hidden', '');
-              seeMoreBtn.textContent = 'See more subscription benefits +';
-            }
-          });
-        }
-
-        const roundPrice = (priceStr) => {
-          if (!priceStr) return priceStr;
-          return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
-        };
-
-        const updatePrices = () => {
-          const checkedInput = sectionEl.querySelector(
-            '.variant-picker input[type="radio"][data-variant-id]:checked'
-          );
-          if (!checkedInput) return;
-
-          const regularText  = roundPrice(checkedInput.getAttribute('data-variant-price-text') || '');
-          const compareText  = roundPrice(checkedInput.getAttribute('data-variant-compare-price-text') || '');
-          const subText      = roundPrice(checkedInput.getAttribute('data-variant-sub-price-text') || regularText);
-          const hasCompare   = compareText !== '';
-
-          poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
-            el.textContent   = regularText;
-            el.style.display = '';
-          });
-          poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
-            el.textContent = subText;
-          });
-
-          poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
-            el.textContent   = compareText;
-            el.style.display = hasCompare ? '' : 'none';
-          });
-          poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
-            el.textContent = regularText;
-          });
-        };
-
-        updatePrices();
-
-        sectionEl.addEventListener('change', (e) => {
-          if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
-            updatePrices();
-          }
-        });
-
-        sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
-          updatePrices();
-        });
-      });
-    };
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initPurchaseOptions);
-    } else {
-      initPurchaseOptions();
-    }
-  })();
-
-  (() => {
-    const sections = document.querySelectorAll('.new-product-information');
-    if (!sections.length) return;
-
-    const isSubscriptionSelected = (sectionEl) => {
-      const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
-      return subRadio ? subRadio.checked : false;
-    };
-
-    const roundPriceCart = (priceStr) => {
-      if (!priceStr) return priceStr;
-      return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
-    };
-
-    const getSelectedVariantPriceText = (sectionEl) => {
-      let checkedOption = sectionEl.querySelector('.variant-picker input[type="radio"][data-variant-id]:checked');
-
-      if (!checkedOption) {
-        const variantIdInput = sectionEl.querySelector('product-form-component input[ref="variantId"]');
-        const variantId = variantIdInput?.value;
-        if (variantId) {
-          checkedOption = sectionEl.querySelector(
-            `.variant-picker input[type="radio"][data-variant-id="${variantId}"][data-variant-price-text]`
-          );
-        }
-      }
-
-      if (!checkedOption) return null;
-
-      if (isSubscriptionSelected(sectionEl)) {
-        const subPrice = checkedOption.getAttribute('data-variant-sub-price-text');
-        if (subPrice) return roundPriceCart(subPrice);
-      }
-
-      return roundPriceCart(checkedOption.getAttribute('data-variant-price-text') || null);
-    };
-
-    const updateAddToCartText = (sectionEl) => {
-      const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
-      if (!textEl) return;
-
-      const priceText = getSelectedVariantPriceText(sectionEl);
-      if (!priceText) return;
-
-      // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
-      const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
-
-      textEl.textContent = `${baseLabel} - ${priceText}`;
-    };
-
-    sections.forEach((sectionEl) => {
-      updateAddToCartText(sectionEl);
-
-      let isSyncing = false;
-      const safeSync = () => {
-        if (isSyncing) return;
-        isSyncing = true;
-        updateAddToCartText(sectionEl);
-        setTimeout(() => {
-          updateAddToCartText(sectionEl);
-          isSyncing = false;
-        }, 60);
-      };
-
-      sectionEl.addEventListener('change', (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLInputElement)) return;
-        if (target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
-          safeSync();
-        }
-        if (target.matches('.new-po-radio-input')) {
-          safeSync();
-        }
-      });
-
-      sectionEl.addEventListener('click', (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-        if (target.closest('.variant-option__button-label')) {
-          safeSync();
-        }
-      });
-
-      document.addEventListener('change', (event) => {
-        const target = event.target;
-        if (target instanceof HTMLInputElement && target.matches('.new-po-radio-input')) {
-          safeSync();
-        }
-      });
-
-      const formContainer = sectionEl.querySelector('product-form-component');
-      if (formContainer) {
-        const observer = new MutationObserver(() => safeSync());
-        observer.observe(formContainer, { childList: true, subtree: true, characterData: true, attributes: true });
-      }
-    });
-  })();
 </script>
+
+{% render 'purchase-options-sync', root_selector: '.new-product-information' %}
 
 {% stylesheet %}
   .new-product-information {
@@ -989,11 +789,11 @@
   .new-purchase-options {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
     width: 100%;
     border: none;
     padding: 0;
-    margin: 0 0 25px 0;
+    margin: 0;
   }
 
   .new-purchase-options .new-po-legend {
@@ -1241,15 +1041,31 @@
     padding-left: 12px;
     padding-right: 12px;
   }
-  .product-information.red.gradient {
+  /* Hex picked on the product (metafield custom.product_page_background_color) fades into the page background.
+     --pdp-gradient-color is set inline by sections/product-information.liquid. */
+  /* Scoped through .shopify-section to outrank base.css `:is(.section, ...) { background: transparent }` */
+  .shopify-section:not(.header-section) :is(.product-information, .new-product-information).gradient {
+    background: linear-gradient(
+      180deg,
+      var(--pdp-gradient-color, transparent) 0%,
+      var(--pdp-gradient-end, var(--color-mediumgray, #F8F4EF)) var(--pdp-gradient-stop, 52.51%)
+    );
+  }
+
+  /* Legacy keyword values kept so products still on "red/gold/orange gradient" render unchanged */
+  .shopify-section:not(.header-section) .product-information.red.gradient,
+  .shopify-section:not(.header-section) .new-product-information.red.gradient {
     background: linear-gradient(180deg, #D9043D 0%, #F8F4EF 100%);
   }
-  .product-information.gold.gradient {
+  .shopify-section:not(.header-section) .product-information.gold.gradient,
+  .shopify-section:not(.header-section) .new-product-information.gold.gradient {
     background: linear-gradient(180deg, #DBA72D 0%, #F8F4EF 52.51%);
   }
-  .product-information.orange.gradient {
+  .shopify-section:not(.header-section) .product-information.orange.gradient,
+  .shopify-section:not(.header-section) .new-product-information.orange.gradient {
     background: linear-gradient(180deg, #E86400 0%, #F8F4EF 52.51%);
   }
+
   .new-product-information .product-tabs {
     margin-top: 15px;
   }
@@ -1301,15 +1117,38 @@
   } */
 
   @media (min-width: 750px) {
-    .product-information.red.gradient {
-    background: linear-gradient(180deg, #D9043D 0%, #F8F4EF 52.51%);
+    .shopify-section:not(.header-section) .product-information.red.gradient,
+    .shopify-section:not(.header-section) .new-product-information.red.gradient {
+      background: linear-gradient(180deg, #D9043D 0%, #F8F4EF 52.51%);
+    }
   }
-  .product-information.gold.gradient {
-    background: linear-gradient(180deg, #DBA72D 0%, #F8F4EF 52.51%);
+
+  @media (max-width: 749px) {
+    .new-po-option__title {
+      font-size: 18px;
+      line-height: 24px;
+    }
+
+    .new-po-option__row {
+      gap: 8px;
+    }
+
+    .new-po-price--sub,
+    .new-po-price--regular {
+      font-size: 16px;
+      line-height: 16px;
+    }
+    
+    .new-po-price--compare {
+      font-size: 16px;
+      line-height: 16px;
+    }
   }
-  .product-information.orange.gradient {
-    background: linear-gradient(180deg, #E86400 0%, #F8F4EF 52.51%);
-  }
+
+  @media (max-width: 400px) {
+    .new-po-prices {
+      flex-direction: column;
+    }
   }
 
   /* .new-product-information .product-tabs .tab-content {

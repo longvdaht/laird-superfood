@@ -33,7 +33,9 @@ body, body * {
 }
 
 main {
-  overflow-x: hidden;
+  /* clip (not hidden): with overflow-y visible, hidden makes overflow-y compute to auto,
+     turning <main> into a scroll container and breaking position: sticky inside it */
+  overflow-x: clip;
 }
 
 h1 {
