@@ -2036,28 +2036,6 @@
     ]
   },
   {
-    "name": "Pre-order",
-    "settings": [
-      {
-        "type": "paragraph",
-        "content": "Shown on products whose `custom.pre_order` metafield is true."
-      },
-      {
-        "type": "text",
-        "id": "pre_order_button_text",
-        "label": "Button text",
-        "default": "Pre-Order"
-      },
-      {
-        "type": "text",
-        "id": "pre_order_note",
-        "label": "Note under the button",
-        "info": "Replace [add date] with the ship date. Leave empty to show no note. A product can override this with its `custom.pre_order_text` metafield.",
-        "default": "This item is on pre-order and will be shipped on [add date]"
-      }
-    ]
-  },
-  {
     "name": "t:names.prices",
     "settings": [
       {
@@ -2093,6 +2071,12 @@
   {
     "name": "t:names.product_cards",
     "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_product_card_rating",
+        "label": "Show rating on product cards",
+        "default": true
+      },
       {
         "type": "checkbox",
         "id": "quick_add",
