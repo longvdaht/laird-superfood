@@ -173,36 +173,5 @@
     </label>
   </div>
 
-
-  {%- comment -%}
-    Prices per variant, so the sync script can refresh them on pickers that do not carry
-    the data-variant-*-text attributes (every template other than new-mahalo).
-  {%- endcomment -%}
-  <script type="application/json" data-po-variant-prices>
-    {
-      {%- for pov_v in pov_product.variants -%}
-        {%- liquid
-          assign pov_v_compare = nil
-          if pov_v.compare_at_price > pov_v.price
-            assign pov_v_compare = pov_v.compare_at_price
-          elsif pov_v.title == '1 - 16oz'
-            assign pov_v_compare = 3400
-          elsif pov_v.title == '3 Pack - 16oz'
-            assign pov_v_compare = 10200
-          endif
-
-          assign pov_v_sub = nil
-          if pov_v.selling_plan_allocations.size > 0
-            assign pov_v_sub = pov_v.selling_plan_allocations.first.price
-          endif
-        -%}
-        "{{ pov_v.id }}": {
-          "price": {{ pov_v.price | money | json }},
-          "compare": {% if pov_v_compare %}{{ pov_v_compare | money | json }}{% else %}""{% endif %},
-          "sub": {% if pov_v_sub %}{{ pov_v_sub | money | json }}{% else %}""{% endif %}
-        }{%- unless forloop.last -%},{%- endunless -%}
-      {%- endfor -%}
-    }
-  </script>
 </fieldset>
 {%- endunless -%}

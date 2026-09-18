@@ -15,19 +15,6 @@
   if product.selected_or_first_available_variant.featured_media.preview_image == blank
     assign product_variant_media = product.featured_media.preview_image | image_url: width: 100
   endif
-
-  # A pre-order product buys the same way, it just says so on the button. The label is read from
-  # the product here, in the snippet that prints it, rather than handed down as `add_to_cart_text`
-  # from the block that calls it, so that nothing in between can drop it. Sold out still wins:
-  # there is nothing to pre-order when the variant cannot be added at all.
-  assign is_pre_order = false
-  if product.metafields.custom.pre_order.value == true and can_add_to_cart
-    assign is_pre_order = true
-    capture pre_order_label
-      render 'pre-order', product: product, mode: 'label'
-    endcapture
-    assign add_to_cart_text = pre_order_label | strip | default: 'Pre-Order'
-  endif
 -%}
 
 {% assign is_sold_out_for_otc = product.metafields.custom.sold_out.value %}
@@ -57,11 +44,7 @@
             {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
           </span>
         {% endif %}
-        <span
-          class="add-to-cart-text__content{% if icon_only_on_mobile %} is-visually-hidden-mobile{% endif %}"
-          data-base-label="{{ add_to_cart_text | default: default_add_to_cart_text | escape }}"
-          {% if is_pre_order %}data-pre-order="true"{% endif %}
-        >
+        <span class="add-to-cart-text__content{% if icon_only_on_mobile %} is-visually-hidden-mobile{% endif %}">
           {{- add_to_cart_text | default: default_add_to_cart_text -}}
         </span>
       </span>
@@ -78,12 +61,6 @@
       </span>
     </button>
   </add-to-cart-component>
-  {%- if is_pre_order -%}
-    {%- comment -%}
-      The Recharge widget rewrites the button text after render, so the label has to be put back.
-    {%- endcomment -%}
-    <script src="{{ 'pre-order-label.js' | asset_url }}" defer></script>
-  {%- endif -%}
 {% else %}
   <button type="button" class="button add-to-cart-button button" disabled>
     <span class="add-to-cart-text">

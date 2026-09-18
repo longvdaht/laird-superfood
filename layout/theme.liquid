@@ -54,11 +54,6 @@ window['__cvg_shopify_info'] = {
   cvg({method:"track",eventName:"$page_load"});
 </script>
 
-  {%- comment -%}
-    Records which theme Rollouts served, so Flow can tag the order - see
-    `assets/theme-ab-attribute.js`.
-  {%- endcomment -%}
-  <script src="{{ 'theme-ab-attribute.js' | asset_url }}" defer></script>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">

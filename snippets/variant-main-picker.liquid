@@ -51,81 +51,9 @@
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
             assign longest_value = 0
           endif
-
-          # The flavor option is shown as a carousel of round product images instead of buttons.
-          assign is_flavor_option = false
-          assign option_handle = product_option.name | handleize
-          if option_handle contains 'flavor'
-            assign is_flavor_option = true
-          endif
         -%}
 
-        {%- capture visible_values -%}
-          {%- render 'variant-visible-values', product_resource: product_resource, product_option: product_option -%}
-        {%- endcapture -%}
-        {%- liquid
-          # Values hidden through `custom.variant_hidden` or `custom.hidden_variants` are left out
-          # of the markup entirely, so `rendered_index` counts the inputs that do make it into the
-          # DOM: `variant-picker.js` indexes the radios of a fieldset by their position in it.
-          assign visible_values = visible_values | strip | split: '|'
-          assign visible_value_ids = visible_values[0] | split: ','
-          assign selected_value_id = visible_values[1]
-          assign rendered_index = 0
-
-          assign selected_value_name = product_option.selected_value
-          for option_value in product_option.values
-            assign option_value_id = option_value.id | append: ''
-            if option_value_id == selected_value_id
-              assign selected_value_name = option_value.name | default: option_value
-              break
-            endif
-          endfor
-        -%}
-
-        {%- capture option_hidden -%}
-          {%- render 'variant-option-hidden', product_resource: product_resource, product_option: product_option -%}
-        {%- endcapture -%}
-        {%- if option_hidden != blank -%}
-          {%- comment -%}
-            The whole option is hidden, label included, but the picker still has to resolve it, so
-            the selected value stays behind as a checked input that is never shown.
-          {%- endcomment -%}
-          {%- assign hidden_fieldset_index = forloop.index0 -%}
-          <fieldset class="variant-option" data-fieldset-index="{{ hidden_fieldset_index }}" ref="fieldsets[]" hidden style="display: none;">
-            {%- for product_option_value in product_option.values -%}
-              {%- assign value_id = product_option_value.id | append: '' -%}
-              {%- if value_id == selected_value_id -%}
-                <input
-                  type="radio"
-                  name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
-                  value="{{ product_option_value | escape }}"
-                  data-previous-checked="false"
-                  data-fieldset-index="{{ hidden_fieldset_index }}"
-                  data-input-index="0"
-                  data-input-id="{{ product_option.position }}-0"
-                  data-option-value-id="{{ product_option_value.id }}"
-                  data-option-available="{{ product_option_value.available }}"
-                  data-connected-product-url="{{ product_option_value.product_url }}"
-                  {% if product_option_value.variant.id %}
-                    data-variant-id="{{ product_option_value.variant.id }}"
-                  {% endif %}
-                  data-current-checked="true"
-                  checked
-                >
-              {%- endif -%}
-            {%- endfor -%}
-          </fieldset>
-          {%- continue -%}
-        {%- endif -%}
-
-        {%- if is_flavor_option -%}
-          {%- render 'variant-flavor-carousel',
-            product_resource: product_resource,
-            product_option: product_option,
-            fieldset_index: forloop.index0,
-            block: block
-          -%}
-        {%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
+        {%- if variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           {%- assign fieldset_index = forloop.index0 -%}
           <fieldset
             class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
@@ -134,66 +62,37 @@
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}:
+              {{ product_option.name | escape -}}
               {%- if variant_style == 'swatch' -%}
-                <span class="variant-option__swatch-value">{{ selected_value_name }}:</span>
+                <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
             </legend>
-            <div class="variant-option__buttons-row">
             {%- for product_option_value in product_option.values -%}
-              {%- assign value_id = product_option_value.id | append: '' -%}
-              {%- unless visible_value_ids contains value_id -%}
-                {%- continue -%}
-              {%- endunless -%}
-              {%- liquid
-                assign option_value_name = product_option_value.name | default: product_option_value
-                assign badge_variant = product_option_value.variant
-                if badge_variant == blank
-                  assign option_key = 'option' | append: product_option.position
-                  assign badge_variant = product_resource.variants | where: option_key, option_value_name | first
-                endif
-              -%}
-              {%- capture badge_classes %}{% render 'variant-badges', variant: badge_variant, mode: 'classes' %}{% endcapture -%}
-              {%- capture badge_label_style %}{% render 'variant-badges', variant: badge_variant, mode: 'style' %}{% endcapture -%}
-              {%- capture variant_display_label -%}
-                {%- render 'variant-label',
-                  variant: badge_variant,
-                  product_resource: product_resource,
-                  fallback: option_value_name
-                -%}
-              {%- endcapture -%}
-              {%- liquid
-                # Equal width buttons are sized after the longest name that is actually shown.
-                if option_id_attribute
-                  assign display_label_size = variant_display_label | strip | size
-                  if display_label_size > longest_value
-                    assign longest_value = display_label_size
-                  endif
-                endif
-              -%}
+              {% if product_option_value.size > longest_value and option_id_attribute %}
+                {% assign longest_value = product_option_value.size %}
+              {% endif %}
               <label
-                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{{ badge_classes }} pdp-variant"
-                {% if badge_label_style != blank %}style="{{ badge_label_style }}"{% endif %}
+                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %} pdp-variant"
               >
                 <input
                   type="radio"
                   name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
                   value="{{ product_option_value | escape }}"
-                  aria-label="{{ variant_display_label | strip }}"
+                  aria-label="{{ product_option_value.name }}"
                   {% if product_option_value.available == false %}
                     aria-disabled="true"
                   {% endif %}
                   data-previous-checked="false"
                   data-fieldset-index="{{ fieldset_index }}"
-                  data-input-index="{{ rendered_index }}"
-                  data-input-id="{{ product_option.position }}-{{ rendered_index }}"
+                  data-input-index="{{ forloop.index0 }}"
+                  data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
                   data-option-value-id="{{ product_option_value.id }}"
                   data-option-available="{{ product_option_value.available }}"
                   data-connected-product-url="{{ product_option_value.product_url }}"
                   {% if product_option_value.variant.id %}
                     data-variant-id="{{ product_option_value.variant.id }}"
                   {% endif %}
-                  {% if value_id == selected_value_id %}
+                  {% if product_option_value.selected %}
                     data-current-checked="true"
                     checked
                   {% else %}
@@ -217,22 +116,18 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
-                  {% render 'variant-badges', variant: badge_variant %}
                   {% if product_option_value.available == true %}
                     <span class="variant-option__button-label__pill"></span>
                   {% endif %}
-                  <span class="variant-option__button-label__text">
-                    {{- variant_display_label | strip -}}
+                  <span class="variant-option__button-label__text">                                        
+                    {{ product_option_value | escape }}
                   </span>
+
+                  
                 {% endif %}
-                {% render 'strikethrough-variant',
-                  product_option: product_option_value,
-                  corner_to_corner: true
-                %}
+                {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
-              {%- assign rendered_index = rendered_index | plus: 1 -%}
             {%- endfor -%}
-            </div>
             {% if option_id_attribute %}
               {% style %}
                 [data-option-id="{{ fieldset_id }}"] {
@@ -272,17 +167,13 @@
                 class="variant-option__select"
               >
                 {%- for product_option_value in product_option.values -%}
-                  {%- assign value_id = product_option_value.id | append: '' -%}
-                  {%- unless visible_value_ids contains value_id -%}
-                    {%- continue -%}
-                  {%- endunless -%}
                   <option
                     value="{{ product_option_value | escape }}"
                     data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
                     data-option-value-id="{{ product_option_value.id }}"
                     data-variant-id="{{ product_option_value.variant.id }}"
                     data-connected-product-url="{{ product_option_value.product_url }}"
-                    {% if value_id == selected_value_id %}
+                    {% if product_option_value.selected %}
                       selected="selected"
                     {% endif %}
                   >
@@ -308,7 +199,7 @@
       {%- endfor -%}
 
       <script type="application/json">
-        {% render 'variant-visible-selected', product_resource: product_resource %}
+        {{ product_resource.selected_or_first_available_variant | json }}
       </script>
     </form>
   </variant-picker>
@@ -322,7 +213,7 @@
   .variant-picker__form {
     display: flex;
     flex-direction: column;
-    gap: var(--padding-2xl);
+    gap: var(--padding-lg);
     width: 100%;
   }
 
@@ -368,11 +259,6 @@
   .variant-option--buttons legend {
     padding: 0;
     margin-block-end: var(--margin-xs);
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 100%;
-    letter-spacing: 0;
-    color: var(--color-black-1);
   }
 
   .variant-option__swatch-value {
@@ -420,9 +306,9 @@
     flex: 0 0 calc(3ch + 1.3em);
     align-items: center;
     position: relative;
-    padding-block: 12px;
-    padding-inline: 12px;
-    border: 2px solid var(--color-gray-1);
+    padding-block: var(--padding-sm);
+    padding-inline: var(--padding-lg);
+    border: var(--options-border-width) solid var(--color-variant-border);
     border-radius: var(--options-border-radius);
     overflow: clip;
     justify-content: center;
@@ -431,11 +317,6 @@
     white-space: nowrap;
     background-color: var(--color-variant-background);
     color: var(--color-variant-text);
-
-    &:has([aria-disabled='true']):has([data-option-available='false']) {
-      border: 2px solid var(--color-gray-1);
-      opacity: var(--opacity-50, .5);
-    }
 
     &:hover,
     &:hover:has([aria-disabled='true']):has([data-option-available='false']) {
@@ -446,9 +327,9 @@
 
     /* we need something like overflow-clip-margin to use the pseudoelement but it doesn't work in Safari */
     /* so instead use the layered background image trick */
-    /* &:not(.variant-option__button-label--has-swatch):has([data-option-available='false']) {
+    &:not(.variant-option__button-label--has-swatch):has([data-option-available='false']) {
       border-width: 0;
-    } */
+    }
     /* ::after/::before act as a fake border for the button style variant */
     /* ::after is the unavailable variant border that clips in */
     &:not(.variant-option__button-label--has-swatch)::before,
@@ -471,7 +352,6 @@
       clip-path: inset(0 0 0 0);
       border-color: var(--color-variant-border);
       inset: calc(var(--options-border-width) * -1);
-      opacity: 0;
     }
     &:has(:checked):not(.variant-option__button-label--has-swatch):not(:has([data-option-available='false']))::before {
       border-color: var(--color-selected-variant-border);
@@ -537,7 +417,7 @@
   }
 
   .variant-option__button-label__pill {
-    background: transparent;
+    background: var(--color-selected-variant-background);
     position: absolute;
     top: calc(var(--options-border-width) * -1);
     bottom: calc(var(--options-border-width) * -1);
@@ -552,13 +432,6 @@
     text-align: start;
     text-wrap: auto;
     z-index: 2;
-    font-size: 12px;
-    line-height: 14px;
-    letter-spacing: 0;
-    text-align: center;
-    vertical-align: middle;
-    color: var(--color-darkblue);
-    font-weight: 600;
   }
 
   .variant-option--equal-width-buttons {
@@ -605,8 +478,7 @@
     color: var(--color-selected-variant-hover-text);
 
     .variant-option__button-label__pill {
-      /* background-color: var(--color-selected-variant-hover-background); */
-      background-color: transparent;
+      background-color: var(--color-selected-variant-hover-background);
     }
   }
 
@@ -728,21 +600,6 @@
     }
   }
 
-  /* the strikethrough of an unavailable button runs from corner to corner in the same light
-     grey as the border, whatever the size of the button */
-  .variant-option__button-label.pdp-variant:not(.variant-option__button-label--has-swatch) svg {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    stroke: var(--color-gray-1);
-
-    line,
-    line:last-of-type {
-      stroke: var(--color-gray-1);
-      stroke-width: 2px;
-    }
-  }
-
   .variant-option__select-wrapper {
     display: flex;
     position: relative;
@@ -811,12 +668,4 @@
     text-align: right;
     justify-content: right;
   }
-
-  @media screen and (min-width: 750px) {
-    .variant-option__button-label__text {
-      font-size: 16px;
-      line-height: 100%;
-    }
-  }
-
 {% endstylesheet %}
