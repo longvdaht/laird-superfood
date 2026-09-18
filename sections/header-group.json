@@ -14,12 +14,13 @@
     "ebd_global_announcement_m7X6qk": {
       "type": "ebd-global-announcement",
       "blocks": {
-        "text_a9JJq9": {
+        "text_mqWeR4": {
           "type": "text",
+          "disabled": true,
           "settings": {
-            "title": "PUMPKIN SPICE IS BACK",
-            "announcement_url": "shopify://collections/pumpkin-spice",
-            "content": "<p>PUMPKIN SPICE IS BACK | <strong>SHOP NOW</strong></p>"
+            "title": "Labor Day Sale",
+            "announcement_url": "shopify://collections/all",
+            "content": "<p>LABOR DAY SALE: <strong>25% OFF </strong>EVERYTHING | <strong>SHOP NOW</strong></p>"
           }
         },
         "text_7zxQTk": {
@@ -38,12 +39,22 @@
             "announcement_url": "shopify://collections/all",
             "content": "<p>FREE SHIPPING ON YOUR FIRST ORDER <strong>| SHOP NOW</strong></p>"
           }
+        },
+        "text_a9JJq9": {
+          "type": "text",
+          "disabled": true,
+          "settings": {
+            "title": "PUMPKIN SPICE IS BACK",
+            "announcement_url": "shopify://collections/pumpkin-spice",
+            "content": "<p>PUMPKIN SPICE IS BACK | <strong>SHOP NOW</strong></p>"
+          }
         }
       },
       "block_order": [
-        "text_a9JJq9",
+        "text_mqWeR4",
         "text_7zxQTk",
-        "text_JAD4Dd"
+        "text_JAD4Dd",
+        "text_a9JJq9"
       ],
       "name": "Global Announcement",
       "settings": {}
