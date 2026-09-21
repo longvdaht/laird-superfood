@@ -29,7 +29,15 @@
       {%- endif -%}
     </div>
   {%- endif -%}
+  {%- if settings.badge_position == 'top-left' -%}
+    {% render 'auto-discounted-price', product: product, badge_only: true %}
+  {%- endif -%}
 </div>
+{%- unless settings.badge_position == 'top-left' -%}
+  <div class="product-badges product-badges--top-left">
+    {% render 'auto-discounted-price', product: product, badge_only: true %}
+  </div>
+{%- endunless -%}
 
 {% stylesheet %}
   .product-badges {

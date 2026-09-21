@@ -77,3 +77,17 @@
     {% render 'unit-price', price: unit_price, measurement: selected_variant.unit_price_measurement %}
   {%- endif -%}
 </div>
+<!-- start automatic discounted price label code -->
+{%- liquid
+  # The main product price on a product page already gets the app's own block,
+  # so the label is only rendered for product cards. The global `product` object
+  # only exists on the product template, so it is blank on collection/search/home.
+  assign is_main_product_price = false
+  if product != blank and product.handle == product_resource.handle
+    assign is_main_product_price = true
+  endif
+-%}
+{%- unless is_main_product_price -%}
+  {% render 'auto-discounted-price', product: product_resource %}
+{%- endunless -%}
+<!-- end automatic discounted price label code -->
