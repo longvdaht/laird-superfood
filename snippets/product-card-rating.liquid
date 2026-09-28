@@ -1,0 +1,156 @@
+{% liquid
+  assign product = product | default: closest.product
+  assign stars_style = stars_style | default: 'shaded'
+  assign show_number = show_number | default: true
+  assign rating_color = rating_color | default: 'primary'
+  assign type_preset = type_preset | default: 'paragraph'
+  assign alignment = alignment | default: 'left'
+
+  # Prioritize Yotpo provider metafields over the shared Shopify built-in reviews metafields
+  assign yotpo_rating = product.metafields.yotpo.reviews_average.value | default: product.metafields.yotpo.reviews_average
+  assign yotpo_count = product.metafields.yotpo.reviews_count.value | default: product.metafields.yotpo.reviews_count
+
+  if yotpo_rating != blank and yotpo_rating != 0 and yotpo_rating != '0'
+    assign rating = yotpo_rating | plus: 0
+    assign scale_max = 5
+    assign rating_count = yotpo_count | plus: 0
+  else
+    assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value | default: product.metafields.reviews.rating
+    assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
+    assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  endif
+
+  if product.handle == 'organic-prebiotic-daily-greens'
+    assign source_product = all_products['organic-prebiotic-daily-greens-14-8oz']
+    assign source_yotpo_count = source_product.metafields.yotpo.reviews_count.value | default: source_product.metafields.yotpo.reviews_count
+    if source_yotpo_count != blank and source_yotpo_count != 0 and source_yotpo_count != '0'
+      assign rating_count = source_yotpo_count | plus: 0
+    elsif source_product.metafields.reviews.rating_count != blank
+      assign rating_count = source_product.metafields.reviews.rating_count
+    endif
+  endif
+-%}
+
+{%- if settings.show_product_card_rating != false and rating != blank -%}
+  {% liquid
+    assign star_count_rating = scale_max
+    assign decimal_rating = 0
+    assign decimal = rating | modulo: 1
+
+    if decimal >= 0.3 and decimal <= 0.7
+      assign decimal_rating = 0.5
+    elsif decimal > 0.7
+      assign decimal_rating = 1
+    endif
+
+    assign decimal_rounded = decimal_rating | ceil
+    assign svg_filled_stars = rating | floor | plus: decimal_rounded
+  %}
+
+  <div class="product-card-rating-container">
+    <div class="rating-wrapper justify-{{ alignment }} rating-color--{{ rating_color }}">
+      <svg
+        style="position: absolute; width: 0; height: 0; pointer-events: none;"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient id="card-star-half" x1="0" x2="100%" y1="0" y2="0">
+            <stop offset="50%" stop-color="var(--star-fill-color, #003349)"></stop>
+            <stop offset="50%" stop-color="{% if stars_style == 'outline' %}transparent{% else %}rgba(var(--star-fill-color-rgb, 0, 51, 73), 0.2){% endif %}"></stop>
+          </linearGradient>
+
+          <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="card-star">
+            <path d="M31.547 12a.848.848 0 00-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 00-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 00-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 001.23.893l8.428-4.434 8.432 4.432a.847.847 0 001.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 00.214-.869z" />
+          </symbol>
+        </defs>
+      </svg>
+
+      <div
+        class="rating"
+        aria-label="{{ 'accessibility.rating' | t: rating: rating | default: 'Rating' }}"
+      >
+        {% if stars_style == 'single' %}
+          <svg
+            class="stars {% if svg_filled_stars > 0 %}filled-star{% endif %}"
+            viewBox="0 0 32 32"
+            role="presentation"
+          >
+            <use xlink:href="#card-star"></use>
+          </svg>
+        {% else %}
+          {%- for star in (1..star_count_rating) -%}
+            <svg
+              class="stars {% if star <= svg_filled_stars %}filled-star{% endif %}"
+              viewBox="0 0 32 32"
+              role="presentation"
+            >
+              <use xlink:href="#card-star"{% if decimal_rating == 0.5 and star == svg_filled_stars %} fill="url(#card-star-half)"{% endif %}></use>
+              {% if stars_style == 'outline' %}
+                <use xlink:href="#card-star" fill="none" stroke="var(--star-fill-color, #003349)" stroke-width="2"></use>
+              {% endif %}
+            </svg>
+          {%- endfor -%}
+        {% endif %}
+      </div>
+
+      {%- if show_number or stars_style == 'single' -%}
+        <p class="rating-count">
+          {%- if stars_style == 'single' -%}
+            <span aria-hidden="true">{{- rating | round: 1 }}</span>
+          {%- endif -%}
+          {%- if stars_style == 'single' and show_number -%}
+            <span class="rating-count-separator">|</span>
+          {%- endif -%}
+          {%- if show_number -%}
+            ({{ rating_count }})
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <style>
+    .product-card-rating-container {
+      display: block;
+      margin: 4px 0 8px;
+      line-height: 1;
+    }
+    .product-card-rating-container .rating-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      --star-fill-color: #003349;
+      --star-fill-color-rgb: 0, 51, 73;
+    }
+    .product-card-rating-container .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .product-card-rating-container .stars {
+      width: 14px;
+      height: 14px;
+      max-width: 14px;
+      max-height: 14px;
+      fill: rgba(var(--star-fill-color-rgb, 0, 51, 73), 0.2);
+      flex-shrink: 0;
+      display: block;
+    }
+    .product-card-rating-container .filled-star {
+      fill: var(--star-fill-color, #003349);
+    }
+    .product-card-rating-container .rating-count {
+      color: var(--star-fill-color, #003349);
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .product-card-rating-container .rating-count-separator {
+      opacity: 0.3;
+      padding: 0 4px;
+    }
+  </style>
+{%- endif -%}

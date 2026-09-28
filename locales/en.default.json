@@ -39,6 +39,7 @@
     "remove_item": "Remove {{ title}}",
     "reset_search": "Reset search",
     "scroll_to": "Scroll to {{ title }}",
+    "scroll_to_reviews": "Scroll to reviews",
     "search_results_count": "{{ count }} search results found for \"{{ query }}\"",
     "search_results_no_results": "No results found for \"{{ query }}\"",
     "skip_to_product_info": "Skip to product information",
