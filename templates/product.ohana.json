@@ -433,6 +433,10 @@
               },
               "blocks": {}
             },
+            "recharge_subscriptions_subscription_widget_v2_rKE33M": {
+              "type": "shopify://apps/recharge-subscriptions/blocks/subscription-widget-v2/371eed76-0b44-4869-9813-730372ea378e",
+              "settings": {}
+            },
             "buy_buttons_fkKWxb": {
               "type": "buy-buttons",
               "settings": {
@@ -497,6 +501,7 @@
           "block_order": [
             "group_ULiWJN",
             "variant_picker_QHMGzk",
+            "recharge_subscriptions_subscription_widget_v2_rKE33M",
             "buy_buttons_fkKWxb",
             "ebd_pdp_guarantee_wmQDEW",
             "ebd_product_tabs_8PEctL"
