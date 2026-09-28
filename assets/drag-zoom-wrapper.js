@@ -7,6 +7,7 @@ const DEFAULT_ZOOM = 1.5;
 const DOUBLE_TAP_DELAY = 300;
 const DOUBLE_TAP_DISTANCE = 50;
 const DRAG_THRESHOLD = 10;
+const SWIPE_THRESHOLD = 50;
 
 export class DragZoomWrapper extends HTMLElement {
   #controller = new AbortController();
@@ -38,6 +39,12 @@ export class DragZoomWrapper extends HTMLElement {
 
   /** @type {boolean} */
   #hasManualZoom = false;
+
+  /** @type {boolean} */
+  #hasPinched = false;
+
+  /** @type {Point} Horizontal/vertical drag distance (px) that could not be applied because the image hit its edge */
+  #overshoot = { x: 0, y: 0 };
 
   get #image() {
     return this.querySelector('img');
@@ -173,6 +180,7 @@ export class DragZoomWrapper extends HTMLElement {
     this.#initialDistance = getDistance(touch1, touch2);
     this.#startScale = this.#scale;
     this.#isDragging = false;
+    this.#hasPinched = true;
   }
 
   /**
@@ -184,6 +192,7 @@ export class DragZoomWrapper extends HTMLElement {
     this.#startTranslate = { x: this.#translate.x, y: this.#translate.y };
     this.#isDragging = true;
     this.#hasDraggedBeyondThreshold = false;
+    this.#overshoot = { x: 0, y: 0 };
   }
 
   /**
@@ -332,8 +341,17 @@ export class DragZoomWrapper extends HTMLElement {
     const dy = touch.clientY - this.#startPosition.y;
 
     // Calculate new translation directly
-    this.#translate.x = this.#startTranslate.x + dx / this.#scale;
-    this.#translate.y = this.#startTranslate.y + dy / this.#scale;
+    const desiredX = this.#startTranslate.x + dx / this.#scale;
+    const desiredY = this.#startTranslate.y + dy / this.#scale;
+    this.#translate.x = desiredX;
+    this.#translate.y = desiredY;
+
+    // Constrain now so we know how much of the drag was blocked by the image edge
+    this.#constrainTranslation();
+    this.#overshoot = {
+      x: (desiredX - this.#translate.x) * this.#scale,
+      y: (desiredY - this.#translate.y) * this.#scale,
+    };
 
     this.#requestUpdateTransform();
   }
@@ -343,12 +361,40 @@ export class DragZoomWrapper extends HTMLElement {
    */
   #handleTouchEnd = (event) => {
     if (event.touches.length === 0) {
+      const { x, y } = this.#overshoot;
+      const isHorizontalSwipe =
+        !this.#hasPinched && this.#hasDraggedBeyondThreshold && Math.abs(x) > SWIPE_THRESHOLD && Math.abs(x) > Math.abs(y);
+
       this.#isDragging = false;
+      this.#hasPinched = false;
+      this.#overshoot = { x: 0, y: 0 };
       this.#requestUpdateTransform();
 
       this.#hasDraggedBeyondThreshold = false;
+
+      // Image is already at its edge and the finger kept going: move to the previous/next media
+      if (isHorizontalSwipe) this.#navigate(x < 0 ? 1 : -1);
     }
   };
+
+  /**
+   * Scroll the zoom dialog to the adjacent media
+   * @param {number} direction - 1 for next, -1 for previous
+   */
+  #navigate(direction) {
+    const zoomDialog = /** @type {ZoomDialog | null} */ (this.closest('zoom-dialog'));
+    const container = this.closest('li');
+    if (!zoomDialog || !container) return;
+
+    const media = zoomDialog.refs.media ?? [];
+    const index = media.indexOf(container);
+    const targetIndex = index + direction;
+    if (index === -1 || targetIndex < 0 || targetIndex >= media.length) return;
+
+    this.#translate = { x: 0, y: 0 };
+    this.#requestUpdateTransform();
+    zoomDialog.selectThumbnail(targetIndex);
+  }
 
   /**
    * Constrain image translation to keep it within the viewport

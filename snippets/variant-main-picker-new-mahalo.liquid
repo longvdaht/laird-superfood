@@ -150,6 +150,17 @@
                   assign var_for_discount = product_resource.variants | where: option_key, option_value_name | first
                 endif
               %}
+              {%- comment -%}
+                The automatic discount app discounts the line at the cart, so it reaches neither
+                variant.price nor a selling plan allocation. The purchase options fieldset reads
+                these attributes on every variant change, so they carry the discounted prices.
+              {%- endcomment -%}
+              {%- capture vfd_auto -%}
+                {%- render 'auto-discount-price-value', product: product_resource, price: var_for_discount.price -%}
+              {%- endcapture -%}
+              {%- capture vfd_auto_sub -%}
+                {%- render 'auto-discount-price-value', product: product_resource, price: var_for_discount.selling_plan_allocations.first.price, purchase_type: 'subscription' -%}
+              {%- endcapture -%}
               <div>
               {%- capture badge_classes %}{% render 'variant-badges', variant: var_for_discount, mode: 'classes' %}{% endcapture -%}
               {%- capture badge_label_style %}{% render 'variant-badges', variant: var_for_discount, mode: 'style' %}{% endcapture -%}
@@ -173,30 +184,47 @@
                   data-option-available="{{ product_option_value.available }}"
                   data-connected-product-url="{{ product_option_value.product_url }}"
                   {% if var_for_discount %}
-                    data-variant-price-text="{{ var_for_discount.price | money }}"
                     {% liquid
+                      assign vfd_auto = vfd_auto | strip
+                      assign vfd_auto_sub = vfd_auto_sub | strip
+
+                      assign vfd_price = var_for_discount.price
+                      if vfd_auto != blank
+                        assign vfd_price = vfd_auto | plus: 0
+                      endif
+
+                      # Read by the purchase options fieldset, and by nothing else, so it only
+                      # ever carries a saving that exists: a compare at price the merchant set,
+                      # or the price an automatic discount came off. The list prices hardcoded
+                      # per variant title here ($34, $102, and $78 / $156 for daily greens) were
+                      # not what anyone is charged, so the one-time row struck through a number
+                      # the customer never sees anywhere else.
                       assign compare_price_value = nil
                       if var_for_discount.compare_at_price > var_for_discount.price
                         assign compare_price_value = var_for_discount.compare_at_price
-                      elsif var_for_discount.title == '1 - 16oz'
-                        assign compare_price_value = 3400
-                      elsif var_for_discount.title == '3 Pack - 16oz'
-                        assign compare_price_value = 10200
                       endif
-                      if product_resource.handle == 'organic-prebiotic-daily-greens'
-                        assign vt = var_for_discount.title
-                        if vt contains '2 Box' or vt contains '2 box'
-                          assign compare_price_value = 7800
-                        elsif vt contains '4 Box' or vt contains '4 box'
-                          assign compare_price_value = 15600
+
+                      if vfd_auto != blank
+                        assign compare_price_value = var_for_discount.price
+                      endif
+
+                      assign vfd_sub_price = nil
+                      assign vfd_sub_compare = var_for_discount.price
+                      if var_for_discount.selling_plan_allocations.size > 0
+                        assign vfd_sub_price = var_for_discount.selling_plan_allocations.first.price
+                        if vfd_auto_sub != blank
+                          assign vfd_sub_price = vfd_auto_sub | plus: 0
+                          assign vfd_sub_compare = vfd_price
                         endif
                       endif
                     %}
+                    data-variant-price-text="{{ vfd_price | money }}"
                     {% if compare_price_value %}
                       data-variant-compare-price-text="{{ compare_price_value | money }}"
                     {% endif %}
-                    {% if var_for_discount.selling_plan_allocations.size > 0 %}
-                      data-variant-sub-price-text="{{ var_for_discount.selling_plan_allocations.first.price | money }}"
+                    {% if vfd_sub_price %}
+                      data-variant-sub-price-text="{{ vfd_sub_price | money }}"
+                      data-variant-sub-compare-price-text="{{ vfd_sub_compare | money }}"
                     {% endif %}
                   {% endif %}
                   {% if product_option_value.variant.id %}
@@ -226,22 +254,13 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
-                  {% liquid
-                    assign discount_percentage = 0
-                    if option_value_name == '1 - 16oz'
-                      assign discount_percentage = 21
-                    elsif option_value_name == '3 Pack - 16oz'
-                      assign discount_percentage = 25
-                    endif
-                    if product_resource.handle == 'organic-prebiotic-daily-greens' and var_for_discount
-                      assign vt = var_for_discount.title
-                      if vt contains '2 Box' or vt contains '2 box'
-                        assign discount_percentage = 5
-                      elsif vt contains '4 Box' or vt contains '4 box'
-                        assign discount_percentage = 10
-                      endif
-                    endif
-                  %}
+                  {% comment %}
+                    The "21% OFF" / "25% OFF" chip that used to sit on these buttons was a
+                    percentage hardcoded per variant title, worked out from a list price that
+                    was hardcoded too, so it stated a saving against a number the customer
+                    never sees. Removed with those list prices. A real saving reaches the
+                    button through `variant-badges` and the metafields behind it.
+                  {% endcomment %}
                   {% render 'variant-badges', variant: var_for_discount %}
                   {% if product_option_value.available == true %}
                     <span class="variant-option__button-label__pill"></span>
@@ -279,11 +298,6 @@
                   <span class="variant-option__button-label__text">
                     {{ variant_display_label | escape }}
                   </span>
-                  {% if discount_percentage > 0 %}
-                    <span class="variant-option__button-label__discount">
-                      {{ discount_percentage }}% OFF
-                    </span>
-                  {% endif %}
 </div>
                   
                 {% endif %}

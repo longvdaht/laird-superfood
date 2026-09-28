@@ -357,6 +357,11 @@
     width: 100%;
   }
 
+  .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__buttons-row:has(> :nth-child(5)) {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__buttons-row .variant-option__button-label {
     width: 100%;
     min-width: 0;
@@ -483,10 +488,6 @@
     background: transparent;
   }
 
-  .new-po-option--onetime .new-po-price--compare {
-    display: none;
-  }
-
   .new-po-option:has(.new-po-radio-input:checked) {
     border-width: 2px;
     border-color: var(--color-azure-14, #003349);
@@ -553,9 +554,11 @@
     line-height: 28px;
   }
 
+  /* Inherits the size of the title it sits in, so "Subscribe & Save" and the percentage read
+     as one line and the row keeps its height at every breakpoint the title is resized at. */
   .new-po-discount-badge {
     display: inline-flex;
-    padding: 5px 8px;
+    padding: 2px 8px;
     justify-content: center;
     align-items: center;
     border-radius: 4px;
@@ -563,10 +566,10 @@
     color: var(--color-white-solid, #FFF);
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
     font-family: var(--font-family-Font-1, Rubik);
-    font-size: 14px;
+    font-size: inherit;
     font-style: normal;
     font-weight: 700;
-    line-height: 100%;
+    line-height: inherit;
     white-space: nowrap;
   }
 
@@ -709,6 +712,42 @@
     color: var(--color-azure-14, #003349);
     display: flex;
     align-items: center;
+  }
+
+  @media (max-width: 1023px) {
+    .new-po-radio-indicator {
+      width: 18px;
+      height: 18px;
+    }
+
+    .new-po-option__title {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .new-po-option__title,
+    .new-po-benefit,
+    .new-po-frequency-select {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .new-po-price--compare,
+    .new-po-price--sub,
+    .new-po-price--regular {
+      font-size: 14px;
+      line-height: 18px;
+    }
+  }
+
+  @media (max-width: 390px) {
+    .new-po-option__row,
+    .new-po-option:has(.new-po-radio-input:checked) .new-po-option__row {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
   }
 {% endstylesheet %}
 
@@ -861,8 +900,8 @@
       "type": "text",
       "id": "po_badge_text",
       "label": "Discount badge",
-      "default": "Save [discount]%",
-      "info": "[discount] is replaced with the subscription discount. Leave empty to hide the badge."
+      "default": "[discount]%",
+      "info": "[discount] is replaced with the discount read off the product's selling plan. It sits right after the subscribe title, so the two read as one phrase. Leave empty to hide the badge."
     }, {
       "type": "textarea",
       "id": "po_benefits",
@@ -899,6 +938,12 @@
       "label": "One-time purchase title",
       "default": "One-Time Purchase"
     }, {
+      "type": "text",
+      "id": "po_onetime_badge_text",
+      "label": "One-time discount badge",
+      "default": "Save [discount]%",
+      "info": "[discount] is replaced with the automatic discount. Only shown while one is running."
+    }, {
       "type": "checkbox",
       "id": "po_show_price_in_button",
       "label": "Show the selected price on the add to cart button",
@@ -909,44 +954,58 @@
   "presets": []
 }
 {% endschema %}
+
+{%- comment -%}
+  Only for the templates that show the Recharge widget itself. Mahalo hides it behind the
+  theme's own purchase options, whose every number is read from the product's selling plans and
+  variants, so the hardcoded percentages below have nothing to correct there and would be the
+  one invented figure left on the page.
+{%- endcomment -%}
+{%- unless template.suffix == 'mahalo' -%}
 <script>
-  (function() {
-    // Configuration: Change these to match exactly what you want
-    const oldPercent = "5.88%";
-    const newPercent = "20%";
+  (function () {
+    // The Recharge widget prints the selling plan discount as it works it out per variant
+    // (5.88% off the three pack); the store advertises the headline 20%. Rewrite it inside the
+    // widget's own shadow root. The previous version watched document.body with a subtree
+    // MutationObserver that was never disconnected and walked the whole shadow tree on every
+    // mutation of the page, which on a PDP with this many apps never stops costing.
+    const OLD_PERCENT = '5.88%';
+    const NEW_PERCENT = '20%';
 
-    const updateRechargeWidget = () => {
-      // 1. Find the Recharge Widget
-      const widget = document.querySelector('recharge-subscription-widget');
-      
-      if (widget && widget.shadowRoot) {
-        // 2. Look through all text nodes inside the Shadow DOM
-        const walker = document.createTreeWalker(
-          widget.shadowRoot, 
-          NodeFilter.SHOW_TEXT, 
-          null, 
-          false
-        );
-
-        let node;
-        while (node = walker.nextNode()) {
-          if (node.nodeValue.includes(oldPercent)) {
-            // 3. Replace the old percentage with the new one
-            node.nodeValue = node.nodeValue.split(oldPercent).join(newPercent);
-          }
+    const rewrite = (root) => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue.includes(OLD_PERCENT)) {
+          node.nodeValue = node.nodeValue.split(OLD_PERCENT).join(NEW_PERCENT);
         }
       }
     };
 
-    // Run the function when the page loads
-    window.addEventListener('load', updateRechargeWidget);
+    const attach = () => {
+      const widget = document.querySelector('recharge-subscription-widget');
+      if (!widget || !widget.shadowRoot) return false;
 
-    // Also run it periodically for 3 seconds to catch the widget if it loads late
-    const interval = setInterval(updateRechargeWidget, 500);
-    setTimeout(() => clearInterval(interval), 3000);
+      rewrite(widget.shadowRoot);
+      // Scoped to the widget, so a variant change still gets rewritten without the rest of the
+      // page paying for it. Rewriting only when the old text is found means our own writes
+      // wake the observer once and then settle.
+      new MutationObserver(() => rewrite(widget.shadowRoot)).observe(widget.shadowRoot, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+      return true;
+    };
 
-    // Watch for changes (in case user switches variants)
-    const observer = new MutationObserver(updateRechargeWidget);
-    observer.observe(document.body, { childList: true, subtree: true });
+    if (attach()) return;
+
+    // The widget hydrates itself, so wait for its shadow root, then give up rather than poll
+    // for the life of the page.
+    const poll = setInterval(() => {
+      if (attach()) clearInterval(poll);
+    }, 200);
+    setTimeout(() => clearInterval(poll), 10000);
   })();
 </script>
+{%- endunless -%}

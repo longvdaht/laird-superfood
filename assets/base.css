@@ -1938,7 +1938,7 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   .sticky-content--desktop,
   .sticky-content--desktop.full-height--desktop > .group-block {
     position: sticky;
-    top: var(--sticky-header-offset, 0);
+    top: calc(var(--sticky-header-offset, 0px) + 20px);
     z-index: var(--layer-flat);
   }
 }
