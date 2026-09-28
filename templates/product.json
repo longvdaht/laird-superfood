@@ -12,6 +12,22 @@
     "main": {
       "type": "product-information",
       "blocks": {
+        "breadcrumbs_XPJJ4t": {
+          "type": "breadcrumbs",
+          "name": "Breadcrumbs",
+          "settings": {
+            "show_home": true,
+            "home_label": "Home",
+            "show_collection": true,
+            "separator": "|",
+            "show_structured_data": true,
+            "text_color": "{{ closest.product.metafields.custom.product_page_breadcrumb_color.value }}",
+            "current_color": "",
+            "font_size": 12,
+            "alignment": "left"
+          },
+          "blocks": {}
+        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
@@ -269,6 +285,9 @@
           ]
         }
       },
+      "block_order": [
+        "breadcrumbs_XPJJ4t"
+      ],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
