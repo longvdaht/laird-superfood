@@ -472,6 +472,7 @@
                 },
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
+                  "disabled": true,
                   "static": true,
                   "settings": {},
                   "blocks": {}
@@ -518,6 +519,9 @@
       },
       "block_order": [
         "breadcrumbs_3cnAee"
+      ],
+      "custom_css": [
+        ".variant-option__button-label__selling-badge {display: none;}"
       ],
       "name": "t:names.product_information",
       "settings": {
