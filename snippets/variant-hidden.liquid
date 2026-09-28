@@ -1,0 +1,86 @@
+{%- doc -%}
+  Renders `true` when a variant must be kept off the storefront, and nothing otherwise.
+
+  Resolved from the most specific source to the most general one:
+
+  1. `variant.metafields.custom.variant_hidden` – a boolean set on the variant itself.
+  2. `product.metafields.custom.hidden_variants` – a list of option values, or variant titles,
+     on the product that must not be shown:
+
+       ["16oz", "3 Pack - 16oz"]
+
+  3. `product.metafields.custom.hide_variant_option` – the comma separated list of variant titles
+     the new Mahalo picker shipped with, read so that products already configured with it keep
+     working. New products should use `hidden_variants`.
+
+  Entries are matched ignoring case and spaces, so `3pack-16oz` matches the variant
+  `3 Pack - 16oz`, the same way `variant-labels` keys are matched.
+
+  Hiding is a storefront concern only: the variant stays purchasable through the Storefront API
+  and through a hand written `/cart/add` request. Unpublish or archive it to stop it from being
+  sold at all.
+
+  @param {object} [variant] - The variant to test.
+  @param {string} [option_value_name] - The option value to test, for a combined listing value
+    that has no variant of its own. Ignored when `variant` is given.
+  @param {object} [product_resource] - The product the variant belongs to, used when the variant
+    carries no product of its own.
+
+  @example
+  {% capture variant_hidden %}
+    {% render 'variant-hidden', variant: variant, product_resource: product_resource %}
+  {% endcapture %}
+  {% if variant_hidden == blank %}
+    ...
+  {% endif %}
+{%- enddoc -%}
+
+{%- liquid
+  assign is_hidden = false
+
+  if variant != blank and variant.metafields.custom.variant_hidden.value == true
+    assign is_hidden = true
+  endif
+
+  if is_hidden == false
+    assign hidden_product = product_resource | default: variant.product
+
+    # Both product level lists, flattened into the one comma separated string they are matched by.
+    assign hidden_keys = ''
+    assign hidden_list = hidden_product.metafields.custom.hidden_variants.value
+    if hidden_list != blank
+      for hidden_entry in hidden_list
+        assign hidden_keys = hidden_keys | append: hidden_entry | append: ','
+      endfor
+    endif
+
+    assign legacy_metafield = hidden_product.metafields.custom.hide_variant_option
+    if legacy_metafield != blank
+      assign legacy_list = legacy_metafield.value | default: legacy_metafield | append: ''
+      assign hidden_keys = hidden_keys | append: legacy_list | append: ','
+    endif
+
+    if hidden_keys != ''
+      # Everything an entry of the lists is allowed to point at, normalized the way entries are.
+      if variant != blank
+        assign variant_keys = variant.title
+        assign variant_keys = variant_keys | append: ',' | append: variant.option1
+        assign variant_keys = variant_keys | append: ',' | append: variant.option2
+        assign variant_keys = variant_keys | append: ',' | append: variant.option3
+      else
+        assign variant_keys = option_value_name | append: ''
+      endif
+      assign variant_keys = variant_keys | downcase | replace: ' ', '' | split: ','
+
+      assign hidden_keys = hidden_keys | downcase | replace: ' ', '' | split: ','
+
+      for hidden_key in hidden_keys
+        if hidden_key != blank and variant_keys contains hidden_key
+          assign is_hidden = true
+          break
+        endif
+      endfor
+    endif
+  endif
+-%}
+{%- if is_hidden -%}true{%- endif -%}

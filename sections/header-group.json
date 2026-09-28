@@ -47,6 +47,15 @@
             "announcement_url": "shopify://collections/all",
             "content": "<p>FREE SHIPPING ON YOUR FIRST ORDER <strong>| SHOP NOW</strong></p>"
           }
+        },
+        "text_a9JJq9": {
+          "type": "text",
+          "disabled": true,
+          "settings": {
+            "title": "PUMPKIN SPICE IS BACK",
+            "announcement_url": "shopify://collections/pumpkin-spice",
+            "content": "<p>PUMPKIN SPICE IS BACK | <strong>SHOP NOW</strong></p>"
+          }
         }
       },
       "block_order": [

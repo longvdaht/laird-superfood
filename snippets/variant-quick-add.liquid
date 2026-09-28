@@ -23,6 +23,57 @@
       endif
     -%}
 
+    {%- capture visible_values -%}
+      {%- render 'variant-visible-values', product_resource: product_resource, product_option: product_option -%}
+    {%- endcapture -%}
+    {%- liquid
+      assign visible_values = visible_values | strip | split: '|'
+      assign visible_value_ids = visible_values[0] | split: ','
+      assign selected_value_id = visible_values[1]
+      assign rendered_index = 0
+
+      assign selected_value_name = product_option.selected_value
+      for option_value in product_option.values
+        assign option_value_id = option_value.id | append: ''
+        if option_value_id == selected_value_id
+          assign selected_value_name = option_value.name | default: option_value
+          break
+        endif
+      endfor
+    -%}
+
+    {%- capture option_hidden -%}
+      {%- render 'variant-option-hidden', product_resource: product_resource, product_option: product_option -%}
+    {%- endcapture -%}
+    {%- if option_hidden != blank -%}
+      {%- comment -%}
+        The whole option is hidden, label included, but the picker still has to resolve it, so the
+        selected value stays behind as a checked input that is never shown.
+      {%- endcomment -%}
+      <fieldset class="variant-option" hidden style="display: none;">
+        {%- for product_option_value in product_option.values -%}
+          {%- assign value_id = product_option_value.id | append: '' -%}
+          {%- if value_id == selected_value_id -%}
+            <input
+              type="radio"
+              name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+              value="{{ product_option_value | escape }}"
+              data-input-id="{{ product_option.position }}-0"
+              data-option-value-id="{{ product_option_value.id }}"
+              data-option-available="{{ product_option_value.available }}"
+              data-connected-product-url="{{ product_option_value.product_url }}"
+              form="{{ block.id }}"
+              {% if product_option_value.variant.id %}
+                data-variant-id="{{ product_option_value.variant.id }}"
+              {% endif %}
+              checked
+            >
+          {%- endif -%}
+        {%- endfor -%}
+      </fieldset>
+      {%- continue -%}
+    {%- endif -%}
+
     <fieldset
       class="variant-option variant-option--buttons {% if variant_style == 'swatch' %}variant-option--swatches{% endif %}"
       {{ option_id_attribute }}
@@ -30,10 +81,14 @@
       <legend>
         {{ product_option.name | escape -}}
         {%- if variant_style == 'swatch' and product_resource.options_with_values.size > 1 -%}
-          <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+          <span class="variant-option__swatch-value">{{ selected_value_name }}</span>
         {%- endif %}
       </legend>
       {%- for product_option_value in product_option.values -%}
+        {%- assign value_id = product_option_value.id | append: '' -%}
+        {%- unless visible_value_ids contains value_id -%}
+          {%- continue -%}
+        {%- endunless -%}
         {% if product_option_value.size > longest_value and option_id_attribute %}
           {% assign longest_value = product_option_value.size %}
         {% endif %}
@@ -61,7 +116,7 @@
             name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
             value="{{ product_option_value | escape }}"
             aria-label="{{ product_option_value.name }}"
-            data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+            data-input-id="{{ product_option.position }}-{{ rendered_index }}"
             data-option-value-id="{{ product_option_value.id }}"
             data-option-media-id="{{ featured_media.id }}"
             data-option-available="{{ product_option_value.available }}"
@@ -73,7 +128,7 @@
             {% if product_option_value.variant.id %}
               data-variant-id="{{ product_option_value.variant.id }}"
             {% endif %}
-            {% if product_option_value.selected %}
+            {% if value_id == selected_value_id %}
               checked
             {% endif %}
           >
@@ -84,6 +139,7 @@
           {% endif %}
           {% render 'strikethrough-variant', product_option: product_option_value %}
         </label>
+        {%- assign rendered_index = rendered_index | plus: 1 -%}
       {%- endfor -%}
       {% if option_id_attribute %}
         {% style %}
@@ -96,6 +152,6 @@
   {%- endfor -%}
 
   <script type="application/json">
-    {{ product_resource.selected_or_first_available_variant | json }}
+    {% render 'variant-visible-selected', product_resource: product_resource %}
   </script>
 </variant-picker>

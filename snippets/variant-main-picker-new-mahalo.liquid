@@ -14,14 +14,6 @@
     if override_metafield != blank
       assign override_raw = override_metafield.value | default: override_metafield | strip
     endif
-    assign hide_variant_names = ''
-    assign hide_metafield = product_resource.metafields.custom.hide_variant_option
-    if hide_metafield != blank
-      assign hide_raw = hide_metafield.value | default: hide_metafield
-      if hide_raw != blank
-        assign hide_variant_names = hide_raw | split: ','
-      endif
-    endif
   %}
   {% liquid
     assign button_background_brightness = section.settings.color_scheme.settings.foreground | color_brightness
@@ -68,6 +60,64 @@
           endif
         -%}
 
+        {%- capture visible_values -%}
+          {%- render 'variant-visible-values', product_resource: product_resource, product_option: product_option -%}
+        {%- endcapture -%}
+        {%- liquid
+          # Values hidden through `custom.variant_hidden` or `custom.hidden_variants` are left out
+          # of the markup entirely, so `rendered_index` counts the inputs that do make it into the
+          # DOM: `variant-picker.js` indexes the radios of a fieldset by their position in it.
+          assign visible_values = visible_values | strip | split: '|'
+          assign visible_value_ids = visible_values[0] | split: ','
+          assign selected_value_id = visible_values[1]
+          assign rendered_index = 0
+
+          assign selected_value_name = product_option.selected_value
+          for option_value in product_option.values
+            assign option_value_id = option_value.id | append: ''
+            if option_value_id == selected_value_id
+              assign selected_value_name = option_value.name | default: option_value
+              break
+            endif
+          endfor
+        -%}
+
+        {%- capture option_hidden -%}
+          {%- render 'variant-option-hidden', product_resource: product_resource, product_option: product_option -%}
+        {%- endcapture -%}
+        {%- if option_hidden != blank -%}
+          {%- comment -%}
+            The whole option is hidden, label included, but the picker still has to resolve it, so
+            the selected value stays behind as a checked input that is never shown.
+          {%- endcomment -%}
+          {%- assign hidden_fieldset_index = forloop.index0 -%}
+          <fieldset class="variant-option" data-fieldset-index="{{ hidden_fieldset_index }}" ref="fieldsets[]" hidden style="display: none;">
+            {%- for product_option_value in product_option.values -%}
+              {%- assign value_id = product_option_value.id | append: '' -%}
+              {%- if value_id == selected_value_id -%}
+                <input
+                  type="radio"
+                  name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+                  value="{{ product_option_value | escape }}"
+                  data-previous-checked="false"
+                  data-fieldset-index="{{ hidden_fieldset_index }}"
+                  data-input-index="0"
+                  data-input-id="{{ product_option.position }}-0"
+                  data-option-value-id="{{ product_option_value.id }}"
+                  data-option-available="{{ product_option_value.available }}"
+                  data-connected-product-url="{{ product_option_value.product_url }}"
+                  {% if product_option_value.variant.id %}
+                    data-variant-id="{{ product_option_value.variant.id }}"
+                  {% endif %}
+                  data-current-checked="true"
+                  checked
+                >
+              {%- endif -%}
+            {%- endfor -%}
+          </fieldset>
+          {%- continue -%}
+        {%- endif -%}
+
         {%- if variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           {%- assign fieldset_index = forloop.index0 -%}
           <fieldset
@@ -80,11 +130,15 @@
             <legend>
               Quantity
               {%- if variant_style == 'swatch' -%}
-                <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+                <span class="variant-option__swatch-value">{{ selected_value_name }}</span>
               {%- endif %}
             </legend>
             <div class="variant-option__buttons-row">
             {%- for product_option_value in product_option.values -%}
+              {%- assign value_id = product_option_value.id | append: '' -%}
+              {%- unless visible_value_ids contains value_id -%}
+                {%- continue -%}
+              {%- endunless -%}
               {% if product_option_value.size > longest_value and option_id_attribute %}
                 {% assign longest_value = product_option_value.size %}
               {% endif %}
@@ -95,25 +149,24 @@
                   assign option_key = 'option' | append: product_option.position
                   assign var_for_discount = product_resource.variants | where: option_key, option_value_name | first
                 endif
-                assign selling_badge_text = blank
-                if var_for_discount and var_for_discount.metafields.custom.selling_badge != blank
-                  assign selling_badge_text = var_for_discount.metafields.custom.selling_badge.value | default: var_for_discount.metafields.custom.selling_badge
-                endif
-                assign hide_this_variant = false
-                if var_for_discount and hide_variant_names != blank
-                  assign variant_title_to_check = var_for_discount.title
-                  for hidden_name in hide_variant_names
-                    assign hidden_trimmed = hidden_name | strip
-                    if hidden_trimmed == variant_title_to_check
-                      assign hide_this_variant = true
-                    endif
-                  endfor
-                endif
               %}
+              {%- comment -%}
+                The automatic discount app discounts the line at the cart, so it reaches neither
+                variant.price nor a selling plan allocation. The purchase options fieldset reads
+                these attributes on every variant change, so they carry the discounted prices.
+              {%- endcomment -%}
+              {%- capture vfd_auto -%}
+                {%- render 'auto-discount-price-value', product: product_resource, price: var_for_discount.price -%}
+              {%- endcapture -%}
+              {%- capture vfd_auto_sub -%}
+                {%- render 'auto-discount-price-value', product: product_resource, price: var_for_discount.selling_plan_allocations.first.price, purchase_type: 'subscription' -%}
+              {%- endcapture -%}
               <div>
+              {%- capture badge_classes %}{% render 'variant-badges', variant: var_for_discount, mode: 'classes' %}{% endcapture -%}
+              {%- capture badge_label_style %}{% render 'variant-badges', variant: var_for_discount, mode: 'style' %}{% endcapture -%}
               <label
-                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{% if selling_badge_text != blank %} variant-option__button-label--has-selling-badge{% endif %}{% if selling_badge_text == 'BEST VALUE' %} variant-option__button-label--best-value{% endif %} pdp-variant"
-                {% if hide_this_variant %}style="display: none;"{% endif %}
+                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}{{ badge_classes }} pdp-variant"
+                {% if badge_label_style != blank %}style="{{ badge_label_style }}"{% endif %}
               >
                 <input
                   type="radio"
@@ -125,42 +178,59 @@
                   {% endif %}
                   data-previous-checked="false"
                   data-fieldset-index="{{ fieldset_index }}"
-                  data-input-index="{{ forloop.index0 }}"
-                  data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                  data-input-index="{{ rendered_index }}"
+                  data-input-id="{{ product_option.position }}-{{ rendered_index }}"
                   data-option-value-id="{{ product_option_value.id }}"
                   data-option-available="{{ product_option_value.available }}"
                   data-connected-product-url="{{ product_option_value.product_url }}"
                   {% if var_for_discount %}
-                    data-variant-price-text="{{ var_for_discount.price | money }}"
                     {% liquid
+                      assign vfd_auto = vfd_auto | strip
+                      assign vfd_auto_sub = vfd_auto_sub | strip
+
+                      assign vfd_price = var_for_discount.price
+                      if vfd_auto != blank
+                        assign vfd_price = vfd_auto | plus: 0
+                      endif
+
+                      # Read by the purchase options fieldset, and by nothing else, so it only
+                      # ever carries a saving that exists: a compare at price the merchant set,
+                      # or the price an automatic discount came off. The list prices hardcoded
+                      # per variant title here ($34, $102, and $78 / $156 for daily greens) were
+                      # not what anyone is charged, so the one-time row struck through a number
+                      # the customer never sees anywhere else.
                       assign compare_price_value = nil
                       if var_for_discount.compare_at_price > var_for_discount.price
                         assign compare_price_value = var_for_discount.compare_at_price
-                      elsif var_for_discount.title == '1 - 16oz'
-                        assign compare_price_value = 3400
-                      elsif var_for_discount.title == '3 Pack - 16oz'
-                        assign compare_price_value = 10200
                       endif
-                      if product_resource.handle == 'organic-prebiotic-daily-greens'
-                        assign vt = var_for_discount.title
-                        if vt contains '2 Box' or vt contains '2 box'
-                          assign compare_price_value = 7800
-                        elsif vt contains '4 Box' or vt contains '4 box'
-                          assign compare_price_value = 15600
+
+                      if vfd_auto != blank
+                        assign compare_price_value = var_for_discount.price
+                      endif
+
+                      assign vfd_sub_price = nil
+                      assign vfd_sub_compare = var_for_discount.price
+                      if var_for_discount.selling_plan_allocations.size > 0
+                        assign vfd_sub_price = var_for_discount.selling_plan_allocations.first.price
+                        if vfd_auto_sub != blank
+                          assign vfd_sub_price = vfd_auto_sub | plus: 0
+                          assign vfd_sub_compare = vfd_price
                         endif
                       endif
                     %}
+                    data-variant-price-text="{{ vfd_price | money }}"
                     {% if compare_price_value %}
                       data-variant-compare-price-text="{{ compare_price_value | money }}"
                     {% endif %}
-                    {% if var_for_discount.selling_plan_allocations.size > 0 %}
-                      data-variant-sub-price-text="{{ var_for_discount.selling_plan_allocations.first.price | money }}"
+                    {% if vfd_sub_price %}
+                      data-variant-sub-price-text="{{ vfd_sub_price | money }}"
+                      data-variant-sub-compare-price-text="{{ vfd_sub_compare | money }}"
                     {% endif %}
                   {% endif %}
                   {% if product_option_value.variant.id %}
                     data-variant-id="{{ product_option_value.variant.id }}"
                   {% endif %}
-                  {% if product_option_value.selected %}
+                  {% if value_id == selected_value_id %}
                     data-current-checked="true"
                     checked
                   {% else %}
@@ -184,27 +254,14 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
-                  {% liquid
-                    assign discount_percentage = 0
-                    if option_value_name == '1 - 16oz'
-                      assign discount_percentage = 21
-                    elsif option_value_name == '3 Pack - 16oz'
-                      assign discount_percentage = 25
-                    endif
-                    if product_resource.handle == 'organic-prebiotic-daily-greens' and var_for_discount
-                      assign vt = var_for_discount.title
-                      if vt contains '2 Box' or vt contains '2 box'
-                        assign discount_percentage = 5
-                      elsif vt contains '4 Box' or vt contains '4 box'
-                        assign discount_percentage = 10
-                      endif
-                    endif
-                  %}
-                  {% if selling_badge_text != blank %}
-                    <span class="variant-option__button-label__selling-badge">
-                      {{ selling_badge_text | escape }}
-                    </span>
-                  {% endif %}
+                  {% comment %}
+                    The "21% OFF" / "25% OFF" chip that used to sit on these buttons was a
+                    percentage hardcoded per variant title, worked out from a list price that
+                    was hardcoded too, so it stated a saving against a number the customer
+                    never sees. Removed with those list prices. A real saving reaches the
+                    button through `variant-badges` and the metafields behind it.
+                  {% endcomment %}
+                  {% render 'variant-badges', variant: var_for_discount %}
                   {% if product_option_value.available == true %}
                     <span class="variant-option__button-label__pill"></span>
                   {% endif %}
@@ -241,15 +298,13 @@
                   <span class="variant-option__button-label__text">
                     {{ variant_display_label | escape }}
                   </span>
-                  {% if discount_percentage > 0 %}
-                    <span class="variant-option__button-label__discount">
-                      {{ discount_percentage }}% OFF
-                    </span>
-                  {% endif %}
 </div>
                   
                 {% endif %}
-                {% render 'strikethrough-variant', product_option: product_option_value %}
+                {% render 'strikethrough-variant',
+                  product_option: product_option_value,
+                  corner_to_corner: true
+                %}
                 {% if var_for_discount %}
                       {% liquid
                         assign subtext_label = var_for_discount.title
@@ -279,7 +334,7 @@
                     {% endif %}
                 </label>
               </div>
-              
+              {%- assign rendered_index = rendered_index | plus: 1 -%}
             {%- endfor -%}
             </div>
             {% if option_id_attribute %}
@@ -321,13 +376,17 @@
                 class="variant-option__select"
               >
                 {%- for product_option_value in product_option.values -%}
+                  {%- assign value_id = product_option_value.id | append: '' -%}
+                  {%- unless visible_value_ids contains value_id -%}
+                    {%- continue -%}
+                  {%- endunless -%}
                   <option
                     value="{{ product_option_value | escape }}"
                     data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
                     data-option-value-id="{{ product_option_value.id }}"
                     data-variant-id="{{ product_option_value.variant.id }}"
                     data-connected-product-url="{{ product_option_value.product_url }}"
-                    {% if product_option_value.selected %}
+                    {% if value_id == selected_value_id %}
                       selected="selected"
                     {% endif %}
                   >
@@ -353,7 +412,7 @@
       {%- endfor -%}
 
       <script type="application/json">
-        {{ product_resource.selected_or_first_available_variant | json }}
+        {% render 'variant-visible-selected', product_resource: product_resource %}
       </script>
     </form>
 
@@ -887,14 +946,23 @@
     justify-content: right;
   }
   .variant-option__button-label__text-wrap{
-     display: flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
 
   }
-  span.variant-option__button-label__subtext{
-    font-size: 12px!important;
-    font-weight: 300;
+  .variant-option__button-label__subtext{
+    pointer-events: none;
+    text-align: start;
+    text-wrap: auto;
+    z-index: 2;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    color: var(--color-darkblue);
+    font-weight: 600;
   }
 {% endstylesheet %}

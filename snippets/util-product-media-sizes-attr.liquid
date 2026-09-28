@@ -4,9 +4,9 @@
   @param {object} block - Block object containing media gallery settings
   @param {object} section - Section object containing layout settings
   @param {object} settings - Theme settings object containing page width configuration
-  @param {boolean} [is_first_image] - Whether this is the first image (for large_first_image mode)
+  @param {boolean} [is_full_width_image] - Whether this image spans the full width (for full_width_images mode)
   @param {boolean} [is_single_column] - Whether the layout is single column (carousel or one-column grid)
-  @param {boolean} [needs_both_sizes] - Whether we need to calculate different sizes for first and other images
+  @param {boolean} [needs_both_sizes] - Whether we need to calculate different sizes for full width and other images
 
   @example
   {% capture media_sizes %}
@@ -35,7 +35,7 @@
   assign calculate_grid_column = false
 
   if needs_both_sizes
-    if is_first_image
+    if is_full_width_image
       assign calculate_single_column = true
     else
       assign calculate_grid_column = true
@@ -48,7 +48,7 @@
 
   # Set up default sizes
   if calculate_single_column
-    # Default for carousel or single column grid (or first image in large_first_image mode)
+    # Default for carousel or single column grid (or full width images in full_width_images mode)
     if section.settings.equal_columns == false
       assign default_sizes = '(min-width: 750px) calc(100vw - 25rem - [gap_half]), 100vw' | replace: '[gap_half]', gap_half
     else

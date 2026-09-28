@@ -1,0 +1,358 @@
+{%- comment -%}
+  Wires a custom purchase options fieldset (purchase-options-mahalo.liquid for mahalo,
+  new-purchase-options-new-mahalo.liquid for new-mahalo) to the Recharge subscription widget:
+  hides the app widget, moves our markup into its place and proxies every selection into the
+  widget shadow DOM. Also keeps the add to cart label in sync.
+
+  Accepts:
+  - root_selector: CSS selector of the product section root, e.g. '.new-product-information'
+  - show_price_in_button: pass false to keep the add to cart label as Liquid rendered it.
+    Omitted, the selected price is appended, which is what new-mahalo has always done.
+{%- endcomment -%}
+
+<script>
+  (() => {
+    const ROOT_SELECTOR = {{ root_selector | default: '.new-product-information' | json }};
+    const SHOW_PRICE_IN_BUTTON = {{ show_price_in_button | json }} !== false;
+
+    const priceMapCache = new WeakMap();
+
+    const getPriceMap = (poEl) => {
+      if (!poEl) return null;
+      if (priceMapCache.has(poEl)) return priceMapCache.get(poEl);
+
+      let map = null;
+      const mapEl = poEl.querySelector('[data-po-variant-prices]');
+      if (mapEl) {
+        try {
+          map = JSON.parse(mapEl.textContent);
+        } catch (e) {
+          map = null;
+        }
+      }
+      priceMapCache.set(poEl, map);
+      return map;
+    };
+
+    // The new-mahalo variant picker carries prices as data attributes. Other pickers do not,
+    // so fall back to the variant price map the fieldset renders from Liquid.
+    const readVariantPrices = (sectionEl, poEl) => {
+      if (!sectionEl) return null;
+
+      const checked = sectionEl.querySelector('.variant-picker input[type="radio"][data-variant-id]:checked');
+      if (checked && checked.hasAttribute('data-variant-price-text')) {
+        return {
+          regular: checked.getAttribute('data-variant-price-text') || '',
+          compare: checked.getAttribute('data-variant-compare-price-text') || '',
+          sub: checked.getAttribute('data-variant-sub-price-text') || '',
+          subCompare: checked.getAttribute('data-variant-sub-compare-price-text') || '',
+        };
+      }
+
+      const map = getPriceMap(poEl);
+      if (!map) return null;
+
+      const variantId =
+        (checked && checked.getAttribute('data-variant-id')) ||
+        sectionEl.querySelector('product-form-component input[ref="variantId"]')?.value;
+      const entry = variantId ? map[String(variantId)] : null;
+      if (!entry) return null;
+
+      return {
+        regular: entry.price || '',
+        compare: entry.compare || '',
+        sub: entry.sub || '',
+        subCompare: entry.subCompare || '',
+      };
+    };
+
+    // Returns false when the widget has not been parsed yet, so the caller can try again.
+    const initPurchaseOptions = () => {
+      const sectionEl = document.querySelector(ROOT_SELECTOR);
+      if (!sectionEl) return false;
+
+      const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
+      if (!rcWidget) return false;
+
+      const poEls = document.querySelectorAll('.new-purchase-options');
+      if (!poEls.length) return false;
+
+      poEls.forEach((poEl) => {
+        if (poEl.dataset.poReady === 'true') return;
+        poEl.dataset.poReady = 'true';
+
+        const getRcShadow = () => rcWidget.shadowRoot;
+        const getRcPlansShadow = () => {
+          const s1 = getRcShadow();
+          if (!s1) return null;
+          const rcPlans = s1.querySelector('rc-selling-plans');
+          return rcPlans ? rcPlans.shadowRoot : null;
+        };
+
+        // Our fieldset is on the page before the widget has hydrated, so a selection can be
+        // made against a shadow root that does not exist yet. Hold the latest one and replay
+        // it once the widget is there, rather than dropping it on the floor.
+        let pendingPurchaseOption = null;
+        let pendingPlanId = null;
+
+        const flushPending = () => {
+          const s1 = getRcShadow();
+          if (s1 && pendingPurchaseOption !== null) {
+            const radio = s1.querySelector(`input[name="purchaseOption"][value="${pendingPurchaseOption}"]`);
+            if (radio) {
+              if (!radio.checked) radio.click();
+              pendingPurchaseOption = null;
+            }
+          }
+          const s2 = getRcPlansShadow();
+          if (s2 && pendingPlanId !== null) {
+            const radio = s2.querySelector(`input[value="${pendingPlanId}"]`);
+            if (radio) {
+              if (!radio.checked) radio.click();
+              pendingPlanId = null;
+            }
+          }
+          return pendingPurchaseOption === null && pendingPlanId === null;
+        };
+
+        let flushTimer = null;
+        const scheduleFlush = () => {
+          if (flushPending()) return;
+          if (flushTimer) return;
+          const startedAt = Date.now();
+          flushTimer = setInterval(() => {
+            if (flushPending() || Date.now() - startedAt > 10000) {
+              clearInterval(flushTimer);
+              flushTimer = null;
+            }
+          }, 100);
+        };
+
+        const syncFrequency = (planId) => {
+          pendingPlanId = planId;
+          scheduleFlush();
+        };
+
+        const syncPurchaseOption = (value) => {
+          pendingPurchaseOption = value;
+          scheduleFlush();
+        };
+
+        rcWidget.parentNode.insertBefore(poEl, rcWidget);
+        rcWidget.style.setProperty('display', 'none', 'important');
+        poEl.style.display = '';
+
+        const freqSelect = poEl.querySelector('.new-po-frequency-select');
+        if (freqSelect) {
+          freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
+          if (freqSelect.value) syncFrequency(freqSelect.value);
+        }
+
+        poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
+          radio.addEventListener('change', () => {
+            if (radio.checked) {
+              syncPurchaseOption(radio.value);
+              const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
+              if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
+            }
+          });
+        });
+
+        const seeMoreBtn = poEl.querySelector('.new-po-see-more');
+        const extraList  = poEl.querySelector('.new-po-benefits-extra');
+        if (seeMoreBtn && extraList) {
+          // Labels come from the section settings, so a merchant can reword them.
+          const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
+          const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
+          seeMoreBtn.addEventListener('click', () => {
+            const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
+            seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
+            if (!expanded) {
+              extraList.removeAttribute('hidden');
+              seeMoreBtn.textContent = lessLabel;
+            } else {
+              extraList.setAttribute('hidden', '');
+              seeMoreBtn.textContent = moreLabel;
+            }
+          });
+        }
+
+        const roundPrice = (priceStr) => {
+          if (!priceStr) return priceStr;
+          return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+        };
+
+        // Only write when the value actually changes: these nodes sit inside the subtree the
+        // add to cart label observes, and an unconditional write feeds that observer forever.
+        const setText = (el, text) => {
+          if (el.textContent !== text) el.textContent = text;
+        };
+
+        const updatePrices = () => {
+          const prices = readVariantPrices(sectionEl, poEl);
+          if (!prices) return;
+
+          const regularText  = roundPrice(prices.regular);
+          const compareText  = roundPrice(prices.compare);
+          const subText      = roundPrice(prices.sub || prices.regular);
+          const hasCompare   = compareText !== '';
+          // What the variant costs without a subscription. Only the pickers and price maps
+          // that know about automatic discounts carry it, so fall back to the one-time price.
+          const subCompareText = roundPrice(prices.subCompare) || regularText;
+
+          poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
+            setText(el, subCompareText);
+            el.style.display = '';
+          });
+          poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
+            setText(el, subText);
+          });
+
+          poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
+            setText(el, compareText);
+            el.style.display = hasCompare ? '' : 'none';
+          });
+          poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
+            setText(el, regularText);
+          });
+        };
+
+        updatePrices();
+
+        sectionEl.addEventListener('change', (e) => {
+          if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+            updatePrices();
+          }
+        });
+
+        sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
+          updatePrices();
+        });
+      });
+
+      return true;
+    };
+
+    // Returns false while the buy buttons have not been parsed yet.
+    const initAddToCartLabel = () => {
+      // When off, the button keeps whatever label Liquid rendered ("Add to cart", "Pre-Order").
+      if (!SHOW_PRICE_IN_BUTTON) return true;
+
+      const sections = document.querySelectorAll(ROOT_SELECTOR);
+      if (!sections.length) return false;
+
+      const isSubscriptionSelected = (sectionEl) => {
+        const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
+        return subRadio ? subRadio.checked : false;
+      };
+
+      const roundPriceCart = (priceStr) => {
+        if (!priceStr) return priceStr;
+        return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+      };
+
+      const getSelectedVariantPriceText = (sectionEl) => {
+        const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
+        const prices = readVariantPrices(sectionEl, poEl);
+        if (!prices) return null;
+
+        if (isSubscriptionSelected(sectionEl) && prices.sub) return roundPriceCart(prices.sub);
+
+        return roundPriceCart(prices.regular) || null;
+      };
+
+      const updateAddToCartText = (sectionEl) => {
+        const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
+        if (!textEl) return false;
+
+        const priceText = getSelectedVariantPriceText(sectionEl);
+        if (!priceText) return true;
+
+        // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
+        const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
+        const label = `${baseLabel} - ${priceText}`;
+
+        // The observer below watches this very element, so writing the same text again would
+        // wake it, which would write again: an endless 60ms loop of DOM work for the life of
+        // the page. Write only on a real change and the loop settles after one pass.
+        if (textEl.textContent !== label) textEl.textContent = label;
+        return true;
+      };
+
+      let attached = true;
+
+      sections.forEach((sectionEl) => {
+        if (sectionEl.dataset.poLabelReady === 'true') return;
+
+        if (!updateAddToCartText(sectionEl)) {
+          attached = false;
+          return;
+        }
+        sectionEl.dataset.poLabelReady = 'true';
+
+        let isSyncing = false;
+        const safeSync = () => {
+          if (isSyncing) return;
+          isSyncing = true;
+          updateAddToCartText(sectionEl);
+          setTimeout(() => {
+            updateAddToCartText(sectionEl);
+            isSyncing = false;
+          }, 60);
+        };
+
+        sectionEl.addEventListener('change', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLInputElement)) return;
+          if (target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+            safeSync();
+          }
+          if (target.matches('.new-po-radio-input')) {
+            safeSync();
+          }
+        });
+
+        sectionEl.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          if (target.closest('.variant-option__button-label')) {
+            safeSync();
+          }
+        });
+
+        document.addEventListener('change', (event) => {
+          const target = event.target;
+          if (target instanceof HTMLInputElement && target.matches('.new-po-radio-input')) {
+            safeSync();
+          }
+        });
+
+        const formContainer = sectionEl.querySelector('product-form-component');
+        if (formContainer) {
+          // Only the parts of the form that can carry a new variant id, rather than every
+          // attribute of every node: the button's own text lives in here too, and watching it
+          // means every label we write comes straight back as another mutation.
+          const observer = new MutationObserver(() => safeSync());
+          observer.observe(formContainer, { childList: true, subtree: true });
+        }
+      });
+
+      return attached;
+    };
+
+    // This snippet renders after the product details blocks, so the widget, the variant picker
+    // and the buy buttons are already in the document: doing the work now puts the fieldset on
+    // screen in the first paint, instead of after every app embed in the head has run and
+    // DOMContentLoaded has finally fired. The listener below is only a fallback for a template
+    // that renders the blocks later.
+    const boot = () => {
+      const a = initPurchaseOptions();
+      const b = initAddToCartLabel();
+      return a && b;
+    };
+
+    if (!boot() && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot, { once: true });
+    }
+  })();
+</script>

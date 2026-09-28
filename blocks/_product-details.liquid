@@ -222,7 +222,25 @@
         "step": 1,
         "unit": "px",
         "default": 12
-      }, {
+      },
+      {
+        "type": "checkbox",
+        "id": "custom_gap_desktop",
+        "label": "Custom gap on desktop",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "gap_desktop",
+        "label": "Gap on desktop",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 12,
+        "visible_if": "{{ block.settings.custom_gap_desktop }}"
+      },
+      {
         "type": "checkbox",
         "id": "sticky_details_desktop",
         "label": "t:settings.make_details_sticky_desktop",

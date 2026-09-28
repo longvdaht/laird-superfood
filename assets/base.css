@@ -1435,9 +1435,9 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .media-gallery--large-first-image .product-media-container:first-child,
+  .media-gallery--two-column .product-media-container--full-width,
   .media-gallery--two-column .product-media-container:only-child {
-    /* First child spans 2 columns */
+    /* Full width media spans 2 columns */
     grid-column: span 2;
   }
 
@@ -1938,7 +1938,7 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   .sticky-content--desktop,
   .sticky-content--desktop.full-height--desktop > .group-block {
     position: sticky;
-    top: var(--sticky-header-offset, 0);
+    top: calc(var(--sticky-header-offset, 0px) + 20px);
     z-index: var(--layer-flat);
   }
 }
@@ -2154,6 +2154,10 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) > *:not(.tax-note) {
   display: flex;
   gap: var(--gap);
   height: 100%;
+
+  @media screen and (min-width: 750px) {
+    gap: var(--gap-desktop, var(--gap));
+  }
 }
 
 .layout-panel-flex--row {
@@ -2452,15 +2456,15 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) > *:not(.tax-note) {
 
 /* Quantity selector */
 .quantity-selector {
-  --quantity-selector-width: 124px;
+  --quantity-selector-width: 128px;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--color-input-text);
   background-color: var(--color-input-background);
-  border: var(--style-border-width-inputs) solid var(--color-input-border);
-  border-radius: var(--style-border-radius-inputs);
+  border: 2px solid var(--color-gray-1);
+  border-radius: var(--style-border-radius-inputs);;
   flex: 1 1 var(--quantity-selector-width);
   align-self: stretch;
   transition: background-color var(--animation-speed) var(--animation-easing);
@@ -3527,9 +3531,9 @@ slideshow-component[autoplay] slideshow-controls {
     }
 
     &:is([aria-selected='true']) {
-      outline: var(--focus-outline-width) solid currentcolor;
-      outline-offset: calc(var(--focus-outline-offset) / 2);
-      border: var(--style-border-width) solid rgb(var(--color-border-rgb) / var(--media-border-opacity));
+      border: var(--style-border-width) solid var(--color-darkblue);
+      /* outline-offset: calc(var(--focus-outline-offset) / 2); */
+      /* border: var(--style-border-width) solid rgb(var(--color-border-rgb) / var(--media-border-opacity)); */
     }
   }
 }

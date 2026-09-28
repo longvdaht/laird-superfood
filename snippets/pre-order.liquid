@@ -1,0 +1,48 @@
+{%- doc -%}
+  Renders the pre-order state of a product, in one of three shapes.
+
+  A product is on pre-order when `custom.pre_order` is true. The wording is a store wide setting
+  that a product can override for itself:
+
+  - the button label comes from the `pre_order_button_text` theme setting;
+  - the note under the button comes from `custom.pre_order_text` on the product when it is set,
+    and from the `pre_order_note` theme setting otherwise. A blank note renders nothing.
+
+  The output is raw, so escape it where it is printed.
+
+  @param {object} product - The product to test.
+  @param {string} [mode] - What to render: `label` for the button text, `note` for the line under
+    the button, or nothing for `true` when the product is on pre-order.
+
+  @example
+  {% capture pre_order %}{% render 'pre-order', product: product %}{% endcapture %}
+  {% if pre_order != blank %}
+    {% capture pre_order_note %}{% render 'pre-order', product: product, mode: 'note' %}{% endcapture %}
+  {% endif %}
+{%- enddoc -%}
+
+{%- liquid
+  assign output = ''
+
+  if product.metafields.custom.pre_order.value == true
+    if mode == 'label'
+      # Never blank: a button with no words on it is worse than the wrong words.
+      assign output = settings.pre_order_button_text | append: '' | strip
+      if output == ''
+        assign output = 'Pre-Order'
+      endif
+
+    elsif mode == 'note'
+      assign own_note = product.metafields.custom.pre_order_text
+      if own_note != blank
+        assign output = own_note.value | default: own_note
+      else
+        assign output = settings.pre_order_note
+      endif
+
+    else
+      assign output = 'true'
+    endif
+  endif
+-%}
+{{- output | append: '' | strip -}}

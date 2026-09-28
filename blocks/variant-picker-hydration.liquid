@@ -131,6 +131,12 @@
 
   <div class="hydration-flavor-grid">
     {%- for variant in product_resource.variants -%}
+      {%- capture variant_hidden -%}
+        {%- render 'variant-hidden', variant: variant, product_resource: product_resource -%}
+      {%- endcapture -%}
+      {%- if variant_hidden != blank -%}
+        {%- continue -%}
+      {%- endif -%}
       {%- assign flavor_name = variant.options[flavor_index] -%}
       {%- assign flavor_lower = flavor_name | downcase | replace: ' ', '-' | replace: "'", '' -%}
 

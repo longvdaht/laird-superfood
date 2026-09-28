@@ -33,6 +33,49 @@
 
 {%- unless pov_product.selling_plan_groups == empty -%}
 
+{%- comment -%}
+  The automatic discount app discounts the line at the cart, so it is in neither variant.price
+  nor a selling plan allocation. Resolve it here, so the fieldset shows what checkout charges.
+{%- endcomment -%}
+{%- assign pov_sub_base = pov_sub_price | default: pov_variant.price -%}
+{%- capture pov_auto_onetime -%}
+  {%- render 'auto-discount-price-value', product: pov_product, price: pov_variant.price -%}
+{%- endcapture -%}
+{%- capture pov_auto_sub -%}
+  {%- render 'auto-discount-price-value', product: pov_product, price: pov_sub_base, purchase_type: 'subscription' -%}
+{%- endcapture -%}
+{%- liquid
+  assign pov_auto_onetime = pov_auto_onetime | strip
+  assign pov_auto_sub = pov_auto_sub | strip
+
+  assign pov_onetime_price = pov_variant.price
+  if pov_auto_onetime != blank
+    assign pov_onetime_price = pov_auto_onetime | plus: 0
+  endif
+
+  assign pov_sub_display = pov_sub_base
+  if pov_auto_sub != blank
+    assign pov_sub_display = pov_auto_sub | plus: 0
+  endif
+
+  # The strikethrough on the subscription row is what the same variant costs without a
+  # subscription. Only follow the one-time price down when the discount reaches the subscription
+  # too, otherwise a subscription that keeps its full price would be struck through with a lower
+  # one and read as the more expensive option.
+  assign pov_sub_compare = pov_variant.price
+  if pov_auto_sub != blank
+    assign pov_sub_compare = pov_onetime_price
+  endif
+
+  # Derived from the two prices rather than read off the metafield, so the badge always states
+  # the saving the row shows, rounding included. The same for every variant of a product, since
+  # the discount is a percentage, so it needs no refreshing when the variant changes.
+  assign pov_auto_pct = 0
+  if pov_auto_onetime != blank and pov_variant.price > 0
+    assign pov_auto_pct = pov_variant.price | minus: pov_onetime_price | times: 100.0 | divided_by: pov_variant.price | round
+  endif
+-%}
+
 {%- capture check_svg -%}
 <svg class="new-po-check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3632 3.32241C13.426 3.37012 13.4788 3.42974 13.5186 3.49788C13.5584 3.56601 13.5843 3.64132 13.5949 3.71949C13.6056 3.79766 13.6007 3.87716 13.5805 3.95344C13.5604 4.02971 13.5254 4.10127 13.4776 4.16401L7.0776 12.564C7.02568 12.6321 6.95981 12.6882 6.88441 12.7287C6.80901 12.7692 6.72582 12.7931 6.64042 12.7987C6.55503 12.8044 6.4694 12.7918 6.3893 12.7616C6.3092 12.7315 6.23647 12.6846 6.176 12.624L2.576 9.02401C2.47001 8.91027 2.41231 8.75984 2.41506 8.6044C2.4178 8.44896 2.48077 8.30065 2.5907 8.19072C2.70063 8.08079 2.84894 8.01782 3.00438 8.01507C3.15982 8.01233 3.31026 8.07003 3.424 8.17602L6.5392 11.2904L12.5232 3.43681C12.6195 3.31038 12.762 3.22732 12.9195 3.20587C13.077 3.18442 13.2366 3.22634 13.3632 3.32241Z" fill="#003349"/>
@@ -59,14 +102,14 @@
       <span class="new-po-radio-indicator" aria-hidden="true"></span>
       <span class="new-po-option__title">
         Subscribe &amp; Save
-        <span class="new-po-discount-badge" data-po-discount-badge>Additional {{ pov_discount_pct }}% Off</span>
+        <span class="new-po-discount-badge" data-po-discount-badge>{{ pov_discount_pct }}%</span>
       </span>
       <span class="new-po-prices">
         <span class="new-po-price new-po-price--compare" data-po-compare-price>
-          {{- pov_variant.price | money -}}
+          {{- pov_sub_compare | money -}}
         </span>
         <span class="new-po-price new-po-price--sub" data-po-sub-price>
-          {{- pov_sub_price | default: pov_variant.price | money -}}
+          {{- pov_sub_display | money -}}
         </span>
       </span>
     </label>
@@ -139,16 +182,26 @@
         value="onetime"
       >
       <span class="new-po-radio-indicator" aria-hidden="true"></span>
-      <span class="new-po-option__title">One-Time Purchase</span>
+      <span class="new-po-option__title">
+        One-Time Purchase
+        {%- if pov_auto_pct > 0 -%}
+          <span class="new-po-discount-badge" data-po-onetime-badge>Save {{ pov_auto_pct }}%</span>
+        {%- endif -%}
+      </span>
       <span class="new-po-prices">
         {%- liquid
+          # A one-time purchase shows one price, the one the customer is charged. The only
+          # thing struck through beside it is a saving that exists: a compare at price the
+          # merchant set on the variant, or the price an automatic discount came off. The
+          # theme used to fall back to a list price hardcoded per variant title ($34 for
+          # `1 - 16oz`, $102 for `3 Pack - 16oz`), which was never what anyone paid.
           assign onetime_compare_value = nil
           if pov_variant.compare_at_price > pov_variant.price
             assign onetime_compare_value = pov_variant.compare_at_price
-          elsif pov_variant.title == '1 - 16oz'
-            assign onetime_compare_value = 3400
-          elsif pov_variant.title == '3 Pack - 16oz'
-            assign onetime_compare_value = 10200
+          endif
+
+          if pov_auto_onetime != blank
+            assign onetime_compare_value = pov_variant.price
           endif
         -%}
         <span
@@ -167,11 +220,61 @@
           {%- endif -%}
         </span>
         <span class="new-po-price new-po-price--regular" data-po-onetime-price>
-          {{- pov_variant.price | money -}}
+          {{- pov_onetime_price | money -}}
         </span>
       </span>
     </label>
   </div>
 
+
+  {%- comment -%}
+    Prices per variant, so the sync script can refresh them on pickers that do not carry
+    the data-variant-*-text attributes (every template other than new-mahalo).
+  {%- endcomment -%}
+  <script type="application/json" data-po-variant-prices>
+    {
+      {%- for pov_v in pov_product.variants -%}
+        {%- liquid
+          assign pov_v_compare = nil
+          if pov_v.compare_at_price > pov_v.price
+            assign pov_v_compare = pov_v.compare_at_price
+          endif
+
+          assign pov_v_sub = nil
+          if pov_v.selling_plan_allocations.size > 0
+            assign pov_v_sub = pov_v.selling_plan_allocations.first.price
+          endif
+        -%}
+        {%- capture pov_v_auto -%}
+          {%- render 'auto-discount-price-value', product: pov_product, price: pov_v.price -%}
+        {%- endcapture -%}
+        {%- capture pov_v_auto_sub -%}
+          {%- render 'auto-discount-price-value', product: pov_product, price: pov_v_sub, purchase_type: 'subscription' -%}
+        {%- endcapture -%}
+        {%- liquid
+          assign pov_v_auto = pov_v_auto | strip
+          assign pov_v_auto_sub = pov_v_auto_sub | strip
+
+          assign pov_v_price = pov_v.price
+          if pov_v_auto != blank
+            assign pov_v_price = pov_v_auto | plus: 0
+            assign pov_v_compare = pov_v.price
+          endif
+
+          assign pov_v_sub_compare = pov_v.price
+          if pov_v_auto_sub != blank
+            assign pov_v_sub = pov_v_auto_sub | plus: 0
+            assign pov_v_sub_compare = pov_v_price
+          endif
+        -%}
+        "{{ pov_v.id }}": {
+          "price": {{ pov_v_price | money | json }},
+          "compare": {% if pov_v_compare %}{{ pov_v_compare | money | json }}{% else %}""{% endif %},
+          "sub": {% if pov_v_sub %}{{ pov_v_sub | money | json }}{% else %}""{% endif %},
+          "subCompare": {{ pov_v_sub_compare | money | json }}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    }
+  </script>
 </fieldset>
 {%- endunless -%}

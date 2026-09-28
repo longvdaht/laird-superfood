@@ -22,16 +22,25 @@
   }
 
   .ai-product-list__title-{{ ai_gen_id }} {
-    font-size: 14px;
-    font-weight: 600;
     text-transform: capitalize;
-    margin-bottom: 10px;
-    color: rgb(var(--color-foreground));
+    margin-bottom: 12px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0;
+    vertical-align: middle;
+    color: rgba(var(--color-black-1), .81);
+    display: flex;
+    gap: 4px;
   }
 
   .ai-product-list__subtitle-{{ ai_gen_id }} {
-    font-size: 14px;
     font-weight: 400;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0;
+    vertical-align: middle;
+    color: rgba(var(--color-black-1), .81);
     text-transform: none;
   }
 
@@ -44,7 +53,8 @@
   .ai-product-list__item-{{ ai_gen_id }} {
     cursor: pointer;
     border-radius: 8px;
-    border: var(--stroke-weight-1, 1px) solid var(--color-azure-42, #507488);
+    /* border: var(--stroke-weight-1, 1px) solid var(--color-azure-42, #507488); */
+    border: 2px solid var(--color-gray-1);
     padding: 10px 16px;
     display: flex;
 {% if block.settings.show_image %}
@@ -106,9 +116,13 @@
   }
 
   .ai-product-list__product-title-{{ ai_gen_id }} {
+    font-weight: 600;
     font-size: 16px;
-    font-weight: 500;
-    line-height: 1.3;
+    line-height: 100%;
+    letter-spacing: 0;
+    text-align: center;
+    vertical-align: middle;
+    color: var(--color-darkblue);
   }
 
   .ai-product-list__price-{{ ai_gen_id }} {
@@ -144,7 +158,8 @@
     }
 
     .ai-product-list__product-title-{{ ai_gen_id }} {
-      font-size: 14px;
+      font-size: 12px;
+      line-height: 14px;
     }
 
     .ai-product-list__price-{{ ai_gen_id }} {
