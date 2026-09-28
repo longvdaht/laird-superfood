@@ -353,6 +353,9 @@
       "block_order": [
         "breadcrumbs_iDKeVi"
       ],
+      "custom_css": [
+        ".variant-option__button-label__selling-badge {display: none;}"
+      ],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
