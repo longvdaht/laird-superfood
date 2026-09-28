@@ -840,9 +840,9 @@ recharge-subscription-widget {
   }
 }
 
-@media (min-width: 1200px) {
+/* @media (min-width: 1200px) {
   .product-information.new-section h1 {
     width: calc(382/632*100%);
   }
-}
+} */
 
