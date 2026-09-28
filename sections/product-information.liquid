@@ -120,13 +120,12 @@
   behind our markup, with the copy coming from this section's settings. new-mahalo still uses
   the older hard-coded snippet. Add a template suffix here to roll this one out further.
 {%- endcomment -%}
-{%- if template.suffix == 'mahalo' -%}
+ 
   {%- render 'purchase-options-mahalo', product: closest.product, section: section -%}
   {% render 'purchase-options-sync',
     root_selector: '.product-information',
     show_price_in_button: section.settings.po_show_price_in_button
   %}
-{%- endif -%}
 
 {% stylesheet %}
   .product-information {

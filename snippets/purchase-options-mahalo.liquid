@@ -9,9 +9,13 @@
   unless pov_first_group == blank
     assign pov_first_plan = pov_first_group.selling_plans | first
     unless pov_first_plan == blank
+      # Dynamic pricing plans list one adjustment per stage, first order first (25% off the
+      # first order, then 20%). Take the first so the badge matches the first order price the
+      # selling plan allocation below carries.
       for pov_adj in pov_first_plan.price_adjustments
         if pov_adj.value_type == 'percentage'
           assign pov_discount_pct = pov_adj.value | round
+          break
         endif
       endfor
     endunless
