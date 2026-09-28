@@ -718,7 +718,7 @@ product-card.product-card {
   }
 }
 
-.template-product-mahalo {
+.product-information.new-section {
   h1 {
     font-size: 30px;
     line-height: 32px;
@@ -834,14 +834,14 @@ recharge-subscription-widget {
     font-size: 36px !important;
     line-height: normal !important;
   }
-  .template-product-mahalo h1 {
+  .product-information.new-section h1 {
     font-size: 36px;
     line-height: 100%;
   }
 }
 
 @media (min-width: 1200px) {
-  .template-product-mahalo h1 {
+  .product-information.new-section h1 {
     width: calc(382/632*100%);
   }
 }
