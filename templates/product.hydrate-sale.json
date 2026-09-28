@@ -520,6 +520,9 @@
       "block_order": [
         "breadcrumbs_wBEBFf"
       ],
+      "custom_css": [
+        ".variant-option__button-label__selling-badge {display: none;}"
+      ],
       "name": "t:names.product_information",
       "settings": {
         "content_width": "content-center-aligned",
