@@ -290,7 +290,8 @@
         "breadcrumbs_XPJJ4t"
       ],
       "custom_css": [
-        ".variant-option__button-label__selling-badge, .variant-option__button-label__selling-badge--top {display: none;}"
+        ".variant-option__button-label__selling-badge,.variant-option__button-label__selling-badge--top {display: none;}",
+        ".variant-option__button-label__selling-badge, .variant-option__button-label__selling-badge--bottom {display: none;}"
       ],
       "settings": {
         "content_width": "content-center-aligned",
