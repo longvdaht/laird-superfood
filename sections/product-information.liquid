@@ -61,7 +61,7 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="product-information section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} product-information--custom-mobile-padding{% endif %} {% if pdp_background_class != blank %} {{ pdp_background_class }}{% endif %}"
+  class="product-information new-section section section--{{ content_width }} spacing-style color-{{ section.settings.color_scheme }} relative{% if section.settings.custom_mobile_padding %} product-information--custom-mobile-padding{% endif %} {% if pdp_background_class != blank %} {{ pdp_background_class }}{% endif %}"
   style="
     {% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;
     {%- if section.settings.custom_mobile_padding -%}
