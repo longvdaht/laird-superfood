@@ -1,0 +1,68 @@
+{%- doc -%}
+  Outputs what a price becomes once the automatic discount app (Yagi) has taken its cut, in
+  cents, or nothing at all when no automatic discount applies. A value, not markup, so that a
+  caller can capture it and format it however it already formats prices:
+
+    {%- capture discounted -%}
+      {%- render 'auto-discount-price-value', product: product, price: variant.price -%}
+    {%- endcapture -%}
+
+  Companion to `auto-discounted-price.liquid`, which renders the price of a whole product card.
+  This one discounts one price that the caller has already chosen, so it also works on a
+  selling plan allocation, which a product level snippet cannot see.
+
+  @param {product} product - The product the price belongs to
+  @param {number} price - The price to discount, in cents
+  @param {string} [purchase_type] - 'subscription' for a selling plan price, one-time otherwise
+{%- enddoc -%}
+
+{%- liquid
+  # The app mirrors the Shopify automatic discount into metafields, but not the Purchase type the
+  # discount was created with, so the percentage alone does not say whether a subscription line
+  # gets it. That one missing fact is read from the shop metafield custom.auto_discount, a JSON
+  # object: {"purchase_type": "one_time" | "subscription" | "both"}.
+  #
+  # Unset is treated as one-time only, the safe end: a subscription that quietly costs more at
+  # checkout than the page promised is worse than a discount that goes unadvertised.
+  assign purchase_type_setting = shop.metafields.custom.auto_discount.value.purchase_type | default: 'one_time'
+
+  assign applies_to_subscriptions = false
+  if purchase_type_setting == 'both' or purchase_type_setting == 'subscription'
+    assign applies_to_subscriptions = true
+  endif
+
+  assign applies_to_one_time = true
+  if purchase_type_setting == 'subscription'
+    assign applies_to_one_time = false
+  endif
+
+  assign product_percentage = product.metafields["app--168074346497"]["discount_percentage"].value
+  assign shop_percentage = shop.metafields["app--168074346497"]["discount_percentage"].value
+
+  assign percentage = 0
+  if product_percentage > 0.01
+    assign percentage = product_percentage
+  endif
+  # Shop wide last, the order auto-discounted-price.liquid resolves them in.
+  if shop_percentage > 0.01
+    assign percentage = shop_percentage
+  endif
+
+  if purchase_type == 'subscription'
+    unless applies_to_subscriptions
+      assign percentage = 0
+    endunless
+  else
+    unless applies_to_one_time
+      assign percentage = 0
+    endunless
+  endif
+
+  if percentage > 0.01 and price > 0
+    assign remaining = 1.0 | minus: percentage
+    assign discounted = price | divided_by: 100.0 | times: remaining | times: 100.0 | ceil
+    if discounted < price
+      echo discounted
+    endif
+  endif
+-%}

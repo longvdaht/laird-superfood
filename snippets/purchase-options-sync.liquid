@@ -45,6 +45,7 @@
           regular: checked.getAttribute('data-variant-price-text') || '',
           compare: checked.getAttribute('data-variant-compare-price-text') || '',
           sub: checked.getAttribute('data-variant-sub-price-text') || '',
+          subCompare: checked.getAttribute('data-variant-sub-compare-price-text') || '',
         };
       }
 
@@ -57,143 +58,188 @@
       const entry = variantId ? map[String(variantId)] : null;
       if (!entry) return null;
 
-      return { regular: entry.price || '', compare: entry.compare || '', sub: entry.sub || '' };
+      return {
+        regular: entry.price || '',
+        compare: entry.compare || '',
+        sub: entry.sub || '',
+        subCompare: entry.subCompare || '',
+      };
     };
 
-    (() => {
-      const initPurchaseOptions = () => {
-        document.querySelectorAll('.new-purchase-options').forEach((poEl) => {
-          const sectionEl = document.querySelector(ROOT_SELECTOR);
-          if (!sectionEl) return;
+    // Returns false when the widget has not been parsed yet, so the caller can try again.
+    const initPurchaseOptions = () => {
+      const sectionEl = document.querySelector(ROOT_SELECTOR);
+      if (!sectionEl) return false;
 
-          const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
-          if (!rcWidget) return;
+      const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
+      if (!rcWidget) return false;
 
-          const getRcShadow = () => rcWidget.shadowRoot;
-          const getRcPlansShadow = () => {
-            const s1 = getRcShadow();
-            if (!s1) return null;
-            const rcPlans = s1.querySelector('rc-selling-plans');
-            return rcPlans ? rcPlans.shadowRoot : null;
-          };
+      const poEls = document.querySelectorAll('.new-purchase-options');
+      if (!poEls.length) return false;
 
-          const hideRcWidget = () => {
-            rcWidget.style.setProperty('display', 'none', 'important');
-          };
+      poEls.forEach((poEl) => {
+        if (poEl.dataset.poReady === 'true') return;
+        poEl.dataset.poReady = 'true';
 
-          const syncFrequency = (planId) => {
-            const s2 = getRcPlansShadow();
-            if (!s2) return;
-            const radio = s2.querySelector(`input[value="${planId}"]`);
-            if (radio && !radio.checked) radio.click();
-          };
+        const getRcShadow = () => rcWidget.shadowRoot;
+        const getRcPlansShadow = () => {
+          const s1 = getRcShadow();
+          if (!s1) return null;
+          const rcPlans = s1.querySelector('rc-selling-plans');
+          return rcPlans ? rcPlans.shadowRoot : null;
+        };
 
-          const syncPurchaseOption = (value) => {
-            const s1 = getRcShadow();
-            if (!s1) return;
-            const radio = s1.querySelector(`input[name="purchaseOption"][value="${value}"]`);
-            if (radio && !radio.checked) radio.click();
-          };
+        // Our fieldset is on the page before the widget has hydrated, so a selection can be
+        // made against a shadow root that does not exist yet. Hold the latest one and replay
+        // it once the widget is there, rather than dropping it on the floor.
+        let pendingPurchaseOption = null;
+        let pendingPlanId = null;
 
-          rcWidget.parentNode.insertBefore(poEl, rcWidget);
-          hideRcWidget();
-          poEl.style.display = '';
-
-          const freqSelect = poEl.querySelector('.new-po-frequency-select');
-          if (freqSelect) {
-            freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
-            setTimeout(() => {
-              if (freqSelect.value) syncFrequency(freqSelect.value);
-            }, 200);
+        const flushPending = () => {
+          const s1 = getRcShadow();
+          if (s1 && pendingPurchaseOption !== null) {
+            const radio = s1.querySelector(`input[name="purchaseOption"][value="${pendingPurchaseOption}"]`);
+            if (radio) {
+              if (!radio.checked) radio.click();
+              pendingPurchaseOption = null;
+            }
           }
-
-          poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
-            radio.addEventListener('change', () => {
-              if (radio.checked) {
-                syncPurchaseOption(radio.value);
-                const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
-                if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
-              }
-            });
-          });
-
-          const seeMoreBtn = poEl.querySelector('.new-po-see-more');
-          const extraList  = poEl.querySelector('.new-po-benefits-extra');
-          if (seeMoreBtn && extraList) {
-            // Labels come from the section settings, so a merchant can reword them.
-            const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
-            const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
-            seeMoreBtn.addEventListener('click', () => {
-              const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
-              seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
-              if (!expanded) {
-                extraList.removeAttribute('hidden');
-                seeMoreBtn.textContent = lessLabel;
-              } else {
-                extraList.setAttribute('hidden', '');
-                seeMoreBtn.textContent = moreLabel;
-              }
-            });
+          const s2 = getRcPlansShadow();
+          if (s2 && pendingPlanId !== null) {
+            const radio = s2.querySelector(`input[value="${pendingPlanId}"]`);
+            if (radio) {
+              if (!radio.checked) radio.click();
+              pendingPlanId = null;
+            }
           }
+          return pendingPurchaseOption === null && pendingPlanId === null;
+        };
 
-          const roundPrice = (priceStr) => {
-            if (!priceStr) return priceStr;
-            return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
-          };
+        let flushTimer = null;
+        const scheduleFlush = () => {
+          if (flushPending()) return;
+          if (flushTimer) return;
+          const startedAt = Date.now();
+          flushTimer = setInterval(() => {
+            if (flushPending() || Date.now() - startedAt > 10000) {
+              clearInterval(flushTimer);
+              flushTimer = null;
+            }
+          }, 100);
+        };
 
-          const updatePrices = () => {
-            const prices = readVariantPrices(sectionEl, poEl);
-            if (!prices) return;
+        const syncFrequency = (planId) => {
+          pendingPlanId = planId;
+          scheduleFlush();
+        };
 
-            const regularText  = roundPrice(prices.regular);
-            const compareText  = roundPrice(prices.compare);
-            const subText      = roundPrice(prices.sub || prices.regular);
-            const hasCompare   = compareText !== '';
+        const syncPurchaseOption = (value) => {
+          pendingPurchaseOption = value;
+          scheduleFlush();
+        };
 
-            poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
-              el.textContent   = regularText;
-              el.style.display = '';
-            });
-            poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
-              el.textContent = subText;
-            });
+        rcWidget.parentNode.insertBefore(poEl, rcWidget);
+        rcWidget.style.setProperty('display', 'none', 'important');
+        poEl.style.display = '';
 
-            poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
-              el.textContent   = compareText;
-              el.style.display = hasCompare ? '' : 'none';
-            });
-            poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
-              el.textContent = regularText;
-            });
-          };
+        const freqSelect = poEl.querySelector('.new-po-frequency-select');
+        if (freqSelect) {
+          freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
+          if (freqSelect.value) syncFrequency(freqSelect.value);
+        }
 
-          updatePrices();
-
-          sectionEl.addEventListener('change', (e) => {
-            if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
-              updatePrices();
+        poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
+          radio.addEventListener('change', () => {
+            if (radio.checked) {
+              syncPurchaseOption(radio.value);
+              const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
+              if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
             }
           });
-
-          sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
-            updatePrices();
-          });
         });
-      };
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initPurchaseOptions);
-      } else {
-        initPurchaseOptions();
-      }
-    })();
+        const seeMoreBtn = poEl.querySelector('.new-po-see-more');
+        const extraList  = poEl.querySelector('.new-po-benefits-extra');
+        if (seeMoreBtn && extraList) {
+          // Labels come from the section settings, so a merchant can reword them.
+          const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
+          const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
+          seeMoreBtn.addEventListener('click', () => {
+            const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
+            seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
+            if (!expanded) {
+              extraList.removeAttribute('hidden');
+              seeMoreBtn.textContent = lessLabel;
+            } else {
+              extraList.setAttribute('hidden', '');
+              seeMoreBtn.textContent = moreLabel;
+            }
+          });
+        }
 
-    (() => {
+        const roundPrice = (priceStr) => {
+          if (!priceStr) return priceStr;
+          return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+        };
+
+        // Only write when the value actually changes: these nodes sit inside the subtree the
+        // add to cart label observes, and an unconditional write feeds that observer forever.
+        const setText = (el, text) => {
+          if (el.textContent !== text) el.textContent = text;
+        };
+
+        const updatePrices = () => {
+          const prices = readVariantPrices(sectionEl, poEl);
+          if (!prices) return;
+
+          const regularText  = roundPrice(prices.regular);
+          const compareText  = roundPrice(prices.compare);
+          const subText      = roundPrice(prices.sub || prices.regular);
+          const hasCompare   = compareText !== '';
+          // What the variant costs without a subscription. Only the pickers and price maps
+          // that know about automatic discounts carry it, so fall back to the one-time price.
+          const subCompareText = roundPrice(prices.subCompare) || regularText;
+
+          poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
+            setText(el, subCompareText);
+            el.style.display = '';
+          });
+          poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
+            setText(el, subText);
+          });
+
+          poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
+            setText(el, compareText);
+            el.style.display = hasCompare ? '' : 'none';
+          });
+          poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
+            setText(el, regularText);
+          });
+        };
+
+        updatePrices();
+
+        sectionEl.addEventListener('change', (e) => {
+          if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
+            updatePrices();
+          }
+        });
+
+        sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
+          updatePrices();
+        });
+      });
+
+      return true;
+    };
+
+    // Returns false while the buy buttons have not been parsed yet.
+    const initAddToCartLabel = () => {
       // When off, the button keeps whatever label Liquid rendered ("Add to cart", "Pre-Order").
-      if (!SHOW_PRICE_IN_BUTTON) return;
+      if (!SHOW_PRICE_IN_BUTTON) return true;
 
       const sections = document.querySelectorAll(ROOT_SELECTOR);
-      if (!sections.length) return;
+      if (!sections.length) return false;
 
       const isSubscriptionSelected = (sectionEl) => {
         const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
@@ -217,19 +263,32 @@
 
       const updateAddToCartText = (sectionEl) => {
         const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
-        if (!textEl) return;
+        if (!textEl) return false;
 
         const priceText = getSelectedVariantPriceText(sectionEl);
-        if (!priceText) return;
+        if (!priceText) return true;
 
         // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
         const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
+        const label = `${baseLabel} - ${priceText}`;
 
-        textEl.textContent = `${baseLabel} - ${priceText}`;
+        // The observer below watches this very element, so writing the same text again would
+        // wake it, which would write again: an endless 60ms loop of DOM work for the life of
+        // the page. Write only on a real change and the loop settles after one pass.
+        if (textEl.textContent !== label) textEl.textContent = label;
+        return true;
       };
 
+      let attached = true;
+
       sections.forEach((sectionEl) => {
-        updateAddToCartText(sectionEl);
+        if (sectionEl.dataset.poLabelReady === 'true') return;
+
+        if (!updateAddToCartText(sectionEl)) {
+          attached = false;
+          return;
+        }
+        sectionEl.dataset.poLabelReady = 'true';
 
         let isSyncing = false;
         const safeSync = () => {
@@ -270,11 +329,30 @@
 
         const formContainer = sectionEl.querySelector('product-form-component');
         if (formContainer) {
+          // Only the parts of the form that can carry a new variant id, rather than every
+          // attribute of every node: the button's own text lives in here too, and watching it
+          // means every label we write comes straight back as another mutation.
           const observer = new MutationObserver(() => safeSync());
-          observer.observe(formContainer, { childList: true, subtree: true, characterData: true, attributes: true });
+          observer.observe(formContainer, { childList: true, subtree: true });
         }
       });
-    })();
 
+      return attached;
+    };
+
+    // This snippet renders after the product details blocks, so the widget, the variant picker
+    // and the buy buttons are already in the document: doing the work now puts the fieldset on
+    // screen in the first paint, instead of after every app embed in the head has run and
+    // DOMContentLoaded has finally fired. The listener below is only a fallback for a template
+    // that renders the blocks later.
+    const boot = () => {
+      const a = initPurchaseOptions();
+      const b = initAddToCartLabel();
+      return a && b;
+    };
+
+    if (!boot() && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot, { once: true });
+    }
   })();
 </script>

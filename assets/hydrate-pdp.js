@@ -3,7 +3,15 @@
 
   function patch() {
     const widget = document.querySelector('recharge-subscription-widget');
-    if (!widget?.shadowRoot) return false;
+    if (!widget) return false;
+
+    // Templates that proxy the widget (Mahalo) hide it and render the theme's own purchase
+    // options in its place, every number in them read from the product's selling plans. There
+    // is nothing to restyle inside a hidden widget, and nothing on such a page should carry the
+    // percentage hardcoded below, so stop here rather than patching what no one sees.
+    if (widget.style.display === 'none') return true;
+
+    if (!widget.shadowRoot) return false;
 
     // --- Benefits: bullet colour ---
     const benefits = widget.shadowRoot.querySelector('rc-benefits');

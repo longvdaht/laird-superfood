@@ -725,28 +725,6 @@
     text-align: center;
   }
 
-  .new-product-information .variant-option__button-label__discount {
-    color: var(--color-white-solid, #FFF);
-    text-align: center;
-    font-family: var(--font-family-Font-1, Rubik);
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 100%;
-    letter-spacing: var(--letter-spacing-0_3, 0.3px);
-    display: flex;
-    height: 16px;
-    padding: 0 2px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    background: var(--color-rose-46, #EA0044);
-    border-radius: 2px;
-    white-space: nowrap;
-    z-index: 2;
-    flex-shrink: 0;
-  }
-
   .new-product-information .buy-buttons-block {
     margin-bottom: 25px;
   }
@@ -865,7 +843,8 @@
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 1px;
+    /* The title and the badge now read as one phrase, so they need a word's worth of space. */
+    gap: 8px;
     flex-wrap: wrap;
     color: var(--lairdsuperfood-com-prussian-blue, var(--color-azure-14, #003349));
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
@@ -876,9 +855,11 @@
     line-height: 24px;
   }
 
+  /* Inherits the size of the title it sits in, so "Subscribe & Save" and the percentage read
+     as one line and the row keeps its height at every breakpoint the title is resized at. */
   .new-po-discount-badge {
-    display: flex;
-    padding: 6px ;
+    display: inline-flex;
+    padding: 2px 6px;
     justify-content: center;
     align-items: center;
     gap: 8px;
@@ -887,10 +868,11 @@
     color: var(--color-white-solid, #FFF);
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0);
     font-family: var(--font-family-Font-1, Rubik);
-    font-size: 14px;
+    font-size: inherit;
     font-style: normal;
     font-weight: 700;
-    line-height: 100%;
+    line-height: inherit;
+    white-space: nowrap;
   }
 
   .new-po-prices {
