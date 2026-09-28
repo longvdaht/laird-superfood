@@ -177,43 +177,47 @@
         "ebd_product_checklist_LBpyX4",
         "ebd_product_dropdowns_hwRjzU"
       ],
+      "disabled": true,
       "name": "EBD Product Main",
       "settings": {}
     },
-    "ebd_product_tabs_9ppdNh": {
-      "type": "ebd-product-tabs",
-      "name": "EBD Product Tabs",
-      "settings": {}
-    },
-    "ebd_product_ingredients_Qd4pCp": {
-      "type": "ebd-product-ingredients",
-      "disabled": true,
-      "name": "EBD Product Ingredients",
-      "settings": {
-        "heading": "Ingredients"
-      }
-    },
-    "main": {
+    "product_information_yWQMJ4": {
       "type": "product-information",
       "blocks": {
+        "breadcrumbs_p3TKrG": {
+          "type": "breadcrumbs",
+          "name": "Breadcrumbs",
+          "settings": {
+            "show_home": true,
+            "home_label": "Home",
+            "show_collection": true,
+            "separator": "|",
+            "show_structured_data": true,
+            "text_color": "{{ closest.product.metafields.custom.product_page_breadcrumb_color.value }}",
+            "current_color": "",
+            "font_size": 12,
+            "alignment": "left"
+          },
+          "blocks": {}
+        },
         "media-gallery": {
           "type": "_product-media-gallery",
-          "disabled": true,
           "static": true,
           "settings": {
             "media_presentation": "grid",
-            "media_columns": "one",
-            "image_gap": 15,
-            "full_width_images": "",
-            "icons_style": "arrow",
-            "slideshow_controls_style": "counter",
-            "slideshow_mobile_controls_style": "dots",
-            "thumbnail_position": "right",
-            "thumbnail_width": 44,
-            "aspect_ratio": "adapt",
+            "media_columns": "two",
+            "image_gap": 20,
+            "full_width_images": "1,4",
+            "icons_style": "chevron_large",
+            "slideshow_controls_style": "thumbnails",
+            "slideshow_mobile_controls_style": "thumbnails",
+            "thumbnail_position": "left",
+            "thumbnail_width": 72,
+            "aspect_ratio": "1",
             "constrain_to_viewport": true,
             "media_fit": "contain",
-            "media_radius": 0,
+            "media_radius": 8,
+            "media_radius_desktop": 12,
             "extend_media": false,
             "zoom": true,
             "video_loop": false,
@@ -235,7 +239,9 @@
             "custom_width_mobile": 100,
             "height": "fit",
             "details_position": "flex-start",
-            "gap": 28,
+            "gap": 16,
+            "custom_gap_desktop": true,
+            "gap_desktop": 16,
             "sticky_details_desktop": true,
             "inherit_color_scheme": true,
             "color_scheme": "scheme-1",
@@ -247,12 +253,12 @@
             "border_opacity": 100,
             "border_radius": 0,
             "padding-block-start": 24,
-            "padding-block-end": 24,
+            "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
           "blocks": {
-            "group_icgrde": {
+            "group_WRLJVf": {
               "type": "group",
               "name": "Header",
               "settings": {
@@ -263,7 +269,8 @@
                 "align_baseline": false,
                 "horizontal_alignment_flex_direction_column": "flex-start",
                 "vertical_alignment_flex_direction_column": "center",
-                "gap": 12,
+                "gap": 4,
+                "gap_desktop": 8,
                 "width": "fill",
                 "custom_width": 100,
                 "width_mobile": "fill",
@@ -292,7 +299,25 @@
                 "padding-inline-end": 0
               },
               "blocks": {
-                "text_xpVMaM": {
+                "review_36xTGd": {
+                  "type": "review",
+                  "name": "t:names.product_review_stars",
+                  "settings": {
+                    "stars_style": "shaded",
+                    "show_number": true,
+                    "rating_color": "primary",
+                    "type_preset": "paragraph",
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                },
+                "ebd_product_type_QRpjBV": {
+                  "type": "ebd-product-type",
+                  "name": "EBD Product Type",
+                  "settings": {},
+                  "blocks": {}
+                },
+                "text_fRVmNU": {
                   "type": "text",
                   "name": "t:names.title",
                   "settings": {
@@ -318,63 +343,84 @@
                   },
                   "blocks": {}
                 },
-                "review_qDTdht": {
-                  "type": "review",
-                  "name": "t:names.product_review_stars",
+                "icon_badges_kH8Ead": {
+                  "type": "icon-badges",
+                  "name": "Icon badges",
                   "settings": {
-                    "stars_style": "shaded",
-                    "show_number": true,
-                    "rating_color": "primary",
-                    "type_preset": "paragraph",
-                    "alignment": "left"
+                    "alignment": "flex-start",
+                    "gap": 8,
+                    "mobile_layout": "wrap",
+                    "background_color": "#b2d6e1",
+                    "text_color": "#121212",
+                    "border_radius": 50,
+                    "font_size": 12,
+                    "padding_block": 5,
+                    "padding_inline": 16,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0
                   },
-                  "blocks": {}
+                  "blocks": {
+                    "icon_badge_cwEaDa": {
+                      "type": "_icon-badge",
+                      "settings": {
+                        "text": "Vegan",
+                        "icon": "leaf",
+                        "icon_width": 20,
+                        "link": "",
+                        "open_in_new_tab": false
+                      },
+                      "blocks": {}
+                    },
+                    "icon_badge_mMXzmC": {
+                      "type": "_icon-badge",
+                      "settings": {
+                        "text": "MCT-Powered",
+                        "icon": "lightning_bolt",
+                        "icon_width": 20,
+                        "link": "",
+                        "open_in_new_tab": false
+                      },
+                      "blocks": {}
+                    },
+                    "icon_badge_zcjWLD": {
+                      "type": "_icon-badge",
+                      "settings": {
+                        "text": "Natural Energy Boost",
+                        "icon": "fire",
+                        "icon_width": 20,
+                        "link": "",
+                        "open_in_new_tab": false
+                      },
+                      "blocks": {}
+                    },
+                    "icon_badge_tWVXKH": {
+                      "type": "_icon-badge",
+                      "settings": {
+                        "text": "Dairy-Free",
+                        "icon": "dairy_free",
+                        "icon_width": 20,
+                        "link": "",
+                        "open_in_new_tab": false
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "icon_badge_cwEaDa",
+                    "icon_badge_mMXzmC",
+                    "icon_badge_zcjWLD",
+                    "icon_badge_tWVXKH"
+                  ]
                 }
               },
               "block_order": [
-                "text_xpVMaM",
-                "review_qDTdht"
+                "review_36xTGd",
+                "ebd_product_type_QRpjBV",
+                "text_fRVmNU",
+                "icon_badges_kH8Ead"
               ]
             },
-            "divider_VJhene": {
-              "type": "_divider",
-              "name": "t:names.divider",
-              "settings": {
-                "thickness": 1,
-                "corner_radius": "square",
-                "width_percent": 100,
-                "padding-block-start": 0,
-                "padding-block-end": 0
-              },
-              "blocks": {}
-            },
-            "text_aEtTtq": {
-              "type": "text",
-              "name": "Product description",
-              "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-primary--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "variant_picker_R3rGDr": {
+            "variant_picker_izykGg": {
               "type": "variant-picker",
               "settings": {
                 "variant_style": "buttons",
@@ -387,9 +433,19 @@
               },
               "blocks": {}
             },
-            "buy_buttons_eYQEYi": {
+            "recharge_subscriptions_subscription_widget_v2_yAhh4E": {
+              "type": "shopify://apps/recharge-subscriptions/blocks/subscription-widget-v2/371eed76-0b44-4869-9813-730372ea378e",
+              "settings": {}
+            },
+            "expertvoice_ev_pdp_deal_block_ryinkN": {
+              "type": "shopify://apps/expertvoice/blocks/ev-pdp-deal-block/72220bb7-008d-4628-98a7-15da652b51dd",
+              "settings": {
+                "theme": "light",
+                "currency_formatting": "symbol_only"
+              }
+            },
+            "buy_buttons_mDGNpj": {
               "type": "buy-buttons",
-              "disabled": true,
               "settings": {
                 "stacking": true,
                 "show_pickup_availability": false,
@@ -402,14 +458,12 @@
               "blocks": {
                 "quantity": {
                   "type": "quantity",
-                  "disabled": true,
                   "static": true,
                   "settings": {},
                   "blocks": {}
                 },
                 "add-to-cart": {
                   "type": "add-to-cart",
-                  "disabled": true,
                   "static": true,
                   "settings": {
                     "style_class": "button"
@@ -418,34 +472,90 @@
                 },
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
-                  "disabled": true,
                   "static": true,
                   "settings": {},
                   "blocks": {}
                 }
               },
               "block_order": []
+            },
+            "ebd_pdp_guarantee_gUiQYB": {
+              "type": "ebd-pdp-guarantee",
+              "name": "EBD PDP Guarantee",
+              "settings": {
+                "heading": "30 Day Happiness Guarantee",
+                "text": "<p>We know you'll love our products - we're so confident that we offer a 30-day guarantee on all orders, from the time you receive it at home.</p>",
+                "background_color": "#ffffff",
+                "border_color": "#3a758a",
+                "icon_background_color": "#003349",
+                "icon_color": "#ffffff",
+                "heading_color": "#003349",
+                "text_color": "#000000",
+                "margin_top": 24,
+                "margin_bottom": 0,
+                "margin_top_mobile": 24,
+                "margin_bottom_mobile": 0
+              },
+              "blocks": {}
+            },
+            "ebd_product_tabs_gR66tf": {
+              "type": "ebd-product-tabs",
+              "name": "EBD Product Tabs",
+              "settings": {},
+              "blocks": {}
             }
           },
           "block_order": [
-            "group_icgrde",
-            "divider_VJhene",
-            "text_aEtTtq",
-            "variant_picker_R3rGDr",
-            "buy_buttons_eYQEYi"
+            "group_WRLJVf",
+            "variant_picker_izykGg",
+            "recharge_subscriptions_subscription_widget_v2_yAhh4E",
+            "expertvoice_ev_pdp_deal_block_ryinkN",
+            "buy_buttons_mDGNpj",
+            "ebd_pdp_guarantee_gUiQYB",
+            "ebd_product_tabs_gR66tf"
           ]
         }
       },
-      "disabled": true,
+      "block_order": [
+        "breadcrumbs_p3TKrG"
+      ],
+      "name": "t:names.product_information",
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
-        "equal_columns": false,
-        "limit_details_width": false,
-        "gap": 48,
+        "equal_columns": true,
+        "limit_details_width": true,
+        "gap": 12,
         "color_scheme": "",
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-start": 45,
+        "padding-block-end": 65,
+        "custom_mobile_padding": true,
+        "padding-block-start-mobile": 20,
+        "padding-block-end-mobile": 20,
+        "po_legend": "Frequency",
+        "po_subscribe_title": "Subscribe &",
+        "po_badge_text": "Save [discount]%",
+        "po_benefits": "Free shipping on orders over $35\nSave [discount]% on every order, additional 10% off third subscription\nPriority stock, we hold inventory for subscribers first\nEasy to manage, cancel anytime",
+        "po_show_more_benefits": false,
+        "po_benefits_extra": "Additional 10% off third subscription\nLow inventory? We hold stock for subscribers first\nExclusive subscriber-only access to new products\n[discount]% off every order, forever",
+        "po_see_more_label": "See more subscription benefits +",
+        "po_see_less_label": "See fewer benefits -",
+        "po_onetime_title": "One-Time",
+        "po_onetime_badge_text": "Save [discount]%",
+        "po_show_price_in_button": false
+      }
+    },
+    "ebd_product_tabs_9ppdNh": {
+      "type": "ebd-product-tabs",
+      "name": "EBD Product Tabs",
+      "settings": {}
+    },
+    "ebd_product_ingredients_Qd4pCp": {
+      "type": "ebd-product-ingredients",
+      "disabled": true,
+      "name": "EBD Product Ingredients",
+      "settings": {
+        "heading": "Ingredients"
       }
     },
     "product_recommendations_qggXJq": {
@@ -668,9 +778,9 @@
   },
   "order": [
     "ebd_product_main_ajKcRY",
+    "product_information_yWQMJ4",
     "ebd_product_tabs_9ppdNh",
     "ebd_product_ingredients_Qd4pCp",
-    "main",
     "product_recommendations_qggXJq",
     "ebd_global_separator_dEgz4x",
     "ebd_pdp_competitor_comparison_FwLPzz",
