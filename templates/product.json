@@ -241,6 +241,7 @@
                 },
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
+                  "disabled": true,
                   "static": true,
                   "settings": {},
                   "blocks": {}
@@ -287,6 +288,9 @@
       },
       "block_order": [
         "breadcrumbs_XPJJ4t"
+      ],
+      "custom_css": [
+        ".variant-option__button-label__selling-badge {display: none;}"
       ],
       "settings": {
         "content_width": "content-center-aligned",
