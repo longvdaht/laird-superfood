@@ -14,6 +14,62 @@
   assign price = selected_variant.price
   assign compare_at_price = selected_variant.compare_at_price
 
+  # The automatic discount app (Yagi) discounts the line at the cart, so it never reaches
+  # variant.price. Show the price checkout charges, struck through against the compare at price
+  # when one is set, otherwise against the price the discount came off.
+  if product_resource != blank
+    capture auto_discounted_price
+      render 'auto-discount-price-value', product: product_resource, price: price
+    endcapture
+    assign auto_discounted_price = auto_discounted_price | strip
+    if auto_discounted_price != blank
+      unless compare_at_price > price
+        assign compare_at_price = price
+      endunless
+      assign price = auto_discounted_price | plus: 0
+    endif
+
+    # A product card leads with the subscribe price, the option the product page selects by
+    # default, so the two pages quote the same number. It is resolved the way the purchase
+    # options fieldset resolves it: the first plan of the first group, which on a dynamic
+    # pricing plan is the first order price. The product page keeps its own price.
+    assign is_main_product_price = false
+    if product != blank and product.handle == product_resource.handle
+      assign is_main_product_price = true
+    endif
+
+    assign first_selling_plan = product_resource.selling_plan_groups.first.selling_plans.first
+    unless is_main_product_price or first_selling_plan == blank
+      assign subscription_price = nil
+      for allocation in selected_variant.selling_plan_allocations
+        if allocation.selling_plan_id == first_selling_plan.id
+          assign subscription_price = allocation.price
+          break
+        endif
+      endfor
+      if subscription_price == nil and selected_variant.selling_plan_allocations.size > 0
+        assign subscription_price = selected_variant.selling_plan_allocations.first.price
+      endif
+
+      if subscription_price != nil
+        capture auto_discounted_subscription_price
+          render 'auto-discount-price-value', product: product_resource, price: subscription_price, purchase_type: 'subscription'
+        endcapture
+        assign auto_discounted_subscription_price = auto_discounted_subscription_price | strip
+        if auto_discounted_subscription_price != blank
+          assign subscription_price = auto_discounted_subscription_price | plus: 0
+        endif
+
+        if subscription_price < price
+          unless compare_at_price > selected_variant.price
+            assign compare_at_price = selected_variant.price
+          endunless
+          assign price = subscription_price
+        endif
+      endif
+    endunless
+  endif
+
   assign show_compare_price = false
   if compare_at_price > price
     assign show_compare_price = true
