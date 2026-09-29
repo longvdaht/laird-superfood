@@ -1,0 +1,26 @@
+{%- doc -%}
+  Invisible component that watches the cart subtotal against the GWP threshold and automatically
+  adds/removes the gift line item. All the behavior lives in assets/cart-gwp.js, this snippet only
+  passes down the settings it needs as data attributes.
+
+  @param {object} [settings] - An object containing theme settings.
+  @param {boolean} [settings.cart_gwp_enable]
+  @param {number} [settings.cart_gwp_threshold] - dollars
+  @param {object} [settings.cart_gwp_product]
+{%- enddoc -%}
+
+{%- if settings.cart_gwp_enable and settings.cart_gwp_product != blank -%}
+  {%- liquid
+    assign default_variant = settings.cart_gwp_product.selected_or_first_available_variant
+    assign threshold_cents = settings.cart_gwp_threshold | times: 100
+  -%}
+
+  {% if default_variant %}
+    {% comment %} cart-gwp.js is already loaded by cart-products.liquid, unconditionally. {% endcomment %}
+    <cart-gwp-watcher-component
+      hidden
+      data-threshold="{{ threshold_cents }}"
+      data-default-variant-id="{{ default_variant.id }}"
+    ></cart-gwp-watcher-component>
+  {% endif %}
+{%- endif -%}
