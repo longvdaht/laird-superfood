@@ -183,7 +183,7 @@
         }
       },
       "custom_css": [
-        "@media (min-width: 1200px) {product-card .rating-wrapper-link {position: static; justify-content: center; }}"
+        
       ],
       "settings": {
         "layout_type": "grid",

@@ -8,6 +8,28 @@
   {% render 'product-card-badges', product: product, settings: settings %}
 {%- enddoc -%}
 
+{%- liquid
+  # On sale when the card's price is struck through (see price.liquid): a compare at price, or an
+  # automatic discount from the Yagi app. The product metafield custom.show_sale_badge forces
+  # the badge on for a product whose saving neither of those shows.
+  assign badge_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if badge_variant.compare_at_price > badge_variant.price
+    assign on_sale = true
+  endif
+
+  capture badge_auto_discounted_price
+    render 'auto-discount-price-value', product: product, price: badge_variant.price
+  endcapture
+  if badge_auto_discounted_price != blank
+    assign on_sale = true
+  endif
+
+  if product.metafields.custom.show_sale_badge.value == true
+    assign on_sale = true
+  endif
+-%}
+
 <div
   class="product-badges product-badges--{{ settings.badge_position }}"
   style="
@@ -15,16 +37,16 @@
     --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
   "
 >
-  {%- if product.available == false or product.compare_at_price > product.price and product.available -%}
+  {%- if product.available == false or on_sale -%}
     <div
       class="
         product-badges__badge product-badges__badge--rectangle
-        {% if product.available == false %} sold-out{% elsif product.compare_at_price > product.price %} sale{% endif %}
+        {% if product.available == false %} sold-out{% elsif on_sale %} sale{% endif %}
       "
     >
       {%- if product.available == false -%}
         {{ 'content.product_badge_sold_out' | t }}
-      {%- elsif product.compare_at_price > product.price -%}
+      {%- elsif on_sale -%}
         {{ 'content.product_badge_sale' | t }}
       {%- endif -%}
     </div>
