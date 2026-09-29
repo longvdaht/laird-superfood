@@ -130,6 +130,8 @@ export class CartUpdateEvent extends Event {
    * @param {number} [data.itemCount] - The number of items in the cart
    * @param {string} [data.variantId] - The id of the product variant that was updated
    * @param {Record<string, string>} [data.sections] - The sections affected by the cart operation
+   * @param {Object} [data.cart] - The full cart object, when the triggering request already
+   * fetched one (e.g. /cart/change.js), so listeners can reuse it instead of fetching their own
    */
   constructor(resource, sourceId, data) {
     super(ThemeEvents.cartUpdate, { bubbles: true });
