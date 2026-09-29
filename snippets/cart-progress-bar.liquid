@@ -1,0 +1,224 @@
+{%- doc -%}
+  Renders the cart progress bar with up to 2 tiers: free shipping and gift with purchase (GWP).
+  Pure Liquid, reads cart.total_price on every render, so it stays correct after every
+  server round-trip (cart:update morph) without needing client-side math.
+
+  Tier 2 (GWP) is optional and controlled by settings.cart_gwp_enable. When disabled, only
+  the free shipping tier is rendered.
+
+  @param {object} [settings] - An object containing theme settings.
+  @param {boolean} [settings.cart_progress_bar_enable]
+  @param {number} [settings.cart_free_shipping_threshold] - dollars
+  @param {string} [settings.cart_free_shipping_label]
+  @param {boolean} [settings.cart_gwp_enable]
+  @param {number} [settings.cart_gwp_threshold] - dollars
+  @param {string} [settings.cart_gwp_label]
+  @param {string} [settings.cart_progress_text_start] - supports [[amount]] token
+  @param {string} [settings.cart_progress_text_tier1] - supports [[amount]] token
+  @param {string} [settings.cart_progress_text_complete]
+  @param {string} [settings.cart_progress_unlocked_label]
+{%- enddoc -%}
+
+{%- comment -%}
+  Intentionally renders even when cart is empty (matches old Rebuy cart behavior) - an empty
+  cart still shows "Spend $70 to get free shipping" to nudge the first add-to-cart.
+{%- endcomment -%}
+{%- if settings.cart_progress_bar_enable -%}
+  {%- liquid
+    assign free_shipping_threshold = settings.cart_free_shipping_threshold | times: 100
+    assign gwp_enabled = settings.cart_gwp_enable
+    assign gwp_threshold = settings.cart_gwp_threshold | times: 100
+    assign current_total = cart.total_price
+
+    assign tier1_reached = false
+    if free_shipping_threshold > 0 and current_total >= free_shipping_threshold
+      assign tier1_reached = true
+    endif
+
+    assign tier1_percent = 100
+    if free_shipping_threshold > 0
+      assign tier1_percent = current_total | times: 100.0 | divided_by: free_shipping_threshold
+      if tier1_percent > 100
+        assign tier1_percent = 100
+      endif
+    endif
+
+    assign tier2_reached = false
+    assign tier2_percent = 0
+    if gwp_enabled
+      if gwp_threshold > 0 and current_total >= gwp_threshold
+        assign tier2_reached = true
+      endif
+      assign tier2_percent = 100
+      if gwp_threshold > 0
+        assign tier2_percent = current_total | times: 100.0 | divided_by: gwp_threshold
+        if tier2_percent > 100
+          assign tier2_percent = 100
+        endif
+      endif
+    endif
+
+    if gwp_enabled and tier1_reached and tier2_reached
+      assign progress_message = settings.cart_progress_text_complete
+    elsif gwp_enabled and tier1_reached
+      assign amount_needed = gwp_threshold | minus: current_total | money
+      assign amount_needed = '<strong>[[amount]]</strong>' | replace: '[[amount]]', amount_needed
+      assign progress_message = settings.cart_progress_text_tier1 | replace: '[[amount]]', amount_needed
+    elsif tier1_reached
+      assign progress_message = settings.cart_progress_text_complete
+    else
+      assign amount_needed = free_shipping_threshold | minus: current_total | money
+      assign amount_needed = '<strong>[[amount]]</strong>' | replace: '[[amount]]', amount_needed
+      assign progress_message = settings.cart_progress_text_start | replace: '[[amount]]', amount_needed
+    endif
+  -%}
+
+  <div class="cart-progress-bar cart-primary-typography">
+    <p class="cart-progress-bar__message">{{ progress_message }}</p>
+
+    <div class="cart-progress-bar__tiers{% if gwp_enabled %} cart-progress-bar__tiers--two{% endif %}">
+      <div class="cart-progress-bar__tier">
+        <div
+          class="cart-progress-bar__track"
+          role="progressbar"
+          aria-valuenow="{{ tier1_percent }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="{{ settings.cart_free_shipping_label }}"
+        >
+          <div
+            class="cart-progress-bar__fill"
+            style="--progress: {{ tier1_percent }}%;"
+          ></div>
+        </div>
+        <p class="cart-progress-bar__label">
+          {{ settings.cart_free_shipping_label }}
+          {% if tier1_reached %}
+            <span class="cart-progress-bar__unlocked">
+              {{- 'icon-cart-tier-unlocked.svg' | inline_asset_content -}}
+              {{ settings.cart_progress_unlocked_label }}
+            </span>
+          {% else %}
+            <span class="cart-progress-bar__threshold">
+              Spend {{ settings.cart_free_shipping_threshold | times: 100 | money }}
+            </span>
+          {% endif %}
+        </p>
+      </div>
+
+      {% if gwp_enabled %}
+        <div class="cart-progress-bar__tier">
+          <div
+            class="cart-progress-bar__track"
+            role="progressbar"
+            aria-valuenow="{{ tier2_percent }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="{{ settings.cart_gwp_label }}"
+          >
+            <div
+              class="cart-progress-bar__fill"
+              style="--progress: {{ tier2_percent }}%;"
+            ></div>
+          </div>
+          <p class="cart-progress-bar__label">
+            {{ settings.cart_gwp_label }}
+            {%- if settings.cart_gwp_product != blank %}: {{ settings.cart_gwp_product.title }}{% endif -%}
+            {% if tier2_reached %}
+              <span class="cart-progress-bar__unlocked">
+                {{- 'icon-cart-tier-unlocked.svg' | inline_asset_content -}}
+                {{ settings.cart_progress_unlocked_label }}
+              </span>
+            {% else %}
+              <span class="cart-progress-bar__threshold">
+                Spend {{ settings.cart_gwp_threshold | times: 100 | money }}
+              </span>
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-progress-bar {
+    width: 100%;
+    padding: var(--padding-xl);
+    border-bottom: var(--style-border-width) solid var(--color-gray-2);
+  }
+
+  .cart-progress-bar__message {
+    color: var(--color-black-1);
+    margin: 0 0 5px 0;
+    text-align: center;
+    font-weight: 400;
+    font-size: var(--cart-font-size--sm);
+    line-height: 17px;
+  }
+
+  .cart-progress-bar__message strong,
+  .cart-progress-bar__message b {
+    font-weight: 700;
+  }
+
+  .cart-progress-bar__tiers {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-2xs);
+  }
+
+  .cart-progress-bar__tiers--two {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap-sm);
+  }
+
+  .cart-progress-bar__track {
+    width: 100%;
+    height: 10px;
+    border-radius: var(--style-border-radius-buttons-primary, 999px);
+    background-color: var(--color-gray-2);
+    overflow: hidden;
+  }
+
+  .cart-progress-bar__fill {
+    height: 100%;
+    width: var(--progress, 0%);
+    background-color: var(--color-navy);
+    border-radius: inherit;
+    transition: width var(--animation-speed, 0.3s) var(--animation-easing, ease);
+  }
+
+  .cart-progress-bar__label {
+    margin: 5px 0 0 0;
+    text-align: center;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-black-1);
+  }
+
+  .cart-progress-bar__threshold {
+    display: block;
+    color: var(--color-gray-3);
+    margin-top: var(--margin-3xs);
+  }
+
+  .cart-progress-bar__unlocked {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--padding-2xs);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-gray-3);
+    margin-top: var(--margin-3xs);
+  }
+
+  .cart-progress-bar__unlocked svg {
+    width: 12px;
+    height: 12px;
+    color: var(--color-navy);
+  }
+{% endstylesheet %}

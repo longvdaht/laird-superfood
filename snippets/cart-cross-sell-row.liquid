@@ -1,0 +1,306 @@
+{%- doc -%}
+  Renders one cross-sell carousel row for the cart drawer.
+
+  @param {string} heading - The heading text for this row.
+  @param {object} collection - The collection to pull products from.
+  @param {number} max_items - Max number of products to show.
+  @param {string} ref - Unique ref name for this carousel instance (needed when rendering twice).
+{%- enddoc -%}
+
+<cart-cross-sell-carousel
+  class="cart-cross-sell"
+  ref="{{ ref }}"
+>
+  <div class="cart-cross-sell__header">
+    <p class="cart-cross-sell__heading cart-primary-typography">{{ heading }}</p>
+    <div class="cart-cross-sell__nav">
+      <button
+        type="button"
+        class="button button-unstyled cart-cross-sell__nav-button"
+        aria-label="Previous"
+        ref="prevButton"
+        on:click="/scrollPrev"
+      >
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+      <button
+        type="button"
+        class="button button-unstyled cart-cross-sell__nav-button cart-cross-sell__nav-button--next"
+        aria-label="Next"
+        ref="nextButton"
+        on:click="/scrollNext"
+      >
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </button>
+    </div>
+  </div>
+
+  <ul
+    class="cart-cross-sell__list list-unstyled"
+    role="list"
+    ref="track"
+  >
+    {% for product in collection.products limit: max_items %}
+      <li class="cart-cross-sell__item">
+        <div class="cart-cross-sell__media-wrap">
+          {% if product.tags contains 'New' %}
+            <span class="cart-cross-sell__badge">New</span>
+          {% endif %}
+
+          <a
+            href="{{ product.url }}"
+            class="cart-cross-sell__media"
+          >
+            {%- if product.featured_media -%}
+              {{ product.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', widths: '80,120,160' }}
+            {%- endif -%}
+          </a>
+        </div>
+
+        <div class="cart-cross-sell__details">
+          <a
+            href="{{ product.url }}"
+            class="cart-cross-sell__title"
+          >
+            {{- product.title -}}
+          </a>
+          {% if product.options_with_values.first.name != 'Title' %}
+            <p class="cart-cross-sell__variant">{{ product.options_with_values.first.values.first }}</p>
+          {% endif %}
+
+          <div class="cart-cross-sell__price-row">
+            <p class="cart-cross-sell__price">
+              {%- if product.compare_at_price > product.price -%}
+                <s class="cart-cross-sell__price-compare">{{ product.compare_at_price | money }}</s>
+                <span>{{ product.price | money }}</span>
+              {%- else -%}
+                <span>{{ product.price | money }}</span>
+              {%- endif -%}
+            </p>
+
+            <div class="cart-cross-sell__add">
+              {% render 'quick-add', product: product, section_id: section.id %}
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</cart-cross-sell-carousel>
+
+{% stylesheet %}
+  .cart-cross-sell {
+    display: block;
+    width: 100%;
+    padding-block: var(--padding-lg);
+    padding-inline: var(--padding-xl);
+  }
+
+  .cart-cross-sell:first-child {
+    padding-block-start: 0;
+  }
+
+  .cart-cross-sell__divider {
+    padding-inline: var(--padding-xl);
+  }
+
+  .cart-cross-sell__divider-line {
+    border-bottom: var(--style-border-width) solid var(--color-gray-2);
+  }
+
+  .cart-cross-sell__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--margin-xl);
+  }
+
+  .cart-cross-sell__heading.cart-primary-typography {
+    margin: 0;
+    font-size: var(--font-size--lg);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-black-1);
+    line-height: 28px;
+  }
+
+  .cart-cross-sell__nav {
+    display: flex;
+    gap: var(--gap-lg);
+  }
+
+  .cart-cross-sell__nav-button {
+    width: 28px;
+    height: 28px;
+    border: 1.4px solid var(--color-black-1);
+    border-radius: 29.4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--color-black-1);
+  }
+
+  .cart-cross-sell__nav-button:disabled {
+    border-color: rgb(18 18 18 / 0.25);
+    cursor: default;
+  }
+
+  .cart-cross-sell__nav-button svg {
+    width: 1rem;
+    height: 1rem;
+    transform: rotate(90deg);
+  }
+
+  .cart-cross-sell__nav-button--next svg {
+    transform: rotate(-90deg);
+  }
+
+  .cart-cross-sell__list {
+    display: flex;
+    gap: var(--gap-lg);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .cart-cross-sell__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cart-cross-sell__item {
+    flex: 0 0 auto;
+    width: 61%;
+    scroll-snap-align: start;
+    display: flex;
+    gap: var(--gap-sm);
+    padding: 10px 10px 10px 5px;
+    position: relative;
+  }
+
+  .cart-cross-sell__media-wrap {
+    flex-shrink: 0;
+  }
+
+  .cart-cross-sell__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #e90044;
+    color: var(--color-background);
+    font-size: var(--font-size--xs);
+    font-weight: 500;
+    line-height: 12px;
+    padding: 6px;
+    z-index: 1;
+  }
+
+  .cart-cross-sell__media {
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+  }
+
+  .cart-cross-sell__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-cross-sell__details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+  }
+
+  .cart-cross-sell__title {
+    display: block;
+    color: var(--color-black-1);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--font-size--xs);
+    line-height: 18px;
+  }
+
+  .cart-cross-sell__variant {
+    margin: 0;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-gray-5);
+  }
+
+  .cart-cross-sell__price-row {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--gap-xs);
+    margin-block-start: var(--margin-xl);
+  }
+
+  .cart-cross-sell__price {
+    margin: 0;
+    font-weight: 400;
+    font-size: var(--font-size--xs);
+    line-height: 16px;
+    color: var(--color-black-1);
+  }
+
+  .cart-cross-sell__price-compare {
+    color: var(--color-gray-3);
+    margin-inline-end: var(--margin-3xs);
+  }
+
+  .cart-cross-sell__add .quick-add {
+    position: static;
+    display: block;
+  }
+
+  .cart-cross-sell__add .quick-add__button {
+    display: grid !important;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 29.4px;
+    background-color: var(--color-navy);
+    color: var(--color-background);
+    padding: 0;
+  }
+
+  .cart-cross-sell__add .add-to-cart-text,
+  .cart-cross-sell__add .add-to-cart-text--added {
+    display: none;
+  }
+
+  .cart-cross-sell__add .quick-add__button::after {
+    content: '+';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size--lg);
+    line-height: 1;
+    transition: opacity var(--animation-speed) var(--animation-easing);
+  }
+
+  .cart-cross-sell__add .quick-add__button.cart-cross-sell__add-loading::after {
+    content: '';
+    margin: auto;
+    width: 12px;
+    height: 12px;
+    border: var(--border-width-md) solid rgb(255 255 255 / 0.35);
+    border-top-color: var(--color-background);
+    border-radius: 50%;
+    animation: cart-cross-sell-spin 0.6s linear infinite;
+  }
+
+  @keyframes cart-cross-sell-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+{% endstylesheet %}
