@@ -463,8 +463,13 @@ class SortingFilterComponent extends Component {
    * @param {KeyboardEvent} event - The keyboard event
    */
   handleKeyDown = (event) => {
-    const { listbox, summary } = this.refs;
-    if (!(listbox instanceof Element) || !(summary instanceof HTMLElement)) return;
+    const { details, listbox, summary } = this.refs;
+    if (!(details instanceof HTMLDetailsElement) || !(listbox instanceof Element) || !(summary instanceof HTMLElement))
+      return;
+
+    // While the dropdown is closed, let the native <summary> handle
+    // Enter/Space to open it instead of intercepting the keystroke here.
+    if (!details.open) return;
 
     const options = Array.from(listbox.querySelectorAll('[role="option"]'));
     if (options.length === 0) return;
