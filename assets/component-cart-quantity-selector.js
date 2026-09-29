@@ -20,10 +20,20 @@ class CartQuantitySelectorComponent extends QuantitySelectorComponent {
 
   /**
    * Updates button states based on current value and limits
-   * Cart buttons are always managed client-side, never server-disabled
+   * Cart buttons are always managed client-side, never server-disabled - EXCEPT when
+   * data-quantity-locked is set (Cart Rebuild: gift-with-purchase line items), which this
+   * class doesn't know the reason for, it just always keeps both buttons disabled regardless
+   * of min/max so a GWP line's quantity can never be bumped through this control.
    */
   updateButtonStates() {
     const { minusButton, plusButton } = this.refs;
+
+    if (this.hasAttribute('data-quantity-locked')) {
+      minusButton.disabled = true;
+      plusButton.disabled = true;
+      return;
+    }
+
     const { min, value } = this.getCurrentValues();
     const effectiveMax = this.getEffectiveMax();
 

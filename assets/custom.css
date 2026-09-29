@@ -18,6 +18,7 @@
   --font-primary: 'Rubik', sans-serif !important;
   --font-secondary: 'Poppins', sans-serif !important;
   --color-red: #e11d48;
+  --color-red-2: #E90044;
   --color-black-1: #121212;
   --color-lightblue: #72c3d7;
   --color-mediumblue: #3a758a;
@@ -26,6 +27,11 @@
   --color-lightgray: #e5e7eb;
   --color-mediumgray: #F8F4EF;
   --color-gray-1: #DBE3E7;
+  --color-gray-2: #E3E3E3;
+  --color-gray-3: #999999;
+  --color-gray-4: #CCCCCC;
+  --color-gray-5: #535353;
+  --color-navy: #123147;
 }
 
 body, body * {
