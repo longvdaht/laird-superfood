@@ -351,6 +351,35 @@
       return a && b;
     };
 
+    // What reaches the cart is whatever selling_plan the add to cart FormData carries. Clicking
+    // the hidden widget's plan radio is not enough to guarantee it: the widget re-renders its
+    // plans (a size change, a late hydration) and falls back to its default, 30 days, while
+    // our select still says 90. So the request takes the plan from our fieldset, the one the
+    // customer can see, at the moment the form is read.
+    document.addEventListener(
+      'formdata',
+      (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || form.dataset.type !== 'add-to-cart-form') return;
+
+        const sectionEl = form.closest(ROOT_SELECTOR);
+        if (!sectionEl) return;
+        const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
+        if (!poEl) return;
+
+        const checked = poEl.querySelector('.new-po-radio-input:checked');
+        if (!checked) return;
+
+        const planId = poEl.querySelector('.new-po-frequency-select')?.value;
+        if (checked.value === 'subscription' && planId) {
+          event.formData.set('selling_plan', planId);
+        } else if (checked.value === 'onetime') {
+          event.formData.delete('selling_plan');
+        }
+      },
+      true
+    );
+
     if (!boot() && document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot, { once: true });
     }
