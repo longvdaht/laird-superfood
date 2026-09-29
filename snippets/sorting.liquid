@@ -84,7 +84,8 @@
     >
       <summary
         class="facets__summary"
-        role="button"
+        role="combobox"
+        aria-haspopup="listbox"
         aria-expanded="false"
         aria-controls="sorting-options-{{ section_id }}"
         ref="summary"
@@ -116,10 +117,11 @@
             for="sort-option-{{ option.value }}-{{ section_id }}"
           >
             <div
+              id="sorting-option-{{ option.value }}-{{ section_id }}"
               class="sorting-filter__option"
               role="option"
               aria-selected="{% if option.value == sort_by %}true{% else %}false{% endif %}"
-              tabindex="{% if option.value == sort_by %}0{% else %}-1{% endif %}"
+              tabindex="-1"
             >
               <input
                 type="radio"
@@ -239,8 +241,9 @@
       background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
     }
 
-    &:focus {
+    &.sorting-filter__option--active {
       border-radius: calc(var(--style-border-radius-popover) / 2);
+      background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
     }
   }
 

@@ -455,43 +455,41 @@ class SortingFilterComponent extends Component {
   requiredRefs = ['details', 'summary', 'listbox'];
 
   /**
-   * Handles keyboard navigation in the sorting dropdown
+   * Handles keyboard navigation in the sorting dropdown.
+   * Follows the ARIA combobox (select-only) pattern: focus stays on the
+   * `summary` element (role="combobox") and the active option is tracked
+   * via `aria-activedescendant` rather than moving real DOM focus into the
+   * listbox options.
    * @param {KeyboardEvent} event - The keyboard event
    */
   handleKeyDown = (event) => {
-    const { listbox } = this.refs;
-    if (!(listbox instanceof Element)) return;
+    const { listbox, summary } = this.refs;
+    if (!(listbox instanceof Element) || !(summary instanceof HTMLElement)) return;
 
     const options = Array.from(listbox.querySelectorAll('[role="option"]'));
-    const currentFocused = options.find((option) => option instanceof HTMLElement && option.tabIndex === 0);
-    let newFocusIndex = currentFocused ? options.indexOf(currentFocused) : 0;
+    if (options.length === 0) return;
+
+    const activeId = summary.getAttribute('aria-activedescendant');
+    const currentIndex = options.findIndex((option) => option.id === activeId);
+    let newIndex = currentIndex === -1 ? 0 : currentIndex;
 
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        newFocusIndex = Math.min(newFocusIndex + 1, options.length - 1);
-        this.#moveFocus(options, newFocusIndex);
+        newIndex = Math.min(newIndex + 1, options.length - 1);
+        this.#setActiveOption(options, newIndex);
         break;
 
       case 'ArrowUp':
         event.preventDefault();
-        newFocusIndex = Math.max(newFocusIndex - 1, 0);
-        this.#moveFocus(options, newFocusIndex);
+        newIndex = Math.max(newIndex - 1, 0);
+        this.#setActiveOption(options, newIndex);
         break;
 
       case 'Enter':
       case ' ':
-        // Note: `event.target` is overridden by the framework's declarative event
-        // delegation (see component.js) to always point to the element carrying the
-        // `on:keydown` attribute (this component's root), not the focused option.
-        // Use `document.activeElement` instead to find the option the user is on.
-        if (document.activeElement instanceof Element) {
-          const targetOption = document.activeElement.closest('[role="option"]');
-          if (targetOption) {
-            event.preventDefault();
-            this.#selectOption(targetOption);
-          }
-        }
+        event.preventDefault();
+        if (options[newIndex]) this.#selectOption(options[newIndex]);
         break;
 
       case 'Escape':
@@ -512,32 +510,29 @@ class SortingFilterComponent extends Component {
     summary.setAttribute('aria-expanded', isOpen.toString());
 
     if (isOpen && listbox instanceof Element) {
-      // Move focus to selected option when dropdown opens
-      const selectedOption = listbox.querySelector('[aria-selected="true"]');
-      if (selectedOption instanceof HTMLElement) {
-        selectedOption.focus();
-      }
+      // Mark the selected option as active when the dropdown opens
+      const options = Array.from(listbox.querySelectorAll('[role="option"]'));
+      const selectedIndex = options.findIndex((option) => option.getAttribute('aria-selected') === 'true');
+      this.#setActiveOption(options, selectedIndex === -1 ? 0 : selectedIndex);
     }
   };
 
   /**
-   * Moves focus between options
+   * Marks an option as the active descendant of the combobox
    * @param {Element[]} options - The option elements
-   * @param {number} newIndex - The index of the option to focus
+   * @param {number} newIndex - The index of the option to mark active
    */
-  #moveFocus(options, newIndex) {
-    // Remove tabindex from all options
-    options.forEach((option) => {
-      if (option instanceof HTMLElement) {
-        option.tabIndex = -1;
-      }
-    });
+  #setActiveOption(options, newIndex) {
+    const { summary } = this.refs;
+    if (!(summary instanceof HTMLElement)) return;
 
-    // Set tabindex and focus on new option
+    options.forEach((option) => option.classList.remove('sorting-filter__option--active'));
+
     const targetOption = options[newIndex];
     if (targetOption instanceof HTMLElement) {
-      targetOption.tabIndex = 0;
-      targetOption.focus();
+      targetOption.classList.add('sorting-filter__option--active');
+      summary.setAttribute('aria-activedescendant', targetOption.id);
+      targetOption.scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -557,7 +552,6 @@ class SortingFilterComponent extends Component {
       // Trigger click on the input to ensure normal form behavior
       input.click();
 
-      // Close dropdown and return focus (handles tabIndex reset)
       this.#closeDropdown();
     }
   }
@@ -568,22 +562,13 @@ class SortingFilterComponent extends Component {
   #closeDropdown() {
     const { details, summary } = this.refs;
     if (details instanceof HTMLDetailsElement) {
-      // Reset focus to match the actual selected option
-      const options = this.querySelectorAll('[role="option"]');
-      const selectedOption = this.querySelector('[aria-selected="true"]');
-
-      options.forEach((opt) => {
-        if (opt instanceof HTMLElement) {
-          opt.tabIndex = -1;
-        }
+      this.querySelectorAll('[role="option"]').forEach((opt) => {
+        opt.classList.remove('sorting-filter__option--active');
       });
-
-      if (selectedOption instanceof HTMLElement) {
-        selectedOption.tabIndex = 0;
-      }
 
       details.open = false;
       if (summary instanceof HTMLElement) {
+        summary.removeAttribute('aria-activedescendant');
         summary.focus();
       }
     }
