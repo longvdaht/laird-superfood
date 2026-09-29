@@ -56,6 +56,36 @@
     else
       assign total_price = cart.total_price | money
     endif
+
+    comment
+      Cart has no built-in "sum of compare_at prices" field, so it's accumulated here to show
+      a strikethrough subtotal when line items are on sale - from a plain compare_at_price, or
+      (new, with the subscribe toggle) a selling plan compare_at_price. original_total_price
+      already covers discount-code-style discounts separately above, so this only needs to
+      catch the other 2. Everything here is per-unit, multiplied by quantity to get line totals
+      before summing - cart.total_price/original_total_price are already line totals.
+    endcomment
+    assign cart_compare_at_total = 0
+    for item in cart.items
+      assign item_compare_at = item.original_price
+
+      if item.variant.compare_at_price > item_compare_at
+        assign item_compare_at = item.variant.compare_at_price
+      endif
+
+      if item.selling_plan_allocation.compare_at_price > item_compare_at
+        assign item_compare_at = item.selling_plan_allocation.compare_at_price
+      endif
+
+      assign item_compare_at_line_total = item_compare_at | times: item.quantity
+      assign cart_compare_at_total = cart_compare_at_total | plus: item_compare_at_line_total
+    endfor
+
+    if settings.currency_code_enabled_cart_total
+      assign cart_compare_at_total_formatted = cart_compare_at_total | money_with_currency
+    else
+      assign cart_compare_at_total_formatted = cart_compare_at_total | money
+    endif
   -%}
 
   <div class="cart__total-container">
@@ -63,15 +93,30 @@
       class="cart__summary-item cart__total"
       role="status"
     >
-      <span class="cart__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+      <span class="cart__total-label">
+        {{ 'content.cart_subtotal' | t }} ({{ 'content.item_count' | t: count: cart.item_count }})
+      </span>
       <text-component
         ref="cartTotal"
         value="{{ total_price | strip_html }}"
-        class="cart__total-value cart-secondary-typography"
-        {% comment %} Used by payment_terms web component {% endcomment %}
+        class="cart__total-value rebuy-cart__flyout-subtotal-amount"
+        {% comment %}
+          Used by payment_terms web component. The extra `rebuy-cart__flyout-subtotal-amount`
+          class is NOT styling, it's a bridge: Corso's Checkout Plus is configured (in Corso
+          Admin, cartSelectors) to look for that exact class name from the old Rebuy cart, and
+          that config lives on Corso's side, not in this theme. Safe to keep once Corso Admin
+          is updated with the real selector (#checkout / [data-cart-subtotal]) - remove then.
+        {% endcomment %}
         data-cart-subtotal
       >
-        {{ total_price }}
+        {% if cart_compare_at_total > cart.total_price %}
+          <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
+          <s class="compare-at-price">{{ cart_compare_at_total_formatted }}</s>
+          <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
+          {{ total_price }}
+        {% else %}
+          {{ total_price }}
+        {% endif %}
       </text-component>
     </span>
     {% if settings.show_installments %}
@@ -81,17 +126,36 @@
         {% endform %}
       </span>
     {% endif %}
-    <div class="cart__summary-item tax-note cart-primary-typography">
-      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-    </div>
   </div>
 </div>
 
-<div class="cart__ctas">
+{% comment %}
+  Cart Rebuild: data-skip-subtree-update (assets/morph.js) tells morphSection to leave this
+  subtree alone entirely on cart updates, instead of re-patching it from the server's fresh HTML
+  every time. Needed because Corso (Checkout Plus) injects its own DOM in and around the
+  checkout button here after the page loads - patching that area from server HTML (which knows
+  nothing about what Corso added) was wiping it out and making Corso redetect/reinsert itself on
+  every add/remove, which is what caused the visible flash/jump. Corso updates its own injected
+  price text through its own listeners, not through this morph, so this is safe to skip - there's
+  nothing dynamic of ours inside .cart__ctas itself (the total is shown separately above).
+
+  data-skip-node-update is also needed alongside data-skip-subtree-update - the latter only
+  protects children from being re-patched, not .cart__ctas's own attributes, and this element
+  doesn't need either of those to ever change after first render (its class is static).
+{% endcomment %}
+<div
+  class="cart__ctas"
+  data-skip-node-update
+  data-skip-subtree-update
+>
   <button
     type="submit"
     id="checkout"
-    class="cart__checkout-button button"
+    {% comment %}
+      rebuy-cart__checkout-button is a bridge class for Corso Checkout Plus (see comment on the
+      subtotal element above) - purely a selector hook, not styled anywhere in this theme.
+    {% endcomment %}
+    class="rebuy-button rebuy-cart__checkout-button block"
     name="checkout"
     {% if cart == empty %}
       disabled
@@ -115,21 +179,16 @@
 
 {% stylesheet %}
   .cart-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-    border-block: 1px solid var(--color-border);
-    padding-block: var(--padding-sm);
-    margin-block-start: var(--margin-3xs);
+    display: block;
   }
 
   .cart-actions__divider {
-    border-block-start: 1px solid var(--color-border);
+    border-block-start: var(--style-border-width) solid var(--color-border);
   }
 
   .cart__summary-totals:not(:has(.cart-actions)) {
     margin-block-start: var(--margin-3xs);
-    border-block-start: 1px solid var(--color-border);
+    border-block-start: var(--style-border-width) solid var(--color-border);
     padding-block-start: var(--margin-xl);
   }
 
@@ -137,3 +196,7 @@
     color: var(--color-foreground);
   }
 {% endstylesheet %}
+
+
+
+
