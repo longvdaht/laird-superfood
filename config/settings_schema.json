@@ -1780,6 +1780,148 @@
       },
       {
         "type": "header",
+        "content": "Cart announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_announcement_enable",
+        "label": "Show announcement bar",
+        "default": false
+      },
+      {
+        "type": "richtext",
+        "id": "cart_announcement_text",
+        "label": "Announcement text",
+        "default": "<p>Subscribe &amp; Save <strong>20% on Every Order</strong></p>"
+      },
+      {
+        "type": "color",
+        "id": "cart_announcement_background",
+        "label": "Announcement background color",
+        "default": "#E90044"
+      },
+      {
+        "type": "color",
+        "id": "cart_announcement_text_color",
+        "label": "Announcement text color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Cart progress bar (free shipping / gift with purchase)"
+      },
+      {
+        "type": "paragraph",
+        "content": "Use [[amount]] inside the messages below, it will be replaced with the amount still needed."
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_progress_bar_enable",
+        "label": "Show progress bar",
+        "default": false
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping threshold ($)",
+        "default": 70
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_label",
+        "label": "Free shipping tier label",
+        "default": "Free Shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_gwp_enable",
+        "label": "Enable gift with purchase (GWP) tier",
+        "default": false
+      },
+      {
+        "type": "number",
+        "id": "cart_gwp_threshold",
+        "label": "Gift with purchase threshold ($)",
+        "default": 100
+      },
+      {
+        "type": "text",
+        "id": "cart_gwp_label",
+        "label": "Gift tier label",
+        "default": "Free Gift"
+      },
+      {
+        "type": "product",
+        "id": "cart_gwp_product",
+        "label": "Gift product"
+      },
+      {
+        "type": "text",
+        "id": "cart_progress_text_start",
+        "label": "Message: no tier reached yet",
+        "default": "Add [[amount]] to get free shipping"
+      },
+      {
+        "type": "text",
+        "id": "cart_progress_text_tier1",
+        "label": "Message: free shipping unlocked, gift not yet reached",
+        "default": "Add [[amount]] to get a free gift"
+      },
+      {
+        "type": "text",
+        "id": "cart_progress_text_complete",
+        "label": "Message: all tiers unlocked",
+        "default": "You've unlocked free shipping & a free gift"
+      },
+      {
+        "type": "text",
+        "id": "cart_progress_unlocked_label",
+        "label": "\"Unlocked\" label shown under a completed tier",
+        "default": "Unlocked"
+      },
+      {
+        "type": "header",
+        "content": "Cart cross-sell"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_cross_sell_enable",
+        "label": "Show cross-sell carousels",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "cart_cross_sell_heading_1",
+        "label": "First carousel heading",
+        "default": "Built for your routine"
+      },
+      {
+        "type": "collection",
+        "id": "cart_cross_sell_collection_1",
+        "label": "First carousel collection"
+      },
+      {
+        "type": "text",
+        "id": "cart_cross_sell_heading_2",
+        "label": "Second carousel heading",
+        "default": "Best Sellers"
+      },
+      {
+        "type": "collection",
+        "id": "cart_cross_sell_collection_2",
+        "label": "Second carousel collection"
+      },
+      {
+        "type": "range",
+        "id": "cart_cross_sell_max_items",
+        "label": "Max items per carousel",
+        "min": 2,
+        "max": 12,
+        "step": 1,
+        "default": 6
+      },
+      {
+        "type": "header",
         "content": "t:content.product_media"
       },
       {

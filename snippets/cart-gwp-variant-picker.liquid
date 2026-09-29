@@ -1,0 +1,46 @@
+{%- doc -%}
+  Renders a variant dropdown for a gift-with-purchase line item, when the configured gift product
+  has more than one available variant (e.g. "Free instant latte" defaults to one flavor, user can
+  switch flavor). Switching removes the current gift line and adds the newly chosen variant with
+  the same _gwp marker property, handled by assets/cart-gwp.js.
+
+  @param {object} item - The current GWP cart line item.
+  @param {object} variants - The available variants of the gift product.
+{%- enddoc -%}
+
+<cart-gwp-variant-picker-component
+  class="cart-gwp-variant-picker"
+  data-line="{{ item.index | plus: 1 }}"
+>
+  <select
+    class="cart-gwp-variant-picker__select"
+    ref="select"
+    on:change="/changeVariant"
+    aria-label="Choose option"
+  >
+    {% for variant in variants %}
+      <option
+        value="{{ variant.id }}"
+        {% if variant.id == item.variant.id %}selected{% endif %}
+      >
+        {{ variant.title }}
+      </option>
+    {% endfor %}
+  </select>
+</cart-gwp-variant-picker-component>
+
+{% stylesheet %}
+  .cart-gwp-variant-picker {
+    display: block;
+    margin-block-start: var(--margin-2xs);
+  }
+
+  .cart-gwp-variant-picker__select {
+    font-size: var(--cart-font-size--xs);
+    padding: var(--padding-3xs) var(--padding-2xs);
+    border: var(--style-border-width) solid var(--color-border);
+    background-color: var(--color-input-background);
+    color: var(--color-input-text);
+    max-width: 100%;
+  }
+{% endstylesheet %}
