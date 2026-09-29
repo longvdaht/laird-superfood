@@ -114,8 +114,13 @@
           <span class="rating-count-separator">|</span>
         {%- endif -%}
         {%- if block_settings.show_number -%}
-          ({{- rating_count }}
-          {{ 'content.reviews' | t }})
+          {% if template.name contains 'collection' %}
+            {{- rating_count }}
+            {{ 'content.reviews' | t }}
+          {% else %}
+            ({{- rating_count }}
+            {{ 'content.reviews' | t }})
+          {% endif %}
         {%- endif -%}
       </p>
     {%- endif -%}
