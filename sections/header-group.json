@@ -35,9 +35,9 @@
         "text_a9JJq9": {
           "type": "text",
           "settings": {
-            "title": "PUMPKIN SPICE IS BACK",
-            "announcement_url": "shopify://products/pumpkin-spice-superfood-creamer",
-            "content": "<p>PUMPKIN SPICE IS BACK | <strong>SHOP NOW</strong></p>"
+            "title": "20% OFF - NATIONAL COFFEE DAY",
+            "announcement_url": "shopify://collections/national-coffee-day",
+            "content": "<p><strong>20% OFF</strong> - NATIONAL COFFEE DAY</p>"
           }
         },
         "text_JAD4Dd": {
