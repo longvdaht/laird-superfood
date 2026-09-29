@@ -1,0 +1,54 @@
+{%- doc -%}
+  Renders the cart drawer cross-sell carousels. Up to 2 curated collections (not a dynamic
+  recommendation engine), each rendered as a horizontally scrollable row with prev/next controls.
+  Reuses the theme's existing quick-add component for the add button, so variant selection and
+  the cart update flow are handled by code that already exists (product-form.js).
+
+  @param {object} [settings] - An object containing theme settings.
+  @param {boolean} [settings.cart_cross_sell_enable]
+  @param {string} [settings.cart_cross_sell_heading_1]
+  @param {object} [settings.cart_cross_sell_collection_1]
+  @param {string} [settings.cart_cross_sell_heading_2]
+  @param {object} [settings.cart_cross_sell_collection_2]
+  @param {number} [settings.cart_cross_sell_max_items]
+{%- enddoc -%}
+
+{%- comment -%}
+  Intentionally renders even when cart is empty (matches old Rebuy cart behavior, e.g. its
+  "New Products" / "Add a Best Seller" rows) - gives an empty cart something to convert on.
+{%- endcomment -%}
+{%- if settings.cart_cross_sell_enable -%}
+  {% liquid
+    assign max_items = settings.cart_cross_sell_max_items | default: 6
+  %}
+
+  <script
+    src="{{ 'cart-cross-sell.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
+  {% if settings.cart_cross_sell_collection_1 != blank %}
+    {% render 'cart-cross-sell-row',
+      heading: settings.cart_cross_sell_heading_1,
+      collection: settings.cart_cross_sell_collection_1,
+      max_items: max_items,
+      ref: 'cartCrossSell1'
+    %}
+  {% endif %}
+
+  {% if settings.cart_cross_sell_collection_2 != blank %}
+    {% if settings.cart_cross_sell_collection_1 != blank %}
+      <div class="cart-cross-sell__divider" aria-hidden="true">
+        <div class="cart-cross-sell__divider-line"></div>
+      </div>
+    {% endif %}
+
+    {% render 'cart-cross-sell-row',
+      heading: settings.cart_cross_sell_heading_2,
+      collection: settings.cart_cross_sell_collection_2,
+      max_items: max_items,
+      ref: 'cartCrossSell2'
+    %}
+  {% endif %}
+{%- endif -%}
