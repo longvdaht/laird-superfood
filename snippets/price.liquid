@@ -60,9 +60,11 @@
           assign subscription_price = auto_discounted_subscription_price | plus: 0
         endif
 
+        # The subscribe saving is always there, so on its own it is not a sale: strike through
+        # only when a one-time Yagi discount or a compare at price makes the product one.
         if subscription_price < price
-          unless compare_at_price > selected_variant.price
-            assign compare_at_price = selected_variant.price
+          unless auto_discounted_price != blank or compare_at_price > selected_variant.price
+            assign compare_at_price = 0
           endunless
           assign price = subscription_price
         endif
