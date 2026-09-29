@@ -364,7 +364,11 @@
 
         const sectionEl = form.closest(ROOT_SELECTOR);
         if (!sectionEl) return;
-        const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
+        // Scoped to this section only - falling back to the first `.new-purchase-options` found
+        // anywhere in the document (as this used to) can silently grab another product's widget
+        // when this section doesn't contain its own, sending the wrong (or no) selling_plan with
+        // this add-to-cart request while the shopper's own "Subscribe & Save" selection is ignored.
+        const poEl = sectionEl.querySelector('.new-purchase-options');
         if (!poEl) return;
 
         const checked = poEl.querySelector('.new-po-radio-input:checked');

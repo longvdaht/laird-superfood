@@ -1,0 +1,38 @@
+{%- doc -%}
+  Renders the Remove button + quantity selector for a cart line item. Pulled out into its own
+  snippet because it needs to render in 2 different places depending on the item: alone in its
+  own row (no subscription, or GWP), or sharing a row with the subscribe frequency dropdown
+  (see cart-subscribe-toggle.liquid) - same markup either way, just a different parent wrapper.
+
+  @param {object} item - The cart line item.
+  @param {boolean} can_update_quantity
+  @param {boolean} can_remove
+{%- enddoc -%}
+
+{% comment %}
+  Wrapped in its own group (not loose siblings) so the parent .cart-items__bottom-row can push
+  JUST this group to the right (margin-inline-start: auto) regardless of whether a sibling
+  (the subscribe frequency <select>) is also present - see that class's CSS.
+{% endcomment %}
+<div class="cart-items__controls-group">
+  <button
+    class="button button--tertiary cart-items__remove"
+    type="button"
+    aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
+    on:click="cart-items-component/onLineItemRemove/{{ item.index | plus: 1 }}"
+    {% if can_remove == false %}
+      hidden
+    {% endif %}
+  >
+    {{ 'actions.remove' | t }}
+  </button>
+
+  {% render 'quantity-selector',
+    product: item.product,
+    variant: item.variant,
+    in_cart_quantity: item.quantity,
+    line_index: item.index,
+    class: 'cart-primary-typography',
+    can_update_quantity: can_update_quantity
+  %}
+</div>

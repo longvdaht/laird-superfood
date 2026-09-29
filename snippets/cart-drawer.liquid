@@ -2,9 +2,7 @@
   Renders the cart drawer, a slide-out panel that displays the contents of the cart. It includes the cart icon that acts as a trigger.
 
   @param {object} [settings] - An object containing theme settings.
-
-  @param {boolean} [settings.auto_open_cart_drawer] - If `true`, the cart drawer opens automatically after an item is
-  added.
+  @param {boolean} [settings.auto_open_cart_drawer] - If `true`, the cart drawer opens automatically after an item is added.
   @param {string} [settings.drawer_color_scheme] - The color scheme for the drawer.
 {%- enddoc -%}
 
@@ -26,7 +24,17 @@
     aria-haspopup="dialog"
     aria-label="{{ 'accessibility.cart' | t }}"
     aria-describedby="cart-bubble-text"
-    data-testid="cart-drawer-trigger"
+    {% comment %}
+      NOTE (Cart Rebuild, 2026-09): renamed from data-testid="cart-drawer-trigger". Rebuy has a
+      custom "ready" callback (configured server-side in Rebuy Admin, not in this theme) that
+      does `document.querySelector('[data-testid="cart-drawer-trigger"]').addEventListener(...)`
+      to force-open its own Smart Cart on click, hijacking this exact button. Renaming the
+      attribute breaks that querySelector match so clicks fall through to our own
+      on:click="cart-drawer-component/open" below. This does NOT disable Rebuy elsewhere on the
+      site - still needs the real Rebuy Admin fix at go-live (see custom.js note).
+    {% endcomment %}
+    data-testid="native-cart-drawer-trigger"
+    on:click="cart-drawer-component/open"
   >
     {% render 'cart-icon-component' %}
   </button>
@@ -44,10 +52,22 @@
       >
         {%- if cart.empty? -%}
           <div class="cart-drawer__header">
+            {% comment %}
+              NOTE (Cart Rebuild, 2026-09): stock Horizon theme only showed the close button here
+              when the cart is empty (no title). Added the title back so the header always looks
+              the same (title + close), matching the old Rebuy cart and the Figma design.
+            {% endcomment %}
+            <h2
+              class="cart-drawer__heading h3"
+              id="cart-drawer-heading-empty-title"
+            >
+              {{ 'content.cart_title' | t }}
+            </h2>
+
             <button
               ref="closeButton"
               on:click="cart-drawer-component/close"
-              class="button close-button cart-drawer__close-button button-unstyled"
+              class="button cart-close-button button-unstyled"
               aria-label="{{ 'actions.close_dialog' | t }}"
             >
               <span class="svg-wrapper">
@@ -56,19 +76,22 @@
             </button>
           </div>
 
+          {% render 'cart-announcement-bar' %}
+          {% render 'cart-progress-bar' %}
+
           <div
             class="cart-drawer__content motion-reduce"
             aria-label="{{ 'accessibility.cart' | t }}"
           >
-            <h2
-              class="cart-drawer__heading h3 cart-drawer__heading--empty"
-              id="cart-drawer-heading-empty"
-            >
-              {{ 'content.your_cart_is_empty' | t }}
-            </h2>
-
             <div class="cart-drawer__items">
+              <h2
+                class="cart-drawer__heading h3 cart-drawer__heading--empty"
+                id="cart-drawer-heading-empty"
+              >
+                {{ 'content.your_cart_is_empty' | t }}
+              </h2>
               {% render 'cart-products' %}
+              {% render 'cart-cross-sell' %}
             </div>
           </div>
         {%- else -%}
@@ -80,14 +103,13 @@
               class="cart-drawer__heading h3"
               id="cart-drawer-heading"
             >
-              {{ 'content.cart_title' | t }}
-              {% render 'cart-bubble' %}
+              {{ 'content.cart_title' | t }} ({{ cart.item_count }})
             </h2>
 
             <button
               ref="closeButton"
               on:click="cart-drawer-component/close"
-              class="button close-button cart-drawer__close-button button-unstyled"
+              class="button cart-close-button button-unstyled"
               aria-label="{{ 'actions.close_dialog' | t }}"
             >
               <span class="svg-wrapper">
@@ -95,6 +117,10 @@
               </span>
             </button>
           </div>
+
+          {% render 'cart-announcement-bar' %}
+          {% render 'cart-progress-bar' %}
+          {% render 'cart-gwp-watcher' %}
 
           <div
             class="cart-drawer__content motion-reduce"
@@ -105,6 +131,7 @@
               class="cart-drawer__items"
             >
               {% render 'cart-products' %}
+              {% render 'cart-cross-sell' %}
             </scroll-hint>
 
             <div
@@ -139,21 +166,27 @@
     min-width: 26px;
   }
 
-  .cart-drawer__header {
+  .cart-drawer__inner .cart-drawer__header {
     background-color: var(--color-background);
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: var(--cart-drawer-padding);
+    padding: var(--padding-sm) var(--padding-xl);
     border-bottom: var(--style-border-width) solid none;
     position: sticky;
     top: 0;
     z-index: 1;
+  }
 
-    @media screen and (min-width: 750px) {
-      padding: var(--cart-drawer-padding-desktop);
-    }
+  .cart-close-button svg {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+    --icon-stroke-width: 2px;
+  }
+
+  .cart-close-button .svg-wrapper {
+    color: var(--color-navy);
   }
 
   .cart-drawer__dialog {

@@ -1,0 +1,46 @@
+{%- doc -%}
+  Renders a static announcement bar for the cart drawer, shown above the progress bar.
+  Controlled entirely by theme settings, no per-cart logic.
+
+  @param {object} [settings] - An object containing theme settings.
+  @param {boolean} [settings.cart_announcement_enable]
+  @param {string} [settings.cart_announcement_text]
+  @param {string} [settings.cart_announcement_background]
+  @param {string} [settings.cart_announcement_text_color]
+{%- enddoc -%}
+
+{%- if settings.cart_announcement_enable and settings.cart_announcement_text != blank -%}
+  <div
+    class="cart-announcement-bar cart-primary-typography"
+    style="--cart-announcement-background: {{ settings.cart_announcement_background }}; --cart-announcement-text-color: {{ settings.cart_announcement_text_color }};"
+  >
+    {{ settings.cart_announcement_text }}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-announcement-bar {
+    width: 100%;
+    text-align: center;
+    padding-block: var(--padding-xs);
+    padding-inline: var(--cart-drawer-padding, var(--padding-lg));
+    background-color: var(--cart-announcement-background, var(--color-foreground));
+    color: var(--cart-announcement-text-color, var(--color-background));
+    font-size: 14px;
+    line-height: 17px;
+    letter-spacing: var(--letter-spacing--body-normal);
+    vertical-align: middle;
+  }
+
+  .cart-announcement-bar p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  .cart-announcement-bar strong {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+  }
+{% endstylesheet %}
