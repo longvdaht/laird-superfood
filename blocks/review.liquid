@@ -51,7 +51,7 @@
     assign svg_filled_stars = rating | floor | plus: decimal_rounded
   %}
 
-  <a href="#product-reviews" class="rating-wrapper-link" aria-label="{{ 'accessibility.scroll_to_reviews' | t | default: 'Scroll to reviews' }}">
+  <a href="#product-reviews" class="rating-wrapper-link {% if product.type == blank %}non-produc-type{% endif %}" aria-label="{{ 'accessibility.scroll_to_reviews' | t | default: 'Scroll to reviews' }}">
   <div
     class="rating-wrapper justify-{{ block_settings.alignment }} rating-color--{{ block_settings.rating_color }}"
     {{ block.shopify_attributes }}
