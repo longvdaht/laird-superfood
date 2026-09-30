@@ -346,6 +346,7 @@
                 "icon_badges_CqGijP": {
                   "type": "icon-badges",
                   "name": "Icon badges",
+                  "disabled": true,
                   "settings": {
                     "alignment": "flex-start",
                     "gap": 8,
