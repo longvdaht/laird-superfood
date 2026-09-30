@@ -76,9 +76,19 @@
     </svg>
     <div
       class="rating"
-      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
       aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
     >
+      <style>
+        .rating {
+          --star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);
+        }
+
+        @media screen and (max-width: 400px) {
+          .rating {
+            --star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 0.9);
+          }
+        }
+      </style>
       {% if block_settings.stars_style == 'single' %}
         <svg
           class="stars {% if svg_filled_stars > 0 %}filled-star{% endif %}"
@@ -202,6 +212,12 @@
 
   .filled-star {
     fill: var(--star-fill-color);
+  }
+  @media (max-width: 767px) {
+    .rating-wrapper .rating-count {
+      font-size: 14px;
+      line-height: 1.2;
+    }
   }
 {% endstylesheet %}
 
