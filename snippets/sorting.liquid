@@ -117,11 +117,10 @@
             for="sort-option-{{ option.value }}-{{ section_id }}"
           >
             <div
-              id="sorting-option-{{ option.value }}-{{ section_id }}"
               class="sorting-filter__option"
               role="option"
               aria-selected="{% if option.value == sort_by %}true{% else %}false{% endif %}"
-              tabindex="-1"
+              tabindex="{% if option.value == sort_by %}0{% else %}-1{% endif %}"
             >
               <input
                 type="radio"
@@ -241,9 +240,8 @@
       background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
     }
 
-    &.sorting-filter__option--active {
+    &:focus {
       border-radius: calc(var(--style-border-radius-popover) / 2);
-      background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
     }
   }
 
