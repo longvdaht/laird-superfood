@@ -98,9 +98,9 @@ select {
   display: flex;
   align-content: center;
   justify-content: center;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 4px;
   margin-top: 4px;
 }
 
