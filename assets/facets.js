@@ -1,6 +1,6 @@
-import { sectionRenderer } from '@theme/section-renderer';
 import { Component } from '@theme/component';
 import { FilterUpdateEvent, ThemeEvents } from '@theme/events';
+import { sectionRenderer } from '@theme/section-renderer';
 import { debounce, formatMoney, startViewTransition } from '@theme/utilities';
 
 /**
@@ -459,8 +459,12 @@ class SortingFilterComponent extends Component {
    * @param {KeyboardEvent} event - The keyboard event
    */
   handleKeyDown = (event) => {
-    const { listbox } = this.refs;
-    if (!(listbox instanceof Element)) return;
+    const { details, listbox } = this.refs;
+    if (!(details instanceof HTMLDetailsElement) || !(listbox instanceof Element)) return;
+
+    // While the dropdown is closed, let the native <summary> handle
+    // Enter/Space to open it instead of intercepting the keystroke here.
+    if (!details.open) return;
 
     const options = Array.from(listbox.querySelectorAll('[role="option"]'));
     const currentFocused = options.find((option) => option instanceof HTMLElement && option.tabIndex === 0);
@@ -481,8 +485,12 @@ class SortingFilterComponent extends Component {
 
       case 'Enter':
       case ' ':
-        if (event.target instanceof Element) {
-          const targetOption = event.target.closest('[role="option"]');
+        // Note: `event.target` is overridden by the framework's declarative event
+        // delegation (see component.js) to always point to the element carrying the
+        // `on:keydown` attribute (this component's root), not the focused option.
+        // Use `document.activeElement` instead to find the option the user is on.
+        if (document.activeElement instanceof Element) {
+          const targetOption = document.activeElement.closest('[role="option"]');
           if (targetOption) {
             event.preventDefault();
             this.#selectOption(targetOption);
@@ -508,7 +516,8 @@ class SortingFilterComponent extends Component {
     summary.setAttribute('aria-expanded', isOpen.toString());
 
     if (isOpen && listbox instanceof Element) {
-      // Move focus to selected option when dropdown opens
+      // Move focus to the selected option when the dropdown opens, so
+      // keyboard-only users land directly on a real, selectable tab stop.
       const selectedOption = listbox.querySelector('[aria-selected="true"]');
       if (selectedOption instanceof HTMLElement) {
         selectedOption.focus();
@@ -553,7 +562,6 @@ class SortingFilterComponent extends Component {
       // Trigger click on the input to ensure normal form behavior
       input.click();
 
-      // Close dropdown and return focus (handles tabIndex reset)
       this.#closeDropdown();
     }
   }
