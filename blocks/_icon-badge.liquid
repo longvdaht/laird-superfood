@@ -1,60 +1,16 @@
 {% assign block_settings = block.settings %}
 
-{% capture badge_content %}
-  {% render 'icon-or-image',
-    icon: block_settings.icon,
-    image_upload: block_settings.image_upload,
-    width: block_settings.icon_width,
-    class_name: 'icon-badge__icon'
-  %}
-  {% if block_settings.text != blank %}
-    <span class="icon-badge__text">{{ block_settings.text }}</span>
-  {% endif %}
-{% endcapture %}
+{% render 'icon-badge',
+  text: block_settings.text,
+  icon: block_settings.icon,
+  image: block_settings.image_upload,
+  width: block_settings.icon_width,
+  link: block_settings.link,
+  open_in_new_tab: block_settings.open_in_new_tab,
+  attributes: block.shopify_attributes
+%}
 
-{% if block_settings.link != blank %}
-  <a
-    class="icon-badge icon-badge--link"
-    href="{{ block_settings.link }}"
-    {% if block_settings.open_in_new_tab %}
-      target="_blank" rel="noopener"
-    {% endif %}
-    {{ block.shopify_attributes }}
-  >
-    {{ badge_content }}
-  </a>
-{% else %}
-  <div class="icon-badge" {{ block.shopify_attributes }}>
-    {{ badge_content }}
-  </div>
-{% endif %}
-
-{% stylesheet %}
-  .icon-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: var(--icon-badge-padding-block, 8px) var(--icon-badge-padding-inline, 16px);
-    border-radius: var(--icon-badge-radius, 50px);
-    background-color: var(--icon-badge-background, var(--color-background));
-    color: var(--icon-badge-color, var(--color-foreground));
-    font-size: var(--icon-badge-font-size, 15px);
-    line-height: 16px;
-    white-space: nowrap;
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-
-  .icon-badge--link {
-    text-decoration: none;
-  }
-
-  .icon-badge__icon {
-    flex-shrink: 0;
-    fill: currentcolor;
-    height: auto;
-  }
-{% endstylesheet %}
+{% comment %} Styles live in the `icon-badges` block, which also renders metaobject badges. {% endcomment %}
 
 {% schema %}
 {

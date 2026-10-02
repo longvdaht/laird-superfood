@@ -1,24 +1,97 @@
-{% assign block_settings = block.settings %}
+{% comment %}
+  Badges come from `product.metafields.custom.icon_badges`, a list of `icon_badge` metaobjects
+  with the fields `text`, `icon` (an icon name such as `leaf`, `fire`, `dairy_free`), `image`,
+  `link` and `open_in_new_tab`. Products without that metafield fall back to the `_icon-badge`
+  child blocks, so templates keep working until every product is filled in.
+{% endcomment %}
 
-<div
-  class="icon-badges icon-badges--mobile-{{ block_settings.mobile_layout }} spacing-style"
-  style="
-    --icon-badges-gap: {{ block_settings.gap }}px;
-    --icon-badges-alignment: {{ block_settings.alignment }};
-    --icon-badge-background: {{ block_settings.background_color | default: '#cde3ea' }};
-    --icon-badge-color: {{ block_settings.text_color | default: '#10293b' }};
-    --icon-badge-radius: {{ block_settings.border_radius }}px;
-    --icon-badge-padding-block: {{ block_settings.padding_block }}px;
-    --icon-badge-padding-inline: {{ block_settings.padding_inline }}px;
-    --icon-badge-font-size: {{ block_settings.font_size }}px;
-    {% render 'spacing-style', settings: block_settings %}
-  "
-  {{ block.shopify_attributes }}
->
-  {% content_for 'blocks' %}
-</div>
+{% liquid
+  assign block_settings = block.settings
+
+  assign product_resource = closest.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  assign metaobject_badges = blank
+  if block_settings.source == 'metaobject' and product_resource != blank
+    assign metaobject_badges = product_resource.metafields.custom.icon_badges.value
+  endif
+
+  # Metaobject lists cannot be tested with `size` or an index, only iterated.
+  assign has_metaobject_badges = false
+  for badge in metaobject_badges
+    assign has_metaobject_badges = true
+    break
+  endfor
+
+  assign show_blocks = false
+  if has_metaobject_badges == false
+    if block_settings.source == 'blocks' or block_settings.fallback_to_blocks
+      assign show_blocks = true
+    endif
+  endif
+%}
+
+{% if has_metaobject_badges or show_blocks or request.design_mode %}
+  <div
+    class="icon-badges icon-badges--mobile-{{ block_settings.mobile_layout }} spacing-style"
+    style="
+      --icon-badges-gap: {{ block_settings.gap }}px;
+      --icon-badges-alignment: {{ block_settings.alignment }};
+      --icon-badge-background: {{ block_settings.background_color | default: '#cde3ea' }};
+      --icon-badge-color: {{ block_settings.text_color | default: '#10293b' }};
+      --icon-badge-radius: {{ block_settings.border_radius }}px;
+      --icon-badge-padding-block: {{ block_settings.padding_block }}px;
+      --icon-badge-padding-inline: {{ block_settings.padding_inline }}px;
+      --icon-badge-font-size: {{ block_settings.font_size }}px;
+      {% render 'spacing-style', settings: block_settings %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% if has_metaobject_badges %}
+      {% for badge in metaobject_badges %}
+        {% render 'icon-badge',
+          text: badge.text.value,
+          icon: badge.icon.value,
+          image: badge.image.value,
+          width: block_settings.icon_width,
+          link: badge.link.value,
+          open_in_new_tab: badge.open_in_new_tab.value
+        %}
+      {% endfor %}
+    {% elsif show_blocks %}
+      {% content_for 'blocks' %}
+    {% endif %}
+  </div>
+{% endif %}
 
 {% stylesheet %}
+  .icon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--icon-badge-padding-block, 8px) var(--icon-badge-padding-inline, 16px);
+    border-radius: var(--icon-badge-radius, 50px);
+    background-color: var(--icon-badge-background, var(--color-background));
+    color: var(--icon-badge-color, var(--color-foreground));
+    font-size: var(--icon-badge-font-size, 15px);
+    line-height: 16px;
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .icon-badge--link {
+    text-decoration: none;
+  }
+
+  .icon-badge__icon {
+    flex-shrink: 0;
+    fill: currentcolor;
+    height: auto;
+  }
+
   .icon-badges {
     display: flex;
     flex-wrap: wrap;
@@ -58,6 +131,45 @@
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Badge source",
+      "options": [
+        {
+          "value": "metaobject",
+          "label": "Product metafield (icon_badges)"
+        },
+        {
+          "value": "blocks",
+          "label": "Blocks below"
+        }
+      ],
+      "default": "metaobject",
+      "info": "Reads product.metafields.custom.icon_badges, a list of Icon badge metaobjects."
+    },
+    {
+      "type": "checkbox",
+      "id": "fallback_to_blocks",
+      "label": "Show blocks when the product has no badges",
+      "default": true,
+      "visible_if": "{{ block.settings.source == 'metaobject' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_width",
+      "label": "Metaobject icon width",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.source == 'metaobject' }}"
+    },
     {
       "type": "header",
       "content": "t:content.layout"

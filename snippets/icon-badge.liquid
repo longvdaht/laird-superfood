@@ -1,0 +1,45 @@
+{%- doc -%}
+  Renders a single icon badge. Shared by the `_icon-badge` block and the `icon_badge` metaobject
+  entries read by the `icon-badges` block, so both look the same.
+
+  @param {string} [text] - The badge label.
+  @param {string} [icon] - An icon name from the `icon` snippet, or `none`.
+  @param {object} [image] - An uploaded image, used instead of the icon when set.
+  @param {number} width - The icon width in px.
+  @param {string} [link] - Turns the badge into a link.
+  @param {boolean} [open_in_new_tab] - Opens the link in a new tab.
+  @param {string} [attributes] - Extra attributes for the badge element, e.g. `block.shopify_attributes`.
+{%- enddoc -%}
+
+{% liquid
+  assign badge_icon = icon | default: 'none'
+%}
+
+{% capture badge_content %}
+  {% render 'icon-or-image',
+    icon: badge_icon,
+    image_upload: image,
+    width: width,
+    class_name: 'icon-badge__icon'
+  %}
+  {% if text != blank %}
+    <span class="icon-badge__text">{{ text }}</span>
+  {% endif %}
+{% endcapture %}
+
+{% if link != blank %}
+  <a
+    class="icon-badge icon-badge--link"
+    href="{{ link }}"
+    {% if open_in_new_tab %}
+      target="_blank" rel="noopener"
+    {% endif %}
+    {{ attributes }}
+  >
+    {{ badge_content }}
+  </a>
+{% else %}
+  <div class="icon-badge" {{ attributes }}>
+    {{ badge_content }}
+  </div>
+{% endif %}
