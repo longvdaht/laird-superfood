@@ -51,7 +51,9 @@
   property="og:description"
   content="{{ og_description | escape }}"
 >
-
+{%- unless settings.type_body_font.system? -%}
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+{%- endunless -%}
 {%- if page_image -%}
   <meta
     property="og:image"

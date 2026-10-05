@@ -1,6 +1,6 @@
 <div class="ebd-hp-product-cards">
   <div class="content-wrapper">
-    <h2 class="darkblue">{{ section.settings.heading }}</h3>
+    <h2 class="darkblue">{{ section.settings.heading }}</h2>
     <div class="swiper cards-wrapper">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
@@ -30,7 +30,7 @@
                 {% endif %}
               </div>
               <div class="media">
-                <img src="{{ product.featured_image | img_url: '750x' }}" alt="{{ product.title }}" class="product-image">
+                <img loading="lazy" src="{{ product.featured_image | img_url: '750x' }}" alt="{{ product.title }}" class="product-image" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
               </div>
               <div class="details">
                 <div class="text">

@@ -4,6 +4,7 @@
 
   @param {string} media_type - 'image' or 'video'
   @param {object} [image] - Image object, used when media_type is 'image'
+  @param {object} [image_mobile] - Mobile image; together with image, renders one <picture> shown on every device
   @param {object} [video] - Video object, used when media_type is 'video'
   @param {string} device - 'desktop' or 'mobile'; becomes the .hc-media--<device> visibility class
   @param {boolean} [is_first_slide] - True for the first slide, which is eager loaded (it is the LCP element)
@@ -98,6 +99,67 @@
     ></video>
   </div>
   {%- endif -%}
+{%- elsif media_type == 'image' and image != blank and image_mobile != blank -%}
+  {%- liquid
+    # Desktop + mobile images in one <picture>, so each device downloads only its own image.
+    # (Two separate <img> tags hidden with CSS both download, both at fetchpriority high.)
+    assign alt_text = alt | default: image.alt
+    assign widths = '600,800,1000,1200,1600,2000,2400,3000' | split: ','
+
+    capture srcset_desktop
+      for w in widths
+        assign w_num = w | plus: 0
+        if w_num < image.width
+          echo image | image_url: width: w_num | append: ' ' | append: w | append: 'w, '
+        endif
+      endfor
+      echo image | image_url: width: image.width | append: ' ' | append: image.width | append: 'w'
+    endcapture
+
+    capture srcset_mobile
+      for w in widths
+        assign w_num = w | plus: 0
+        if w_num < image_mobile.width
+          echo image_mobile | image_url: width: w_num | append: ' ' | append: w | append: 'w, '
+        endif
+      endfor
+      echo image_mobile | image_url: width: image_mobile.width | append: ' ' | append: image_mobile.width | append: 'w'
+    endcapture
+
+    # image_tag used to write the focal point as an inline object-position; keep that per device.
+    assign img_style = ''
+    if image.presentation.focal_point
+      assign img_style = img_style | append: '--hc-img-pos: ' | append: image.presentation.focal_point.x | append: '% ' | append: image.presentation.focal_point.y | append: '%;'
+    endif
+    if image_mobile.presentation.focal_point
+      assign img_style = img_style | append: '--hc-img-pos-mobile: ' | append: image_mobile.presentation.focal_point.x | append: '% ' | append: image_mobile.presentation.focal_point.y | append: '%;'
+    endif
+  -%}
+  <div class="hc-media hc-media--both">
+    <picture>
+      <source
+        media="(max-width: 768px)"
+        srcset="{{ srcset_mobile | strip }}"
+        sizes="100vw"
+        width="{{ image_mobile.width }}"
+        height="{{ image_mobile.height }}"
+      >
+      <img
+        src="{{ image | image_url: width: 1600 }}"
+        srcset="{{ srcset_desktop | strip }}"
+        sizes="100vw"
+        alt="{{ alt_text | escape }}"
+        class="hc-image"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+        loading="{{ image_loading }}"
+        fetchpriority="{{ image_priority }}"
+        {% if img_style != blank %}
+          style="{{ img_style }}"
+        {% endif %}
+      >
+    </picture>
+  </div>
 {%- elsif media_type == 'image' and image != blank -%}
   {%- assign alt_text = alt | default: image.alt -%}
   <div class="{{ wrapper_classes }}">

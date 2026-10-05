@@ -12,7 +12,7 @@
 
     {% if section.settings.content_image != blank %}
       <div class="content image-content">
-        <img src="{{ section.settings.content_image | img_url: '1500x' }}" alt="{{ section.settings.content_image.alt }}" class="content-image">
+        <img src="{{ section.settings.content_image | img_url: '1500x' }}" alt="{{ section.settings.content_image.alt }}" width="{{ section.settings.content_image.width }}" height="{{ section.settings.content_image.height }}"  class="content-image">
       </div>
     {% endif %}
   </div>

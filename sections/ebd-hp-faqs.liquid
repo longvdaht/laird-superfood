@@ -21,7 +21,7 @@
       <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
     </div>
   </div>
-  <img src="{{ section.settings.background_image | img_url: '1000x' }}" alt="{{ section.settings.background_image.alt }}" class="floating-image">
+  <img loading="lazy" src="{{ section.settings.background_image | img_url: '1000x' }}" alt="{{ section.settings.background_image.alt }}" class="floating-image" width="{{ section.settings.background_image.width }}" height="{{ section.settings.background_image.height }}">
 </section>
 
 {% schema %}
