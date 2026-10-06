@@ -1,5 +1,10 @@
 {% liquid
   assign max_items = section.settings.max_products
+  assign selected_products = section.settings.product_list
+  assign slide_count = max_items
+  if section.settings.collection == blank and selected_products != blank
+    assign slide_count = selected_products.size | at_most: max_items
+  endif
 %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
@@ -39,6 +44,18 @@
           {% endunless %}
         {% endfor %}
       {% endpaginate %}
+    {% elsif selected_products != blank %}
+      {% for product in selected_products limit: max_items %}
+        <div class="resource-list__item">
+          {% # theme-check-disable UniqueStaticBlockId %}
+            {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: product %}
+          {% # theme-check-enable UniqueStaticBlockId %}
+        </div>
+
+        {% unless forloop.last %}
+          <!--@list/split-->
+        {% endunless %}
+      {% endfor %}
     {% else %}
       {% for i in (1..max_items) %}
         <div
@@ -65,7 +82,7 @@
     list_items: list_items,
     list_items_array: list_items_array,
     settings: section.settings,
-    slide_count: max_items,
+    slide_count: slide_count,
     content_type: 'products',
     test_id: 'resource-list-grid'
   %}
@@ -101,6 +118,13 @@
       "type": "collection",
       "id": "collection",
       "label": "t:settings.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Products (manual selection)",
+      "limit": 16,
+      "info": "Used only when no collection is selected. Collection takes priority."
     },
     {
       "type": "select",

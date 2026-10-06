@@ -3,27 +3,32 @@
     id="LinkBlocks-{{ section.id }}"
     class="link-blocks link-blocks--{{ section.settings.alignment }}"
   >
-    <div class="link-blocks__inner">
-      {% for block in section.blocks %}
-        {% if block.settings.text != blank %}
-          {% if block.settings.link != blank %}
-            <a
-              href="{{ block.settings.link }}"
-              class="link-blocks__item"
-              {{ block.shopify_attributes }}
-            >
-              {{ block.settings.text }}
-            </a>
-          {% else %}
-            <span
-              class="link-blocks__item"
-              {{ block.shopify_attributes }}
-            >
-              {{ block.settings.text }}
-            </span>
-          {% endif %}
-        {% endif %}
-      {% endfor %}
+    <div class="link-blocks__outer">
+      <div class="link-blocks__slider">
+        <div class="link-blocks__inner">
+          {% for block in section.blocks %}
+            {% if block.settings.text != blank %}
+              <div
+                class="link-blocks__slide"
+                {{ block.shopify_attributes }}
+              >
+                {% if block.settings.link != blank %}
+                  <a
+                    href="{{ block.settings.link }}"
+                    class="link-blocks__item"
+                  >
+                    {{ block.settings.text }}
+                  </a>
+                {% else %}
+                  <span class="link-blocks__item">
+                    {{ block.settings.text }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
     </div>
   </div>
 {% endif %}
@@ -33,6 +38,12 @@
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
     background-color: {{ section.settings.section_background }};
+  }
+
+  #LinkBlocks-{{ section.id }} .link-blocks__outer {
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 
   #LinkBlocks-{{ section.id }} .link-blocks__inner {
@@ -53,6 +64,10 @@
     justify-content: flex-end;
   }
 
+  #LinkBlocks-{{ section.id }} .link-blocks__slide {
+    flex: 0 0 auto;
+  }
+
   #LinkBlocks-{{ section.id }} .link-blocks__item {
     display: inline-flex;
     align-items: center;
@@ -65,6 +80,7 @@
 
     text-decoration: none;
     padding: 12px;
+    white-space: nowrap;
   }
 
   #LinkBlocks-{{ section.id }} a.link-blocks__item:hover {
@@ -76,6 +92,39 @@
     #LinkBlocks-{{ section.id }} {
       padding-top: {{ section.settings.padding_top | times: 0.5 }}px;
       padding-bottom: {{ section.settings.padding_bottom | times: 0.5 }}px;
+      overflow: hidden;
+    }
+
+    #LinkBlocks-{{ section.id }} .link-blocks__outer {
+      padding-left: var(--page-margin);
+      padding-right: 0;
+    }
+
+    #LinkBlocks-{{ section.id }} .link-blocks__slider {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x;
+      scrollbar-width: none;
+    }
+
+    #LinkBlocks-{{ section.id }} .link-blocks__slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    #LinkBlocks-{{ section.id }} .link-blocks__inner {
+      width: max-content;
+      min-width: 100%;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 16px;
+      padding-right: var(--page-margin);
+    }
+
+    #LinkBlocks-{{ section.id }} .link-blocks__slide {
+      flex: 0 0 auto;
     }
 
     #LinkBlocks-{{ section.id }} .link-blocks__item {
