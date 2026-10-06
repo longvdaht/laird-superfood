@@ -5,7 +5,7 @@
     <div class="socials-wrapper">
       {% for block in section.blocks %}
         <a href="{{ block.settings.social_url }}" title="{{ block.settings.title }}" target="_blank">
-          <img src="{{ block.settings.social_icon | img_url: '150x' }}" alt="{{ block.settings.title }}">
+          <img loading="lazy" src="{{ block.settings.social_icon | img_url: '150x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.social_icon.width }}" height="{{ block.settings.social_icon.height }}">
         </a>
       {% endfor %}
       <h5>{{ section.settings.handle }}</h5>

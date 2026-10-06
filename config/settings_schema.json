@@ -376,6 +376,13 @@
         "label": "t:options.accent"
       },
       {
+        "type": "font_picker",
+        "id": "type_secondary_font",
+        "default": "poppins_n4",
+        "label": "Secondary font (custom sections)",
+        "info": "Used by the custom sections that use var(--font-secondary), e.g. the subscriptions and liquid creamer pages. Weights 400/500/600/700 are loaded."
+      },
+      {
         "type": "header",
         "content": "t:content.text_presets"
       },

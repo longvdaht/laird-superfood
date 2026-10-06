@@ -10,7 +10,7 @@
             <a href="{{ block.settings.link_url }}" class="slide-wrapper" title="{{ block.settings.link_text }}">
               <div class="media-wrapper">
                 <video src="{{ block.settings.video.sources[1].url }}" muted loop playsinline></video>
-                <img class="poster" src="{{ block.settings.image | img_url: '500x' }}" alt="{{ block.settings.link_text }}">
+                <img class="poster" loading="lazy" src="{{ block.settings.image | img_url: '500x' }}" alt="{{ block.settings.link_text }}" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
               </div>
               <h4 class="darkblue">{{ block.settings.link_text }}</h4>
             </a>

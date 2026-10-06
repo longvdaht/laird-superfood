@@ -307,17 +307,37 @@
                 --hc-focal-point-mobile: {{ slide_settings.focal_mobile }};
               "
             >
-              {%- render 'ebd-hero-carousel-media',
-                media_type: slide_settings.media_type_desktop,
-                image: slide_settings.image_desktop,
-                video: slide_settings.video_desktop,
-                alt: slide_settings.image_alt,
-                device: 'desktop',
-                is_first_slide: forloop.first,
-                max_video_height: 1080
+              {%- liquid
+                # Image on both devices: render a single <picture> so mobile never downloads the
+                # desktop image (and vice versa).
+                assign use_picture = false
+                if has_mobile_media and slide_settings.media_type_desktop == 'image' and slide_settings.image_desktop != blank and slide_settings.media_type_mobile == 'image'
+                  assign use_picture = true
+                endif
               -%}
 
-              {%- if has_mobile_media -%}
+              {%- if use_picture -%}
+                {%- render 'ebd-hero-carousel-media',
+                  media_type: 'image',
+                  image: slide_settings.image_desktop,
+                  image_mobile: slide_settings.image_mobile,
+                  alt: slide_settings.image_alt,
+                  device: 'desktop',
+                  is_first_slide: forloop.first
+                -%}
+              {%- else -%}
+                {%- render 'ebd-hero-carousel-media',
+                  media_type: slide_settings.media_type_desktop,
+                  image: slide_settings.image_desktop,
+                  video: slide_settings.video_desktop,
+                  alt: slide_settings.image_alt,
+                  device: 'desktop',
+                  is_first_slide: forloop.first,
+                  max_video_height: 1080
+                -%}
+              {%- endif -%}
+
+              {%- if has_mobile_media and use_picture == false -%}
                 {%- render 'ebd-hero-carousel-media',
                   media_type: slide_settings.media_type_mobile,
                   image: slide_settings.image_mobile,
@@ -1526,6 +1546,10 @@
       display: none;
     }
 
+    .hc-media--both picture {
+      display: contents;
+    }
+
     .hc-media--placeholder .hc-placeholder {
       display: block;
       width: 100%;
@@ -1540,6 +1564,10 @@
       height: var(--hc-media-height);
       object-fit: cover;
       object-position: var(--hc-focal-point);
+    }
+
+    .hc-media.hc-media--both img {
+      object-position: var(--hc-img-pos, var(--hc-focal-point));
     }
 
     .hc-overlay {
@@ -1791,6 +1819,10 @@
 
       .hc-slide-inner--has-mobile-media .hc-media--mobile {
         display: block;
+      }
+
+      .hc-media.hc-media--both img {
+        object-position: var(--hc-img-pos-mobile, var(--hc-focal-point-mobile));
       }
 
       .hc-overlay {

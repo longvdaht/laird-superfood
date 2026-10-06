@@ -1,0 +1,35 @@
+{%- comment -%}
+  Extra @font-face rules for the custom (ebd / mush-lp) sections, served from Shopify's font CDN
+  instead of Google Fonts (no extra connection, no render-blocking stylesheet).
+
+  - Rubik: theme-styles-variables only declares 400/700. custom.css also uses 300/500/600/800/900,
+    which would otherwise be faux-bolded.
+  - Poppins (settings.type_secondary_font): used through var(--font-secondary), weights 400-700.
+
+  A @font-face rule only downloads its file when text on the page actually uses it, so declaring
+  them globally costs nothing on pages that do not use these weights.
+{%- endcomment -%}
+
+{%- liquid
+  assign extra_rubik_weights = '300,500,600,800,900' | split: ','
+  assign secondary_weights = '500,600,700' | split: ','
+-%}
+
+<style>
+  {%- for weight in extra_rubik_weights -%}
+    {%- assign font = settings.type_body_font | font_modify: 'weight', weight -%}
+    {%- if font -%}
+      {{ font | font_face: font_display: 'swap' }}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if settings.type_secondary_font -%}
+    {{ settings.type_secondary_font | font_face: font_display: 'swap' }}
+    {%- for weight in secondary_weights -%}
+      {%- assign font = settings.type_secondary_font | font_modify: 'weight', weight -%}
+      {%- if font -%}
+        {{ font | font_face: font_display: 'swap' }}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+</style>

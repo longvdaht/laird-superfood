@@ -4,7 +4,7 @@
     <div class="logo-grid">
       {% for block in section.blocks %}
         <div class="grid-item">
-          <img src="{{ block.settings.logo | img_url: '500x' }}" alt="{{ block.settings.title }}" class="logo">
+          <img loading="lazy" src="{{ block.settings.logo | img_url: '500x' }}" alt="{{ block.settings.title }}" class="logo" width="{{ block.settings.logo.width }}" height="{{ block.settings.logo.height }}">
         </div>
       {% endfor %}
     </div>

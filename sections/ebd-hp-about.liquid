@@ -2,18 +2,27 @@
   <div class="content-wrapper">
     <div class="image">
       <picture>
-        <source
-          media="(max-width: 768px)"
-          srcset="{{ section.settings.image_mobile | img_url: 'master' }}"
-        >
+        {% if section.settings.image_mobile != blank %}
+          <source
+            media="(max-width: 768px)"
+            srcset="{{ section.settings.image_mobile | image_url: width: 750 }} 750w, {{ section.settings.image_mobile | image_url: width: 1100 }} 1100w, {{ section.settings.image_mobile | image_url: width: 1500 }} 1500w"
+            sizes="100vw"
+            width="{{ section.settings.image_mobile.width }}"
+            height="{{ section.settings.image_mobile.height }}"
+          >
+        {% endif %}
         <source
           media="(min-width: 769px)"
-          srcset="{{ section.settings.image | img_url: 'master' }}"
+          srcset="{{ section.settings.image | image_url: width: 1200 }} 1200w, {{ section.settings.image | image_url: width: 1800 }} 1800w, {{ section.settings.image | image_url: width: 2400 }} 2400w"
+          sizes="100vw"
         >
         <img
-          src="{{ section.settings.image | img_url: 'master' }}"
+          src="{{ section.settings.image | image_url: width: 1800 }}"
           alt="About Us"
           class="w-full h-full object-cover"
+          loading="lazy"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
         >
       </picture>
     </div>
@@ -38,7 +47,50 @@
       <div class="graphic-left">
         {% render 'graphic-floral' %}
       </div>
-      <video id="aboutVideo" src="{{ section.settings.video.sources[1].url }}" muted autoplay loop playsinline></video>
+      {%- liquid
+        # Pick the largest mp4 within 720p for mobile and 1080p for desktop. The video is only
+        # loaded once it scrolls into view (see the script below), so it no longer costs the
+        # initial page load ~12MB on mobile.
+        assign video = section.settings.video
+        assign src_mobile = ''
+        assign src_mobile_h = 0
+        assign src_desktop = ''
+        assign src_desktop_h = 0
+        for source in video.sources
+          if source.format != 'mp4'
+            continue
+          endif
+          if source.height <= 720 and source.height > src_mobile_h
+            assign src_mobile = source.url
+            assign src_mobile_h = source.height
+          endif
+          if source.height <= 1080 and source.height > src_desktop_h
+            assign src_desktop = source.url
+            assign src_desktop_h = source.height
+          endif
+        endfor
+        if src_desktop == blank
+          assign src_desktop = video.sources[1].url | default: video.sources.first.url
+        endif
+        if src_mobile == blank
+          assign src_mobile = src_desktop
+        endif
+      -%}
+      <video
+        id="aboutVideo"
+        data-src-mobile="{{ src_mobile }}"
+        data-src-desktop="{{ src_desktop }}"
+        {% if video.preview_image != blank %}
+          poster="{{ video.preview_image | image_url: width: 1200 }}"
+        {% endif %}
+        {% if video.aspect_ratio %}
+          style="aspect-ratio: {{ video.aspect_ratio }};"
+        {% endif %}
+        preload="none"
+        muted
+        loop
+        playsinline
+      ></video>
         <button class="video-toggle" id="videoToggle" aria-label="Video Play Button">
           <span class="icon icon-play">{% render 'icon-play' %}</span>
           <span class="icon icon-pause hidden">{% render 'icon-pause' %}</span>
@@ -47,7 +99,14 @@
         {% render 'graphic-floral' %}
       </div>
       <a href="{{ section.settings.product_url }}" title="Laird Superfood Instant Lattes">
-        <img class="product-image" src="{{ section.settings.product_image | img_url: '750x' }}" alt="{{ section.settings.product_image.alt }}">
+        <img
+          class="product-image"
+          src="{{ section.settings.product_image | img_url: '750x' }}"
+          alt="{{ section.settings.product_image.alt }}"
+          loading="lazy"
+          width="{{ section.settings.product_image.width }}"
+          height="{{ section.settings.product_image.height }}"
+        >
       </a>
     </div>
   </div>
@@ -181,7 +240,7 @@
         width: 280px;
         left: -80px;
         animation: floralMove 10s infinite;
-        svg {
+        svg, img {
           width: 100%;
           height: 100%;
         }
@@ -195,7 +254,7 @@
         right: -90px;
         animation: floralMove 10s 2s infinite;
 
-        svg {
+        svg, img {
           width: 100%;
           height: 100%;
           transform: rotate(15deg);
@@ -393,7 +452,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure initial state
   video.muted = true;
 
+  // Attach the source only when needed, so the video is not downloaded on page load.
+  const loadVideo = () => {
+    if (video.getAttribute('src')) return;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    video.src = (isMobile ? video.dataset.srcMobile : video.dataset.srcDesktop) || video.dataset.srcDesktop;
+  };
+
+  // Autoplay (muted) while the video is on screen, pause when it scrolls away. Once the user has
+  // taken control with the toggle, leave playback to them.
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (firstClickDone) return;
+        if (entry.isIntersecting) {
+          loadVideo();
+          video.play().catch(() => {});
+        } else if (!video.paused) {
+          video.pause();
+        }
+      });
+    }, { rootMargin: '200px 0px' }).observe(video);
+  } else {
+    loadVideo();
+    video.play().catch(() => {});
+  }
+
   toggle.addEventListener('click', () => {
+    loadVideo();
     // FIRST CLICK: restart from beginning and unmute (even though it's already playing muted)
     if (!firstClickDone) {
       video.pause();               // ensure we can safely jump to 0
