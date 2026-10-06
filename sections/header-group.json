@@ -34,11 +34,10 @@
         },
         "text_a9JJq9": {
           "type": "text",
-          "disabled": true,
           "settings": {
-            "title": "20% OFF - NATIONAL COFFEE DAY",
-            "announcement_url": "shopify://collections/national-coffee-day",
-            "content": "<p><strong>20% OFF</strong> - NATIONAL COFFEE DAY</p>"
+            "title": "20% OFF - TODAY & TOMORROW ONLY",
+            "announcement_url": "shopify://collections/all",
+            "content": "<p><strong>20% OFF</strong> - TODAY & TOMORROW ONLY</p>"
           }
         },
         "text_JAD4Dd": {
