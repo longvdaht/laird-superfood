@@ -35,9 +35,9 @@
         "text_a9JJq9": {
           "type": "text",
           "settings": {
-            "title": "20% OFF - TODAY & TOMORROW ONLY",
+            "title": "20% OFF - ENDS TODAY!",
             "announcement_url": "shopify://collections/all",
-            "content": "<p><strong>20% OFF</strong> - TODAY & TOMORROW ONLY</p>"
+            "content": "<p><strong>20% OFF</strong> <strong>SITEWIDE</strong> - ENDS TODAY!</p>"
           }
         },
         "text_JAD4Dd": {
