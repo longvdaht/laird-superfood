@@ -46,7 +46,7 @@
           "settings": {
             "title": "FREE SHIPPING",
             "announcement_url": "shopify://collections/all",
-            "content": "<p>FREE SHIPPING ON YOUR FIRST ORDER <strong>| SHOP NOW</strong></p>"
+            "content": "<p>FREE SHIPPING ON ORDERS OVER $70</p>"
           }
         }
       },
