@@ -28,6 +28,15 @@
   {% if line_index == null %}
     {{- block.shopify_attributes -}}
   {% endif %}
+  {% comment %}
+    Cart Rebuild: component-cart-quantity-selector.js otherwise recalculates +/- disabled state
+    off min/max on every change, ignoring the disabled attributes below (which only apply on
+    first render) - this tells it to keep both buttons disabled regardless (gift-with-purchase
+    line items).
+  {% endcomment %}
+  {% if line_index != null and can_update_quantity == false %}
+    data-quantity-locked
+  {% endif %}
   ref="quantitySelectors[]"
 >
   <button
