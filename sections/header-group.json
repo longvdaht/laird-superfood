@@ -34,11 +34,10 @@
         },
         "text_a9JJq9": {
           "type": "text",
-          "disabled": true,
           "settings": {
-            "title": "20% OFF - ENDS TODAY!",
-            "announcement_url": "shopify://collections/all",
-            "content": "<p><strong>20% OFF</strong> <strong>SITEWIDE</strong> - ENDS TODAY!</p>"
+            "title": "PUMPKIN SPICE IS BACK | SHOP NOW",
+            "announcement_url": "shopify://collections/pumpkin-spice",
+            "content": "<p>PUMPKIN SPICE IS BACK |<strong> SHOP NOW</strong></p>"
           }
         },
         "text_JAD4Dd": {
