@@ -34,6 +34,7 @@
         },
         "text_a9JJq9": {
           "type": "text",
+          "disabled": true,
           "settings": {
             "title": "20% OFF - ENDS TODAY!",
             "announcement_url": "shopify://collections/all",
