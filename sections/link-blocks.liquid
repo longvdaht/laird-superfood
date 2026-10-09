@@ -35,6 +35,10 @@
 
 {% style %}
   {% if section.settings.enable_sticky %}
+    body main {
+      overflow-x: clip;
+    }
+
     #shopify-section-{{ section.id }} {
       position: sticky;
       top: calc(var(--header-height, 0px) - 1px);
