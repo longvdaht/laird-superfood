@@ -34,6 +34,14 @@
 {% endif %}
 
 {% style %}
+  {% if section.settings.enable_sticky %}
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: calc(var(--header-height, 0px) - 1px);
+      z-index: calc(var(--layer-sticky, 8) - 1);
+    }
+  {% endif %}
+
   #LinkBlocks-{{ section.id }} {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -137,6 +145,12 @@
 {
   "name": "Link blocks",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky",
+      "default": true
+    },
     {
       "type": "select",
       "id": "alignment",
