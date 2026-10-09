@@ -184,15 +184,6 @@
         "disabled": false,
         "settings": {}
       },
-      "12090905205488370668": {
-        "type": "shopify://apps/expertvoice/blocks/ev-app-embed-theme-updater/72220bb7-008d-4628-98a7-15da652b51dd",
-        "disabled": true,
-        "settings": {
-          "selector": "",
-          "theme": "light",
-          "currency_formatting": "symbol_only"
-        }
-      },
       "14339172867238703359": {
         "type": "shopify://apps/yotpo-product-reviews/blocks/reviews_tab/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
         "disabled": false,
@@ -204,6 +195,15 @@
         "type": "shopify://apps/black-crow-ai-that-delivers/blocks/blackcrow_ai_script/3e73f597-cb71-47a1-8a06-0c931482ecd2",
         "disabled": false,
         "settings": {}
+      },
+      "12090905205488370668": {
+        "type": "shopify://apps/expertvoice/blocks/ev-app-embed-theme-updater/72220bb7-008d-4628-98a7-15da652b51dd",
+        "disabled": false,
+        "settings": {
+          "selector": "",
+          "theme": "light",
+          "currency_formatting": "symbol_only"
+        }
       }
     },
     "color_schemes": {
