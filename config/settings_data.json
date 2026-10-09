@@ -198,7 +198,7 @@
       },
       "12090905205488370668": {
         "type": "shopify://apps/expertvoice/blocks/ev-app-embed-theme-updater/72220bb7-008d-4628-98a7-15da652b51dd",
-        "disabled": false,
+        "disabled": true,
         "settings": {
           "selector": "",
           "theme": "light",
