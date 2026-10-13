@@ -311,6 +311,10 @@ export default class VariantPicker extends Component {
     }
 
     morph(main, newMain);
+
+    // Inline scripts in the new main are never run by the morph, so anything they set up on page
+    // load (the Recharge purchase options proxy) listens for this to set itself up again.
+    document.dispatchEvent(new CustomEvent('product:main-morphed'));
   }
 
   /**

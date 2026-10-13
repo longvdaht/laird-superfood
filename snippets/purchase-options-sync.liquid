@@ -4,6 +4,11 @@
   hides the app widget, moves our markup into its place and proxies every selection into the
   widget shadow DOM. Also keeps the add to cart label in sync.
 
+  Picking a flavor that is another product of a combined listing morphs the whole <main>, which
+  puts the widget back on screen and our fieldset back where Liquid rendered it, and never runs
+  this script again. So every listener is delegated from the document and registered once, and
+  the part that touches the DOM (boot) runs again on 'product:main-morphed'.
+
   Accepts:
   - root_selector: CSS selector of the product section root, e.g. '.new-product-information'
   - show_price_in_button: pass false to keep the add to cart label as Liquid rendered it.
@@ -14,8 +19,14 @@
   (() => {
     const ROOT_SELECTOR = {{ root_selector | default: '.new-product-information' | json }};
     const SHOW_PRICE_IN_BUTTON = {{ show_price_in_button | json }} !== false;
+    const VARIANT_RADIO_SELECTOR = '.variant-picker input[type="radio"][data-variant-id]';
 
-    const priceMapCache = new WeakMap();
+    // Reset on every boot: after a morph the same fieldset node can carry another product's prices.
+    let priceMapCache = new WeakMap();
+
+    const getSection = () => document.querySelector(ROOT_SELECTOR);
+    const getWidget = () => getSection()?.querySelector('recharge-subscription-widget') || null;
+    const getPoEls = () => document.querySelectorAll('.new-purchase-options');
 
     const getPriceMap = (poEl) => {
       if (!poEl) return null;
@@ -39,7 +50,7 @@
     const readVariantPrices = (sectionEl, poEl) => {
       if (!sectionEl) return null;
 
-      const checked = sectionEl.querySelector('.variant-picker input[type="radio"][data-variant-id]:checked');
+      const checked = sectionEl.querySelector(`${VARIANT_RADIO_SELECTOR}:checked`);
       if (checked && checked.hasAttribute('data-variant-price-text')) {
         return {
           regular: checked.getAttribute('data-variant-price-text') || '',
@@ -66,172 +77,226 @@
       };
     };
 
+    const roundPrice = (priceStr) => {
+      if (!priceStr) return priceStr;
+      return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
+    };
+
+    // Only write when the value actually changes: these nodes sit inside the subtree the
+    // add to cart label observes, and an unconditional write feeds that observer forever.
+    const setText = (el, text) => {
+      if (el.textContent !== text) el.textContent = text;
+    };
+
+    // --- Recharge widget proxy ---
+
+    // Our fieldset is on the page before the widget has hydrated, so a selection can be
+    // made against a shadow root that does not exist yet. Hold the latest one and replay
+    // it once the widget is there, rather than dropping it on the floor. The widget is looked
+    // up on every attempt, since a morph can hand us a new one.
+    let pendingPurchaseOption = null;
+    let pendingPlanId = null;
+
+    const flushPending = () => {
+      const s1 = getWidget()?.shadowRoot;
+      if (s1 && pendingPurchaseOption !== null) {
+        const radio = s1.querySelector(`input[name="purchaseOption"][value="${pendingPurchaseOption}"]`);
+        if (radio) {
+          if (!radio.checked) radio.click();
+          pendingPurchaseOption = null;
+        }
+      }
+      const s2 = s1?.querySelector('rc-selling-plans')?.shadowRoot;
+      if (s2 && pendingPlanId !== null) {
+        const radio = s2.querySelector(`input[value="${pendingPlanId}"]`);
+        if (radio) {
+          if (!radio.checked) radio.click();
+          pendingPlanId = null;
+        }
+      }
+      return pendingPurchaseOption === null && pendingPlanId === null;
+    };
+
+    let flushTimer = null;
+    const scheduleFlush = () => {
+      if (flushPending()) return;
+      if (flushTimer) return;
+      const startedAt = Date.now();
+      flushTimer = setInterval(() => {
+        if (flushPending() || Date.now() - startedAt > 10000) {
+          clearInterval(flushTimer);
+          flushTimer = null;
+        }
+      }, 100);
+    };
+
+    const syncFrequency = (planId) => {
+      pendingPlanId = planId;
+      scheduleFlush();
+    };
+
+    const syncPurchaseOption = (value) => {
+      pendingPurchaseOption = value;
+      scheduleFlush();
+    };
+
+    const updateSubscribeBody = (poEl) => {
+      const checked = poEl.querySelector('.new-po-radio-input:checked');
+      const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
+      if (checked && subscribeBody) subscribeBody.style.display = checked.value === 'subscription' ? '' : 'none';
+    };
+
+    const updatePrices = () => {
+      const sectionEl = getSection();
+
+      getPoEls().forEach((poEl) => {
+        const prices = readVariantPrices(sectionEl, poEl);
+        if (!prices) return;
+
+        const regularText  = roundPrice(prices.regular);
+        const compareText  = roundPrice(prices.compare);
+        const subText      = roundPrice(prices.sub || prices.regular);
+        const hasCompare   = compareText !== '';
+        // What the variant costs without a subscription. Only the pickers and price maps
+        // that know about automatic discounts carry it, so fall back to the one-time price.
+        const subCompareText = roundPrice(prices.subCompare) || regularText;
+
+        poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
+          setText(el, subCompareText);
+          el.style.display = '';
+        });
+        poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
+          setText(el, subText);
+        });
+
+        poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
+          setText(el, compareText);
+          el.style.display = hasCompare ? '' : 'none';
+        });
+        poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
+          setText(el, regularText);
+        });
+      });
+    };
+
     // Returns false when the widget has not been parsed yet, so the caller can try again.
     const initPurchaseOptions = () => {
-      const sectionEl = document.querySelector(ROOT_SELECTOR);
-      if (!sectionEl) return false;
-
-      const rcWidget = sectionEl.querySelector('recharge-subscription-widget');
+      const rcWidget = getWidget();
       if (!rcWidget) return false;
 
-      const poEls = document.querySelectorAll('.new-purchase-options');
+      const poEls = getPoEls();
       if (!poEls.length) return false;
 
       poEls.forEach((poEl) => {
-        if (poEl.dataset.poReady === 'true') return;
-        poEl.dataset.poReady = 'true';
-
-        const getRcShadow = () => rcWidget.shadowRoot;
-        const getRcPlansShadow = () => {
-          const s1 = getRcShadow();
-          if (!s1) return null;
-          const rcPlans = s1.querySelector('rc-selling-plans');
-          return rcPlans ? rcPlans.shadowRoot : null;
-        };
-
-        // Our fieldset is on the page before the widget has hydrated, so a selection can be
-        // made against a shadow root that does not exist yet. Hold the latest one and replay
-        // it once the widget is there, rather than dropping it on the floor.
-        let pendingPurchaseOption = null;
-        let pendingPlanId = null;
-
-        const flushPending = () => {
-          const s1 = getRcShadow();
-          if (s1 && pendingPurchaseOption !== null) {
-            const radio = s1.querySelector(`input[name="purchaseOption"][value="${pendingPurchaseOption}"]`);
-            if (radio) {
-              if (!radio.checked) radio.click();
-              pendingPurchaseOption = null;
-            }
-          }
-          const s2 = getRcPlansShadow();
-          if (s2 && pendingPlanId !== null) {
-            const radio = s2.querySelector(`input[value="${pendingPlanId}"]`);
-            if (radio) {
-              if (!radio.checked) radio.click();
-              pendingPlanId = null;
-            }
-          }
-          return pendingPurchaseOption === null && pendingPlanId === null;
-        };
-
-        let flushTimer = null;
-        const scheduleFlush = () => {
-          if (flushPending()) return;
-          if (flushTimer) return;
-          const startedAt = Date.now();
-          flushTimer = setInterval(() => {
-            if (flushPending() || Date.now() - startedAt > 10000) {
-              clearInterval(flushTimer);
-              flushTimer = null;
-            }
-          }, 100);
-        };
-
-        const syncFrequency = (planId) => {
-          pendingPlanId = planId;
-          scheduleFlush();
-        };
-
-        const syncPurchaseOption = (value) => {
-          pendingPurchaseOption = value;
-          scheduleFlush();
-        };
-
-        rcWidget.parentNode.insertBefore(poEl, rcWidget);
+        if (poEl.nextElementSibling !== rcWidget) rcWidget.parentNode.insertBefore(poEl, rcWidget);
         rcWidget.style.setProperty('display', 'none', 'important');
         poEl.style.display = '';
 
+        updateSubscribeBody(poEl);
+
+        // Tell the widget, which may be a fresh one, what our fieldset says.
+        const checked = poEl.querySelector('.new-po-radio-input:checked');
+        if (checked) syncPurchaseOption(checked.value);
         const freqSelect = poEl.querySelector('.new-po-frequency-select');
-        if (freqSelect) {
-          freqSelect.addEventListener('change', () => syncFrequency(freqSelect.value));
-          if (freqSelect.value) syncFrequency(freqSelect.value);
-        }
-
-        poEl.querySelectorAll('.new-po-radio-input').forEach((radio) => {
-          radio.addEventListener('change', () => {
-            if (radio.checked) {
-              syncPurchaseOption(radio.value);
-              const subscribeBody = poEl.querySelector('.new-po-option--subscribe .new-po-option__body');
-              if (subscribeBody) subscribeBody.style.display = radio.value === 'subscription' ? '' : 'none';
-            }
-          });
-        });
-
-        const seeMoreBtn = poEl.querySelector('.new-po-see-more');
-        const extraList  = poEl.querySelector('.new-po-benefits-extra');
-        if (seeMoreBtn && extraList) {
-          // Labels come from the section settings, so a merchant can reword them.
-          const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
-          const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
-          seeMoreBtn.addEventListener('click', () => {
-            const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
-            seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
-            if (!expanded) {
-              extraList.removeAttribute('hidden');
-              seeMoreBtn.textContent = lessLabel;
-            } else {
-              extraList.setAttribute('hidden', '');
-              seeMoreBtn.textContent = moreLabel;
-            }
-          });
-        }
-
-        const roundPrice = (priceStr) => {
-          if (!priceStr) return priceStr;
-          return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
-        };
-
-        // Only write when the value actually changes: these nodes sit inside the subtree the
-        // add to cart label observes, and an unconditional write feeds that observer forever.
-        const setText = (el, text) => {
-          if (el.textContent !== text) el.textContent = text;
-        };
-
-        const updatePrices = () => {
-          const prices = readVariantPrices(sectionEl, poEl);
-          if (!prices) return;
-
-          const regularText  = roundPrice(prices.regular);
-          const compareText  = roundPrice(prices.compare);
-          const subText      = roundPrice(prices.sub || prices.regular);
-          const hasCompare   = compareText !== '';
-          // What the variant costs without a subscription. Only the pickers and price maps
-          // that know about automatic discounts carry it, so fall back to the one-time price.
-          const subCompareText = roundPrice(prices.subCompare) || regularText;
-
-          poEl.querySelectorAll('[data-po-compare-price]').forEach((el) => {
-            setText(el, subCompareText);
-            el.style.display = '';
-          });
-          poEl.querySelectorAll('[data-po-sub-price]').forEach((el) => {
-            setText(el, subText);
-          });
-
-          poEl.querySelectorAll('[data-po-onetime-compare-price]').forEach((el) => {
-            setText(el, compareText);
-            el.style.display = hasCompare ? '' : 'none';
-          });
-          poEl.querySelectorAll('[data-po-onetime-price]').forEach((el) => {
-            setText(el, regularText);
-          });
-        };
-
-        updatePrices();
-
-        sectionEl.addEventListener('change', (e) => {
-          if (e.target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
-            updatePrices();
-          }
-        });
-
-        sectionEl.querySelector('.variant-picker')?.addEventListener('variant:update', () => {
-          updatePrices();
-        });
+        if (freqSelect?.value) syncFrequency(freqSelect.value);
       });
 
+      updatePrices();
       return true;
     };
+
+    document.addEventListener('change', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const poEl = target.closest('.new-purchase-options');
+      if (poEl) {
+        if (target.matches('.new-po-frequency-select')) syncFrequency(target.value);
+        if (target.matches('.new-po-radio-input') && target.checked) {
+          syncPurchaseOption(target.value);
+          updateSubscribeBody(poEl);
+        }
+        return;
+      }
+
+      if (target.matches(VARIANT_RADIO_SELECTOR) && target.closest(ROOT_SELECTOR)) updatePrices();
+    });
+
+    document.addEventListener('variant:update', (event) => {
+      if (event.target instanceof Element && event.target.closest(`${ROOT_SELECTOR} .variant-picker`)) updatePrices();
+    });
+
+    document.addEventListener('click', (event) => {
+      const seeMoreBtn = event.target instanceof Element ? event.target.closest('.new-po-see-more') : null;
+      if (!seeMoreBtn) return;
+
+      const extraList = seeMoreBtn.closest('.new-purchase-options')?.querySelector('.new-po-benefits-extra');
+      if (!extraList) return;
+
+      // Labels come from the section settings, so a merchant can reword them.
+      const moreLabel = seeMoreBtn.dataset.poSeeMoreLabel || 'See more subscription benefits +';
+      const lessLabel = seeMoreBtn.dataset.poSeeLessLabel || 'See fewer benefits -';
+      const expanded = seeMoreBtn.getAttribute('aria-expanded') === 'true';
+      seeMoreBtn.setAttribute('aria-expanded', String(!expanded));
+      if (!expanded) {
+        extraList.removeAttribute('hidden');
+        seeMoreBtn.textContent = lessLabel;
+      } else {
+        extraList.setAttribute('hidden', '');
+        seeMoreBtn.textContent = moreLabel;
+      }
+    });
+
+    // --- Add to cart label ---
+
+    const isSubscriptionSelected = (sectionEl) => {
+      const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
+      return subRadio ? subRadio.checked : false;
+    };
+
+    const getSelectedVariantPriceText = (sectionEl) => {
+      const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
+      const prices = readVariantPrices(sectionEl, poEl);
+      if (!prices) return null;
+
+      if (isSubscriptionSelected(sectionEl) && prices.sub) return roundPrice(prices.sub);
+
+      return roundPrice(prices.regular) || null;
+    };
+
+    const updateAddToCartText = (sectionEl) => {
+      const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
+      if (!textEl) return false;
+
+      const priceText = getSelectedVariantPriceText(sectionEl);
+      if (!priceText) return true;
+
+      // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
+      const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
+      const label = `${baseLabel} - ${priceText}`;
+
+      // The observer below watches this very element, so writing the same text again would
+      // wake it, which would write again: an endless 60ms loop of DOM work for the life of
+      // the page. Write only on a real change and the loop settles after one pass.
+      if (textEl.textContent !== label) textEl.textContent = label;
+      return true;
+    };
+
+    const syncingSections = new WeakSet();
+    const safeSync = (sectionEl) => {
+      if (!sectionEl || syncingSections.has(sectionEl)) return;
+      syncingSections.add(sectionEl);
+      updateAddToCartText(sectionEl);
+      setTimeout(() => {
+        updateAddToCartText(sectionEl);
+        syncingSections.delete(sectionEl);
+      }, 60);
+    };
+
+    const syncAllLabels = () => document.querySelectorAll(ROOT_SELECTOR).forEach(safeSync);
+
+    // A morph can swap the form for a new node, which the old observer no longer sees.
+    const observedForms = new WeakSet();
 
     // Returns false while the buy buttons have not been parsed yet.
     const initAddToCartLabel = () => {
@@ -241,98 +306,21 @@
       const sections = document.querySelectorAll(ROOT_SELECTOR);
       if (!sections.length) return false;
 
-      const isSubscriptionSelected = (sectionEl) => {
-        const subRadio = sectionEl.querySelector('.new-po-radio-input[value="subscription"]');
-        return subRadio ? subRadio.checked : false;
-      };
-
-      const roundPriceCart = (priceStr) => {
-        if (!priceStr) return priceStr;
-        return priceStr.replace(/\$(\d+)\.00$/, '$$$1');
-      };
-
-      const getSelectedVariantPriceText = (sectionEl) => {
-        const poEl = sectionEl.querySelector('.new-purchase-options') || document.querySelector('.new-purchase-options');
-        const prices = readVariantPrices(sectionEl, poEl);
-        if (!prices) return null;
-
-        if (isSubscriptionSelected(sectionEl) && prices.sub) return roundPriceCart(prices.sub);
-
-        return roundPriceCart(prices.regular) || null;
-      };
-
-      const updateAddToCartText = (sectionEl) => {
-        const textEl = sectionEl.querySelector('.add-to-cart-button .add-to-cart-text__content');
-        if (!textEl) return false;
-
-        const priceText = getSelectedVariantPriceText(sectionEl);
-        if (!priceText) return true;
-
-        // Whatever Liquid put on the button, so a pre-order product keeps saying "Pre-Order".
-        const baseLabel = textEl.dataset.baseLabel || 'Add To Cart';
-        const label = `${baseLabel} - ${priceText}`;
-
-        // The observer below watches this very element, so writing the same text again would
-        // wake it, which would write again: an endless 60ms loop of DOM work for the life of
-        // the page. Write only on a real change and the loop settles after one pass.
-        if (textEl.textContent !== label) textEl.textContent = label;
-        return true;
-      };
-
       let attached = true;
 
       sections.forEach((sectionEl) => {
-        if (sectionEl.dataset.poLabelReady === 'true') return;
-
         if (!updateAddToCartText(sectionEl)) {
           attached = false;
           return;
         }
-        sectionEl.dataset.poLabelReady = 'true';
-
-        let isSyncing = false;
-        const safeSync = () => {
-          if (isSyncing) return;
-          isSyncing = true;
-          updateAddToCartText(sectionEl);
-          setTimeout(() => {
-            updateAddToCartText(sectionEl);
-            isSyncing = false;
-          }, 60);
-        };
-
-        sectionEl.addEventListener('change', (event) => {
-          const target = event.target;
-          if (!(target instanceof HTMLInputElement)) return;
-          if (target.matches('.variant-picker input[type="radio"][data-variant-id]')) {
-            safeSync();
-          }
-          if (target.matches('.new-po-radio-input')) {
-            safeSync();
-          }
-        });
-
-        sectionEl.addEventListener('click', (event) => {
-          const target = event.target;
-          if (!(target instanceof Element)) return;
-          if (target.closest('.variant-option__button-label')) {
-            safeSync();
-          }
-        });
-
-        document.addEventListener('change', (event) => {
-          const target = event.target;
-          if (target instanceof HTMLInputElement && target.matches('.new-po-radio-input')) {
-            safeSync();
-          }
-        });
 
         const formContainer = sectionEl.querySelector('product-form-component');
-        if (formContainer) {
+        if (formContainer && !observedForms.has(formContainer)) {
+          observedForms.add(formContainer);
           // Only the parts of the form that can carry a new variant id, rather than every
           // attribute of every node: the button's own text lives in here too, and watching it
           // means every label we write comes straight back as another mutation.
-          const observer = new MutationObserver(() => safeSync());
+          const observer = new MutationObserver(() => safeSync(formContainer.closest(ROOT_SELECTOR)));
           observer.observe(formContainer, { childList: true, subtree: true });
         }
       });
@@ -340,12 +328,32 @@
       return attached;
     };
 
+    if (SHOW_PRICE_IN_BUTTON) {
+      document.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement)) return;
+        if (target.matches('.new-po-radio-input')) {
+          syncAllLabels();
+        } else if (target.matches(VARIANT_RADIO_SELECTOR)) {
+          safeSync(target.closest(ROOT_SELECTOR));
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof Element && target.closest('.variant-option__button-label')) {
+          safeSync(target.closest(ROOT_SELECTOR));
+        }
+      });
+    }
+
     // This snippet renders after the product details blocks, so the widget, the variant picker
     // and the buy buttons are already in the document: doing the work now puts the fieldset on
     // screen in the first paint, instead of after every app embed in the head has run and
     // DOMContentLoaded has finally fired. The listener below is only a fallback for a template
     // that renders the blocks later.
     const boot = () => {
+      priceMapCache = new WeakMap();
       const a = initPurchaseOptions();
       const b = initAddToCartLabel();
       return a && b;
@@ -379,6 +387,9 @@
       },
       true
     );
+
+    // A flavor of a combined listing loads another product into <main> (variant-picker.js).
+    document.addEventListener('product:main-morphed', boot);
 
     if (!boot() && document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot, { once: true });
