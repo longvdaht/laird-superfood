@@ -1,5 +1,4 @@
 import { Component } from '@theme/component';
-import { ThemeEvents } from '@theme/events';
 
 /**
  * @typedef {object} FlavorCarouselRefs
@@ -16,60 +15,71 @@ import { ThemeEvents } from '@theme/events';
  * combined listing navigation and unavailable states keep being handled by `variant-picker.js`.
  * Swiper (loaded globally in `snippets/scripts.liquid`) only handles the sliding.
  *
- * Selecting a variant re-renders the section, which wipes the classes and inline styles Swiper
- * relies on, so the carousel is rebuilt whenever that happens: `variant:update` covers a variant
- * of the same product, `data-selected-value` covers a combined listing loading another product.
+ * Selecting a variant or another product of a combined listing morphs the picker (or the whole
+ * main content), which wipes the classes and inline styles Swiper relies on, including the
+ * `swiper-initialized` class `.swiper` needs to be visible (see `assets/custom.css`). Rather than
+ * relying on the event that caused it, the carousel watches its own markup and rebuilds itself
+ * whenever Swiper is no longer mounted on it.
  *
  * @extends Component<FlavorCarouselRefs>
  */
 class FlavorCarousel extends Component {
-  static observedAttributes = ['data-selected-value'];
-
   /** @type {any} */
   #swiper = null;
 
   /** @type {number | null} */
   #rebuildFrame = null;
 
+  #markupObserver = new MutationObserver((mutations) => {
+    const markupChanged = mutations.some(
+      (mutation) => mutation.type === 'childList' || mutation.target === this.#carousel
+    );
+
+    if (markupChanged) this.#rebuild();
+  });
+
   connectedCallback() {
     super.connectedCallback();
 
-    document.addEventListener(ThemeEvents.variantUpdate, this.#onVariantUpdate);
     this.#init();
+    this.#markupObserver.observe(this, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    document.removeEventListener(ThemeEvents.variantUpdate, this.#onVariantUpdate);
+    this.#markupObserver.disconnect();
     if (this.#rebuildFrame) cancelAnimationFrame(this.#rebuildFrame);
     this.#destroy();
   }
 
   /**
-   * @param {string} name - The name of the attribute.
-   * @param {string | null} oldValue - The previous value.
-   * @param {string | null} newValue - The new value.
+   * The swiper container, queried directly since `refs` are only refreshed asynchronously after a morph.
+   *
+   * @returns {HTMLElement | null} The swiper container.
    */
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name !== 'data-selected-value' || oldValue === null || oldValue === newValue) return;
-
-    this.#rebuild();
+  get #carousel() {
+    return this.querySelector('[ref="carousel"]');
   }
 
   /**
-   * Rebuilds the carousel when a variant of this product was selected.
+   * Whether Swiper is still mounted on the current swiper container.
    *
-   * @param {Event} event - The variant update event.
+   * @returns {boolean}
    */
-  #onVariantUpdate = (event) => {
-    if (!(event.target instanceof Node) || !event.target.contains(this)) return;
+  get #isMounted() {
+    const carousel = this.#carousel;
 
-    this.#rebuild();
-  };
+    return Boolean(this.#swiper && this.#swiper.el === carousel && carousel?.classList.contains('swiper-initialized'));
+  }
 
   #init() {
-    const { carousel, previous, next } = this.refs;
+    const carousel = this.#carousel;
 
     if (!carousel || this.#swiper) return;
 
@@ -90,8 +100,8 @@ class FlavorCarousel extends Component {
       observeParents: true,
       initialSlide: this.#initialSlide,
       navigation: {
-        prevEl: previous,
-        nextEl: next,
+        prevEl: this.querySelector('[ref="previous"]'),
+        nextEl: this.querySelector('[ref="next"]'),
         disabledClass: 'flavor-carousel__arrow--disabled',
         lockClass: 'flavor-carousel__arrow--locked',
       },
@@ -117,13 +127,16 @@ class FlavorCarousel extends Component {
   }
 
   /**
-   * Rebuilds the carousel on the next frame, once the section has finished re-rendering.
+   * Rebuilds the carousel on the next frame, once the markup has finished re-rendering, unless
+   * Swiper is still mounted on it.
    */
   #rebuild() {
     if (this.#rebuildFrame) cancelAnimationFrame(this.#rebuildFrame);
 
     this.#rebuildFrame = requestAnimationFrame(() => {
       this.#rebuildFrame = null;
+
+      if (this.#isMounted || !(/** @type {any} */ (window).Swiper)) return;
 
       const initialSlide = this.#initialSlide;
 
