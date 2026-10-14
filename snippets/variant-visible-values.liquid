@@ -9,7 +9,8 @@
 
   The value to select is the one Shopify selected when it is still visible, and the first visible
   value otherwise, so that hiding the selected value does not leave the option with nothing
-  checked. When a misconfiguration would hide every value, all of them are kept, so the product
+  checked. In a combined listing the selected value is the product being viewed and is always
+  kept. When a misconfiguration would hide every value, all of them are kept, so the product
   never becomes impossible to buy.
 
   @param {object} product_resource - The product the option belongs to.
@@ -29,6 +30,17 @@
   assign selected_id = ''
   assign all_ids = ''
   assign option_key = 'option' | append: product_option.position
+
+  # In a combined listing the selected value is the product being viewed, so it is never hidden:
+  # a rule hiding its only variant (a size, say) would otherwise take the product off its own
+  # picker and check another product's value instead.
+  assign is_combined_listing = false
+  for product_option_value in product_option.values
+    if product_option_value.selected == false and product_option_value.product_url != blank
+      assign is_combined_listing = true
+      break
+    endif
+  endfor
 
   for product_option_value in product_option.values
     assign value_id = product_option_value.id | append: ''
@@ -61,6 +73,10 @@
       if option_value_hidden != blank
         assign is_hidden = true
       endif
+    endif
+
+    if is_combined_listing and product_option_value.selected
+      assign is_hidden = false
     endif
 
     unless is_hidden
