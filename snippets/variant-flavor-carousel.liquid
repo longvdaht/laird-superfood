@@ -288,6 +288,7 @@
     width: 19%;
     height: auto;
     padding-top: 12px;
+    padding-left: 8px;
   }
 
   .flavor-option {
@@ -377,6 +378,12 @@
       var(--color-gray-1) calc(50% + 1px),
       transparent calc(50% + 1px)
     );
+  }
+
+  @media screen and (min-width: 420px) {
+    .flavor-carousel__swiper .swiper-slide {
+      padding-left: 0;
+    }
   }
 
   @media screen and (min-width: 750px) {
