@@ -632,6 +632,8 @@
 {% stylesheet %}
   .dialog-zoomed-gallery {
     cursor: zoom-out;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .dialog--preloading {
@@ -656,6 +658,7 @@
       overflow-x: hidden;
       scroll-behavior: smooth;
       height: 100%;
+      max-width: 95%;
 
       &::-webkit-scrollbar {
         display: none;

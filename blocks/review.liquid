@@ -1,13 +1,28 @@
 {% liquid
   assign block_settings = block.settings
   assign product = closest.product
-  assign rating = product.metafields.reviews.rating.value.rating
-  assign scale_max = product.metafields.reviews.rating.value.scale_max
-  assign rating_count = product.metafields.reviews.rating_count
+  # Prioritize Yotpo provider metafields over the shared Shopify built-in reviews metafields
+  assign yotpo_rating = product.metafields.yotpo.reviews_average.value | default: product.metafields.yotpo.reviews_average
+  assign yotpo_count = product.metafields.yotpo.reviews_count.value | default: product.metafields.yotpo.reviews_count
+
+  if yotpo_rating != blank and yotpo_rating != 0 and yotpo_rating != '0'
+    assign rating = yotpo_rating | plus: 0
+    assign scale_max = 5
+    assign rating_count = yotpo_count | plus: 0
+  else
+    assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value | default: product.metafields.reviews.rating
+    assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
+    assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  endif
 
   if product.handle == 'organic-prebiotic-daily-greens'
     assign source_product = all_products['organic-prebiotic-daily-greens-14-8oz']
-    assign rating_count = source_product.metafields.reviews.rating_count
+    assign source_yotpo_count = source_product.metafields.yotpo.reviews_count.value | default: source_product.metafields.yotpo.reviews_count
+    if source_yotpo_count != blank and source_yotpo_count != 0 and source_yotpo_count != '0'
+      assign rating_count = source_yotpo_count | plus: 0
+    elsif source_product.metafields.reviews.rating_count != blank
+      assign rating_count = source_product.metafields.reviews.rating_count
+    endif
   endif
 
   if request.visual_preview_mode and product == blank
@@ -18,7 +33,7 @@
   endif
 -%}
 
-{%- if rating != blank -%}
+{%- if settings.show_product_card_rating != false and rating != blank -%}
   {% liquid
     assign star_count_rating = scale_max
     assign decimal_rating = 0

@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "search": {
       "type": "search-header",
@@ -138,6 +138,18 @@
               },
               "blocks": {}
             },
+            "review_Q7mmcG": {
+              "type": "review",
+              "name": "t:names.product_review_stars",
+              "settings": {
+                "stars_style": "shaded",
+                "show_number": true,
+                "rating_color": "primary",
+                "type_preset": "paragraph",
+                "alignment": "left"
+              },
+              "blocks": {}
+            },
             "price_fYkUgG": {
               "type": "price",
               "name": "t:names.product_price",
@@ -165,6 +177,7 @@
           "block_order": [
             "product_card_gallery_cFExAi",
             "product_title_j7qXTx",
+            "review_Q7mmcG",
             "price_fYkUgG"
           ]
         }

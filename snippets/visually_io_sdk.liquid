@@ -1,8 +1,8 @@
 <!--LOOMI SDK-->
 <!--DO NOT EDIT-->
-<link rel="preconnect"  href="https://live.visually-io.com/" crossorigin data-em-disable>
-<link rel="dns-prefetch" href="https://live.visually-io.com/" data-em-disable>
-<script>
+<link rel="preconnect"  href="https://live.visually-io.com" crossorigin data-em-disable>
+<link rel="dns-prefetch" href="https://live.visually-io.com" data-em-disable>
+<script type="text/javascript" data-em-disable data-vsly>
     (()=> {
         const env = 2;
         var store = "{{ shop.permanent_domain }}";
@@ -40,11 +40,12 @@
         window.loomi_ctx.blockingConcent = {{shop.metafields.visually_io.blocking_concent.value}};
         {{shop.metafields.visually_io.ttl.value}}
         {{shop.metafields.visually_io.embedded_tests.value}}
-        {{shop.metafields.visually_io.app_bootstrap.value}}
     })()
 </script>
-<link href="{{shop.metafields.visually_io.sdk_url.value | default: 'https://assets.visually.io/vsly/lib/visually.js'}}" rel="preload" as="script" data-em-disable>
-<script rel="prefetch" type="text/javascript" src="{{shop.metafields.visually_io.sdk_url.value | default: 'https://assets.visually.io/vsly/lib/visually.js'}}" data-em-disable></script>
-<link href="https://assets.visually.io/widgets/vsly-preact.min.js" rel="preload" as="script" data-em-disable>
-<script data-vsly="preact2" type="text/javascript" src="https://assets.visually.io/widgets/vsly-preact.min.js" data-em-disable></script>
+<script type="text/javascript" data-em-disable>
+    {{shop.metafields.visually_io.iife_sdk1.value}}{{shop.metafields.visually_io.iife_sdk2.value}}
+</script>
+<script data-vsly="preact2" type="text/javascript" data-em-disable>
+    {{shop.metafields.visually_io.preact.value}}
+</script>
 <!--LOOMI SDK-->
