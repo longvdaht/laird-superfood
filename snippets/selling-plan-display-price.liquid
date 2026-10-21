@@ -1,0 +1,29 @@
+{%- doc -%}
+  Outputs the price a selling plan allocation shows on the PDP, in cents. A value, not markup,
+  so a caller can capture it and format it however it already formats prices:
+
+    {%- capture sub_price -%}
+      {%- render 'selling-plan-display-price', allocation: variant.selling_plan_allocations.first -%}
+    {%- endcapture -%}
+
+  Shopify rounds a percentage selling plan to the nearest cent (25% off $9.99 is $7.49), while
+  the automatic discount price beside it is rounded up (auto-discount-price-value.liquid shows
+  $7.50). Recomputing the plan price the same way keeps the two rows agreeing. Display only:
+  checkout still charges allocation.price.
+
+  @param {selling_plan_allocation} allocation - The allocation to price
+{%- enddoc -%}
+
+{%- liquid
+  assign base = allocation.compare_at_price | default: allocation.price
+  assign adjustment = allocation.selling_plan.price_adjustments.first
+  assign display_price = allocation.price
+
+  if adjustment.value_type == 'percentage' and base > 0
+    assign remaining = 100.0 | minus: adjustment.value
+    # round: 4 first, so float noise (749.0000001) is not pushed up a whole cent.
+    assign display_price = base | times: remaining | divided_by: 100.0 | round: 4 | ceil
+  endif
+
+  echo display_price
+-%}

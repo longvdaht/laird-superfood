@@ -211,7 +211,10 @@
                       assign vfd_sub_price = nil
                       assign vfd_sub_compare = var_for_discount.price
                       if var_for_discount.selling_plan_allocations.size > 0
-                        assign vfd_sub_price = var_for_discount.selling_plan_allocations.first.price
+                        capture vfd_sub_price
+                          render 'selling-plan-display-price', allocation: var_for_discount.selling_plan_allocations.first
+                        endcapture
+                        assign vfd_sub_price = vfd_sub_price | strip | plus: 0
                         if vfd_auto_sub != blank
                           assign vfd_sub_price = vfd_auto_sub | plus: 0
                           assign vfd_sub_compare = vfd_price

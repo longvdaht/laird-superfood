@@ -5,6 +5,7 @@
 
   assign pov_discount_pct = 0
   assign pov_sub_price    = nil
+  assign pov_sub_alloc    = nil
 
   unless pov_first_group == blank
     assign pov_first_plan = pov_first_group.selling_plans | first
@@ -24,13 +25,19 @@
       for pov_alloc in pov_variant.selling_plan_allocations
         unless pov_first_plan == blank
           if pov_alloc.selling_plan_id == pov_first_plan.id
-            assign pov_sub_price = pov_alloc.price
+            assign pov_sub_alloc = pov_alloc
           endif
         endunless
       endfor
-      if pov_sub_price == nil and pov_variant.selling_plan_allocations.size > 0
-        assign pov_sub_price = pov_variant.selling_plan_allocations.first.price
+      if pov_sub_alloc == nil and pov_variant.selling_plan_allocations.size > 0
+        assign pov_sub_alloc = pov_variant.selling_plan_allocations.first
       endif
+      unless pov_sub_alloc == nil
+        capture pov_sub_price
+          render 'selling-plan-display-price', allocation: pov_sub_alloc
+        endcapture
+        assign pov_sub_price = pov_sub_price | strip | plus: 0
+      endunless
     endunless
   endunless
 
@@ -286,7 +293,10 @@
 
           assign pov_v_sub = nil
           if pov_v.selling_plan_allocations.size > 0
-            assign pov_v_sub = pov_v.selling_plan_allocations.first.price
+            capture pov_v_sub
+              render 'selling-plan-display-price', allocation: pov_v.selling_plan_allocations.first
+            endcapture
+            assign pov_v_sub = pov_v_sub | strip | plus: 0
           endif
         -%}
         {%- capture pov_v_auto -%}
