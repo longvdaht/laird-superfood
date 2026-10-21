@@ -13,7 +13,19 @@
       "image": "greens-info.jpg"
     }
   }
+
+  Badges come from the product metafield custom.whats_inside_badges, a list of
+  metaobject references (type "badge": image + label). When it is empty the three
+  legacy badges are shown, so products that were never filled in keep their old look.
 {% endcomment %}
+
+{%- liquid
+  assign has_badges = false
+  for badge in product.metafields.custom.whats_inside_badges.value
+    assign has_badges = true
+    break
+  endfor
+-%}
 
 <div class="content-wrapper">
   <div class="column">
@@ -32,31 +44,45 @@
     {% endif %}
 
     <div class="icon-wrapper">
-      {% unless product.metafields.custom.hide_non_gmo_badge == true %}
+      {% if has_badges %}
+        {% for badge in product.metafields.custom.whats_inside_badges.value %}
+          {% if badge.image != blank %}
+            <img
+              src="{{ badge.image | image_url: width: 240 }}"
+              alt="{{ badge.label | default: badge.image.alt | escape }}"
+              loading="lazy"
+              width="60"
+              height="60"
+            >
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% unless product.metafields.custom.hide_non_gmo_badge == true %}
+          <img
+            src="https://cdn.shopify.com/s/files/1/1308/3049/files/non-gmo_b32e4a3f-69ed-41d6-b389-67b07ccc437b.png?v=1744133644"
+            alt="Non GMO Verified"
+            loading="lazy"
+            width="110"
+            height="auto"
+          >
+        {% endunless %}
+
         <img
-          src="https://cdn.shopify.com/s/files/1/1308/3049/files/non-gmo_b32e4a3f-69ed-41d6-b389-67b07ccc437b.png?v=1744133644"
-          alt="Non GMO Verified"
+          src="https://cdn.shopify.com/s/files/1/1308/3049/files/gluten-free.png?v=1727117923"
+          alt="Gluten Free"
           loading="lazy"
-          width="110"
-          height="auto"
+          width="60"
+          height="60"
         >
-      {% endunless %}
 
-      <img
-        src="https://cdn.shopify.com/s/files/1/1308/3049/files/gluten-free.png?v=1727117923"
-        alt="Gluten Free"
-        loading="lazy"
-        width="60"
-        height="60"
-      >
-
-      <img
-        src="https://cdn.shopify.com/s/files/1/1308/3049/files/soy-free.png?v=1727117923"
-        alt="Soy Free"
-        loading="lazy"
-        width="60"
-        height="60"
-      >
+        <img
+          src="https://cdn.shopify.com/s/files/1/1308/3049/files/soy-free.png?v=1727117923"
+          alt="Soy Free"
+          loading="lazy"
+          width="60"
+          height="60"
+        >
+      {% endif %}
     </div>
   </div>
 
