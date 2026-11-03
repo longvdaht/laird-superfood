@@ -1,7 +1,16 @@
 // Toggle Rebuy's Custom Cart
-document.querySelector('.header-actions__cart-icon').addEventListener('click', function(e) {
+// Delegated click; if Rebuy SmartCart isn't initialised yet, wait for it then open (no dead click)
+document.addEventListener('click', function(e) {
+    if (!e.target.closest || !e.target.closest('.header-actions__cart-icon')) return;
     e.preventDefault();
-    Rebuy.SmartCart.show();
+    var tries = 0;
+    (function openCart() {
+        if (window.Rebuy && Rebuy.SmartCart && typeof Rebuy.SmartCart.show === 'function') {
+            Rebuy.SmartCart.show();
+        } else if (tries++ < 100) {
+            setTimeout(openCart, 100);
+        }
+    })();
 });
 
 // Custom EBD Mobile Menu Open
