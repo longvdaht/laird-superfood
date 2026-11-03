@@ -62,10 +62,19 @@ class CartGwpWatcherComponent extends Component {
       const cart = knownCart ?? (await fetchCart());
       if (!cart) return;
 
-      const giftLineIndex = cart.items.findIndex(
+      const giftLine = cart.items.find(
         (item) => item.properties && item.properties._gwp === "true",
       );
-      const qualifies = cart.total_price >= threshold;
+      const giftLineIndex = giftLine ? cart.items.indexOf(giftLine) : -1;
+
+      // Exclude the gift's own line price from the threshold check - the Buy X Get Y discount
+      // in Admin is keyed off the same "spend $X" condition, so when a quantity decrease drops
+      // real spend below threshold, Shopify's discount stops applying and the gift's line price
+      // reverts to full price in the same response. Without subtracting it here, that reverted
+      // price pushes cart.total_price back over threshold, qualifies stays true, and the gift
+      // never gets removed - a self-sustaining stuck state.
+      const nonGiftTotal = cart.total_price - (giftLine?.final_line_price ?? 0);
+      const qualifies = nonGiftTotal >= threshold;
 
       if (qualifies && giftLineIndex === -1) {
         await this.#addGift(defaultVariantId);
