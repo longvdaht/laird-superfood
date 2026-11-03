@@ -1,0 +1,215 @@
+{%- doc -%}
+  Renders a "Subscribe & Save" toggle for a cart line item that has selling plans available.
+  Toggling calls cart-subscribe-toggle-component (assets/cart-subscribe-toggle.js), which removes
+  the current line and re-adds it with/without a selling_plan (the only approach guaranteed to
+  work through the documented Cart API, /cart/change.js alone does not reliably switch selling
+  plans off).
+
+  @param {object} item - The cart line item.
+  @param {boolean} can_update_quantity - Passed straight through to cart-line-item-controls.
+  @param {boolean} can_remove - Passed straight through to cart-line-item-controls.
+{%- enddoc -%}
+
+{%- liquid
+  # Some stores (ReCharge-driven ones especially) split each delivery frequency into its own
+  # selling_plan_group instead of putting multiple plans inside one group. Using just
+  # .selling_plan_groups.first.selling_plans would then always see a single plan and hide the
+  # frequency dropdown even when the product really has several - so flatten every plan across
+  # every group into one list instead.
+  assign selling_plan_groups = item.product.selling_plan_groups
+  assign all_plans = selling_plan_groups.first.selling_plans
+  for group in selling_plan_groups offset: 1
+    assign all_plans = all_plans | concat: group.selling_plans
+  endfor
+
+  assign current_plan = item.selling_plan_allocation.selling_plan
+  assign first_plan = all_plans.first
+  assign discount_adjustment = first_plan.price_adjustments.first
+
+  assign discount_text = 'Subscribe & Save'
+  if discount_adjustment.value_type == 'percentage'
+    assign discount_text = discount_text | append: ' ' | append: discount_adjustment.value | append: '%'
+  endif
+-%}
+
+<cart-subscribe-toggle-component
+  class="cart-subscribe-toggle"
+  data-line="{{ item.index | plus: 1 }}"
+  data-variant-id="{{ item.variant.id }}"
+  data-quantity="{{ item.quantity }}"
+  data-default-plan-id="{{ first_plan.id }}"
+>
+  <label class="cart-subscribe-toggle__label">
+    <input
+      type="checkbox"
+      class="cart-subscribe-toggle__input"
+      ref="checkbox"
+      on:change="/toggle"
+      {% if current_plan %}
+        checked
+      {% endif %}
+    >
+    <span
+      class="cart-subscribe-toggle__pill"
+      aria-hidden="true"
+    ></span>
+    <span class="cart-subscribe-toggle__text">{{ discount_text }}</span>
+  </label>
+
+  <div class="cart-items__bottom-row">
+    {% if all_plans.size > 1 %}
+      <div
+        class="cart-subscribe-toggle__frequency-wrap"
+        ref="frequencyWrap"
+        {% unless current_plan %}
+          hidden
+        {% endunless %}
+      >
+        <select
+          class="cart-subscribe-toggle__frequency"
+          ref="frequencySelect"
+          on:change="/changeFrequency"
+        >
+          {% for plan in all_plans %}
+            <option
+              value="{{ plan.id }}"
+              {% if plan.id == current_plan.id %}
+                selected
+              {% endif %}
+            >
+              {{ plan.name }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <span
+          class="cart-subscribe-toggle__frequency-arrow"
+          aria-hidden="true"
+        >
+          {{- 'icon-select-arrow.svg' | inline_asset_content -}}
+        </span>
+      </div>
+    {% endif %}
+
+    {% render 'cart-line-item-controls', item: item, can_update_quantity: can_update_quantity, can_remove: can_remove %}
+  </div>
+</cart-subscribe-toggle-component>
+
+{% stylesheet %}
+  .cart-subscribe-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-2xs);
+  }
+
+  .cart-subscribe-toggle__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    cursor: pointer;
+    font-size: var(--cart-font-size--sm);
+    margin: 6px 0;
+  }
+
+  .cart-subscribe-toggle__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .cart-subscribe-toggle__pill {
+    display: inline-block;
+    width: 2.4em;
+    height: 1.3em;
+    border-radius: 999px;
+    background-color: var(--color-gray-3);
+    position: relative;
+    transition: background-color var(--animation-speed) var(--animation-easing);
+    flex-shrink: 0;
+  }
+
+  .cart-subscribe-toggle__pill::after {
+    content: '';
+    position: absolute;
+    top: 0.185em;
+    left: 0.185em;
+    width: 0.92em;
+    height: 0.92em;
+    border-radius: 50%;
+    background-color: var(--color-background);
+    transition: transform var(--animation-speed) var(--animation-easing);
+  }
+
+  .cart-subscribe-toggle__input:checked + .cart-subscribe-toggle__pill {
+    background-color: var(--color-red-2);
+  }
+
+  .cart-subscribe-toggle__input:checked + .cart-subscribe-toggle__pill::after {
+    transform: translateX(1em);
+  }
+
+  .cart-subscribe-toggle__input:focus-visible + .cart-subscribe-toggle__pill {
+    outline: 2px solid var(--color-red-2);
+    outline-offset: 2px;
+  }
+
+  .cart-subscribe-toggle__text {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--color-navy);
+  }
+
+  .cart-subscribe-toggle__frequency-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 26px;
+    border: var(--style-border-width) solid var(--color-gray-2);
+  }
+
+  .cart-subscribe-toggle__frequency {
+    appearance: none;
+    border: none;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    padding-inline: 15px 42px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0;
+    vertical-align: middle;
+    color: var(--color-black-1);
+  }
+
+  .cart-subscribe-toggle__frequency:focus-visible {
+    outline: none;
+  }
+
+  .cart-subscribe-toggle__frequency-arrow {
+    position: absolute;
+    top: 4px;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--padding-lg);
+    border-inline-start: var(--style-border-width) solid var(--color-gray-4);
+    color: var(--color-gray-4);
+    pointer-events: none;
+    height: 16px;
+  }
+
+  .cart-subscribe-toggle__frequency-arrow svg {
+    width: 9px;
+    height: 5px;
+  }
+
+  .cart-subscribe-toggle[data-disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+{% endstylesheet %}

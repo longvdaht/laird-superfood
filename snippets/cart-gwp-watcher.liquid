@@ -1,0 +1,43 @@
+{%- doc -%}
+  Invisible component that watches the cart subtotal against the GWP threshold and automatically
+  adds/removes the gift line item. All the behavior lives in assets/cart-gwp.js, this snippet only
+  passes down the settings it needs as data attributes.
+
+  @param {object} [settings] - An object containing theme settings.
+  @param {boolean} [settings.cart_gwp_enable]
+  @param {number} [settings.cart_gwp_threshold] - dollars
+  @param {object} [settings.cart_gwp_product]
+  @param {string} [settings.cart_gwp_variant_id] - Pins the gift to one specific variant instead
+  of the product's default, when set. Accepts either a bare numeric variant ID or a pasted Admin
+  variant URL (e.g. https://admin.shopify.com/store/x/products/123/variants/456) - only the last
+  numeric path segment is actually used, so either form works.
+{%- enddoc -%}
+
+{%- if settings.cart_gwp_enable and settings.cart_gwp_product != blank -%}
+  {%- liquid
+    assign default_variant = settings.cart_gwp_product.selected_or_first_available_variant
+
+    assign gwp_variant_input = settings.cart_gwp_variant_id | strip
+    if gwp_variant_input != blank
+      assign gwp_variant_id = gwp_variant_input | split: '?' | first | split: '/' | last | times: 1
+
+      for variant in settings.cart_gwp_product.variants
+        if variant.id == gwp_variant_id
+          assign default_variant = variant
+          break
+        endif
+      endfor
+    endif
+
+    assign threshold_cents = settings.cart_gwp_threshold | times: 100
+  -%}
+
+  {% if default_variant %}
+    {% comment %} cart-gwp.js is already loaded by cart-products.liquid, unconditionally. {% endcomment %}
+    <cart-gwp-watcher-component
+      hidden
+      data-threshold="{{ threshold_cents }}"
+      data-default-variant-id="{{ default_variant.id }}"
+    ></cart-gwp-watcher-component>
+  {% endif %}
+{%- endif -%}
