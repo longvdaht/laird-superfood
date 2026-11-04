@@ -2,6 +2,25 @@ import { Component } from "@theme/component";
 import { CartUpdateEvent, ThemeEvents } from "@theme/events";
 import { fetchConfig } from "@theme/utilities";
 
+/** Upper bound on back-to-back re-checks within one check, so a misbehaving cart can't loop forever. */
+const MAX_CHECK_PASSES = 5;
+
+// Shared by EVERY watcher instance, not kept per instance: morphSection can recreate the element
+// while the old instance's check is still running, and two checks that overlap would both see "no
+// gift yet" and both add one.
+let checking = false;
+let recheck = false;
+
+/**
+ * Whether something is a full cart object (as /cart.js and /cart/change.js return), as opposed
+ * to e.g. the single line item /cart/add.js returns.
+ * @param {any} value
+ * @returns {boolean}
+ */
+function isCart(value) {
+  return Boolean(value) && Array.isArray(value.items) && typeof value.total_price === "number";
+}
+
 /**
  * Invisible watcher that auto-adds/removes the gift-with-purchase (GWP) line item based on the
  * cart subtotal vs a threshold set in theme settings. Runs after every cart update.
@@ -15,8 +34,6 @@ import { fetchConfig } from "@theme/utilities";
  * @extends {Component}
  */
 class CartGwpWatcherComponent extends Component {
-  #busy = false;
-
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
@@ -35,20 +52,27 @@ class CartGwpWatcherComponent extends Component {
    * @param {Event} event
    */
   #handleCartUpdate = (event) => {
-    this.#check(/** @type {CartUpdateEvent} */ (event).detail?.data?.cart);
+    // Skip the update this watcher dispatches itself after adding/removing the gift: that
+    // correction is exactly what it just verified, so re-checking it only costs another /cart.js.
+    if (/** @type {CustomEvent} */ (event).detail?.data?.source === "cart-gwp-watcher") return;
+    this.#check();
   };
 
-  /**
-   * @param {any} [knownCart] - The cart object, when the event that triggered this already has
-   * a fresh one (e.g. from /cart/change.js) - skips this component's own /cart.js fetch, which
-   * is otherwise 1 of the 2 sequential requests a correction can take.
-   */
-  async #check(knownCart) {
-    if (this.#busy) return;
+  async #check() {
+    if (checking) {
+      // An update landed while a check was already running (the shopper changed subscription
+      // and quantity back to back, or this check's own add/remove just fired its update). What
+      // that check is looking at may already be stale, so look again once it is done, instead
+      // of dropping this update.
+      recheck = true;
+      return;
+    }
 
     const threshold = Number(this.dataset.threshold);
     const defaultVariantId = this.dataset.defaultVariantId;
     if (!threshold || !defaultVariantId) return;
+
+    checking = true;
 
     // Checking (and possibly correcting) the gift can take 1-2 sequential fetches, which can
     // easily run long enough to outlast a fixed settle delay elsewhere (see
@@ -58,33 +82,79 @@ class CartGwpWatcherComponent extends Component {
       new CustomEvent("cart:gwp-correcting", { detail: { pending: true } }),
     );
 
+    let exhausted = false;
+
     try {
-      const cart = knownCart ?? (await fetchCart());
-      if (!cart) return;
+      for (let pass = 0; pass < MAX_CHECK_PASSES; pass++) {
+        recheck = false;
 
-      const giftLine = cart.items.find(
-        (item) => item.properties && item.properties._gwp === "true",
-      );
-      const giftLineIndex = giftLine ? cart.items.indexOf(giftLine) : -1;
+        // Always decide from the cart as the server has it right now, never from the cart an
+        // event happens to carry: with more than one request in flight, responses arrive out of
+        // order, and an older snapshot has no gift yet - acting on it adds the gift a second time.
+        const cart = await fetchCart();
+        if (!cart) break;
 
-      // Exclude the gift's own line price from the threshold check - the Buy X Get Y discount
-      // in Admin is keyed off the same "spend $X" condition, so when a quantity decrease drops
-      // real spend below threshold, Shopify's discount stops applying and the gift's line price
-      // reverts to full price in the same response. Without subtracting it here, that reverted
-      // price pushes cart.total_price back over threshold, qualifies stays true, and the gift
-      // never gets removed - a self-sustaining stuck state.
-      const nonGiftTotal = cart.total_price - (giftLine?.final_line_price ?? 0);
-      const qualifies = nonGiftTotal >= threshold;
+        await this.#correct(cart, threshold, defaultVariantId);
+        if (!recheck) break;
 
-      if (qualifies && giftLineIndex === -1) {
-        await this.#addGift(defaultVariantId);
-      } else if (!qualifies && giftLineIndex !== -1) {
-        await this.#removeGift(giftLineIndex + 1);
+        // Still being told the cart changed after the last allowed pass.
+        if (pass === MAX_CHECK_PASSES - 1) exhausted = true;
       }
+    } catch (error) {
+      console.error(error);
     } finally {
+      checking = false;
+      recheck = false;
       document.dispatchEvent(
         new CustomEvent("cart:gwp-correcting", { detail: { pending: false } }),
       );
+    }
+
+    // The cap only exists so a runaway can't loop forever; it must not leave the last change
+    // unchecked, so pick it up again shortly instead of dropping it.
+    if (exhausted) setTimeout(() => this.#check(), 250);
+  }
+
+  /**
+   * Makes the cart hold exactly one gift line while it qualifies, and none when it doesn't.
+   * @param {any} cart
+   * @param {number} threshold
+   * @param {string} defaultVariantId
+   */
+  async #correct(cart, threshold, defaultVariantId) {
+    /** @type {{ line: number, quantity: number, price: number }[]} */
+    const giftLines = [];
+    cart.items.forEach((/** @type {any} */ item, /** @type {number} */ index) => {
+      if (item.properties && item.properties._gwp === "true") {
+        giftLines.push({
+          line: index + 1,
+          quantity: item.quantity,
+          price: item.final_line_price,
+        });
+      }
+    });
+
+    // Exclude the gift lines' own price from the threshold check - the Buy X Get Y discount
+    // in Admin is keyed off the same "spend $X" condition, so when a quantity decrease drops
+    // real spend below threshold, Shopify's discount stops applying and the gift's line price
+    // reverts to full price in the same response. Without subtracting it here, that reverted
+    // price pushes cart.total_price back over threshold, qualifies stays true, and the gift
+    // never gets removed - a self-sustaining stuck state.
+    const giftTotal = giftLines.reduce((sum, gift) => sum + gift.price, 0);
+    const qualifies = cart.total_price - giftTotal >= threshold;
+
+    if (!qualifies) {
+      await this.#changeLines(
+        giftLines.map(({ line }) => ({ line, quantity: 0 })),
+      );
+    } else if (giftLines.length === 0) {
+      await this.#addGift(defaultVariantId);
+    } else {
+      // Exactly one unit, ever. A second gift line can only come from a race, so heal it.
+      const [keep, ...extras] = giftLines;
+      const changes = extras.map(({ line }) => ({ line, quantity: 0 }));
+      if (keep && keep.quantity !== 1) changes.push({ line: keep.line, quantity: 1 });
+      await this.#changeLines(changes);
     }
   }
 
@@ -92,7 +162,6 @@ class CartGwpWatcherComponent extends Component {
    * @param {string} variantId
    */
   async #addGift(variantId) {
-    this.#busy = true;
     try {
       const body = JSON.stringify({
         id: variantId,
@@ -116,32 +185,43 @@ class CartGwpWatcherComponent extends Component {
       this.#dispatchUpdate(data.sections);
     } catch (error) {
       console.error(error);
-    } finally {
-      this.#busy = false;
     }
   }
 
   /**
-   * @param {number} line
+   * Applies line changes one after the other, highest line number first so the lower ones stay
+   * valid while earlier lines are removed, then tells the cart to refresh once.
+   * @param {{ line: number, quantity: number }[]} changes
    */
-  async #removeGift(line) {
-    this.#busy = true;
+  async #changeLines(changes) {
+    if (changes.length === 0) return;
+
     try {
-      const body = JSON.stringify({
-        line,
-        quantity: 0,
-        sections: getCartSectionIds(),
-      });
-      const response = await fetch(
-        Theme.routes.cart_change_url,
-        fetchConfig("json", { body }),
-      );
-      const data = await response.json();
+      /** @type {any} */
+      let data = null;
+
+      for (const { line, quantity } of [...changes].sort((a, b) => b.line - a.line)) {
+        const body = JSON.stringify({
+          line,
+          quantity,
+          sections: getCartSectionIds(),
+          sections_url: window.location.pathname,
+        });
+        const response = await fetch(
+          Theme.routes.cart_change_url,
+          fetchConfig("json", { body }),
+        );
+        data = await response.json();
+
+        if (data.status || data.errors) {
+          console.error("cart-gwp: could not change gift line", data);
+          return;
+        }
+      }
+
       this.#dispatchUpdate(data.sections);
     } catch (error) {
       console.error(error);
-    } finally {
-      this.#busy = false;
     }
   }
 
@@ -225,7 +305,8 @@ async function fetchCart() {
     const response = await fetch("/cart.js", {
       headers: { Accept: "application/json" },
     });
-    return await response.json();
+    const cart = await response.json();
+    return isCart(cart) ? cart : null;
   } catch (error) {
     console.error(error);
     return null;

@@ -131,6 +131,15 @@
               %}
               <tr
                 role="row"
+                {% comment %}
+                  Cart Rebuild: morphSection's default row-matching falls back to a node's `id`
+                  attribute (see getNodeKey in morph.js) - without one, reordering rows (e.g. the
+                  subscribe toggle's remove+re-add, which moves a line to the end) is seen as
+                  position-based content changes instead of a move, causing rows to visually swap
+                  content/position on update. `item.key` is stable across cart updates for the
+                  same line, so using it as the id lets morph correctly detect moves.
+                {% endcomment %}
+                id="CartItem-{{ item.key }}"
                 class="cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}{% if is_gwp %} cart-items__table-row--gwp{% endif %}"
                 ref="cartItemRows[]"
                 data-parent-key="{{ item.parent_relationship.parent.key }}"
@@ -354,38 +363,53 @@
                     </div>
                   {% endif %}
                 </td>
-                <td
-                  class="cart-items__error hidden"
-                  role="cell"
-                  ref="cartItemErrorContainer-{{ item.index | plus: 1 }}"
-                  headers="productInformation"
-                >
-                  <div
-                    class="cart-item__error"
-                    role="alert"
-                  >
-                    <span class="svg-wrapper">
-                      {{- 'icon-error.svg' | inline_asset_content -}}
-                    </span>
-                    <small
-                      class="cart-item__error-text cart-primary-typography"
-                      ref="cartItemError-{{ item.index | plus: 1 }}"
-                    ></small>
-                  </div>
-                </td>
-                {% comment %}
-                  Cart Rebuild, 2026-09: removed the separate line-total price column (was
-                  showing final_line_price, e.g. "$106.40" for qty 7) - duplicated the per-unit
-                  price already shown next to the title above, which is the only price Figma
-                  shows. Grid areas/columns below updated to match (price column dropped).
-                {% endcomment %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </form>
-  {%- endif -%}
+
+
+
+
+
+<td
+  class="cart-items__error hidden"
+  role="cell"
+  ref="cartItemErrorContainer-{{ item.index | plus: 1 }}"
+  headers="productInformation"
+>
+  <div
+    class="cart-item__error"
+    role="alert"
+  >
+    <span class="svg-wrapper">
+      {{- 'icon-error.svg' | inline_asset_content -}}
+    </span>
+    <small
+      class="cart-item__error-text cart-primary-typography"
+      ref="cartItemError-{{ item.index | plus: 1 }}"
+    ></small>
+  </div>
+</td>
+{% comment %}
+  Cart Rebuild, 2026-09: removed the separate line-total price column (was
+  showing final_line_price, e.g. "$106.40" for qty 7) - duplicated the per-unit
+  price already shown next to the title above, which is the only price Figma
+  shows. Grid areas/columns below updated to match (price column dropped).
+{% endcomment %}
+</tr>
+{% endfor %}
+
+
+
+
+
+</tbody>
+</table>
+</div>
+</form>
+{%- endif -%}
+
+
+
+
+
 </div>
 
 {% stylesheet %}
@@ -654,7 +678,7 @@
   }
 
   .cart-items__empty-button {
-    margin-top: 0;
+    margin-top: var(--margin-2xl);
     padding-inline: var(--padding-4xl);
     padding-block: var(--padding-lg);
     border-radius: 0;

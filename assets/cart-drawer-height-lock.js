@@ -50,10 +50,20 @@ document.addEventListener("cart:gwp-correcting", (event) => {
 });
 
 document.addEventListener(ThemeEvents.cartUpdate, () => {
-  document.querySelectorAll(".cart-drawer__items").forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
+  /** @type {HTMLElement[]} */
+  const items = Array.from(document.querySelectorAll(".cart-drawer__items")).filter(
+    (el) => el instanceof HTMLElement,
+  );
 
-    const currentHeight = el.getBoundingClientRect().height;
+  // Read phase: measure every element BEFORE writing to any of them. Reading el2's height
+  // after writing el1's min-height forces the browser to recompute layout synchronously right
+  // then (the "Forced reflow" violation seen live, ~80ms of jank right as the morph above this
+  // already dirtied layout) instead of batching it with the next natural layout pass.
+  const heights = items.map((el) => el.getBoundingClientRect().height);
+
+  // Write phase.
+  items.forEach((el, i) => {
+    const currentHeight = heights[i] ?? 0;
     const maxHeight = maxHeights.get(el) ?? currentHeight;
 
     if (currentHeight > maxHeight) {
@@ -67,9 +77,19 @@ document.addEventListener(ThemeEvents.cartUpdate, () => {
 });
 
 function settle() {
-  document.querySelectorAll(".cart-drawer__items").forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
+  /** @type {HTMLElement[]} */
+  const items = Array.from(document.querySelectorAll(".cart-drawer__items")).filter(
+    (el) => el instanceof HTMLElement,
+  );
+
+  // Clear every element's min-height first (write phase)...
+  items.forEach((el) => {
     el.style.minHeight = "";
+  });
+
+  // ...then measure the real settled height in its own pass, so this read can't force a
+  // reflow against a write to a DIFFERENT element still pending from the loop above.
+  items.forEach((el) => {
     maxHeights.set(el, el.getBoundingClientRect().height);
   });
 }
