@@ -123,6 +123,42 @@
     fetchpriority="low"
   ></script>
 {% endif %}
+{% comment %}
+  Cart drawer component scripts live in <head> on purpose, NOT inside the header/cart markup.
+  On live, Nostra (edge cache) serves a cached copy of the page, then patches personalized parts
+  (cart-drawer__inner, cart-icon, cart-bubble, dialog attributes...) by copying them from the origin
+  document with JS. <script> tags inserted that way never execute, so the copies inside
+  cart-products.liquid / cart-cross-sell.liquid were dead whenever the cart wasn't empty on page load: cart-gwp-watcher-component,
+  cart-cross-sell-carousel and cart-subscribe-toggle-component were never defined (no gift
+  auto-add, carousel arrows dead, subscribe toggle not updating). Not reproducible on
+  `shopify theme dev` or a preview_theme_id link, which both bypass Nostra. Do not move these back
+  into the header section: a copy placed right before <cart-drawer-component> was tried and also
+  ended up injected by Nostra instead of parsed. NOTE: after a deploy, Nostra's cache must be purged
+  or it keeps serving HTML without these tags. The tags in those snippets stay for the cart page;
+  a module URL only ever executes once, so the duplicates are harmless.
+{% endcomment %}
+{%- assign cart_drawer_scripts = 'component-cart-items.js,component-cart-quantity-selector.js,cart-subscribe-toggle.js,cart-gwp.js,cart-remove-loading.js,cart-drawer-height-lock.js,cart-drawer-dialog-sync.js' | split: ',' -%}
+{%- for script_name in cart_drawer_scripts -%}
+  <script
+    src="{{ script_name | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endfor -%}
+{%- if settings.cart_cross_sell_enable -%}
+  <script
+    src="{{ 'cart-cross-sell.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endif -%}
+{%- if settings.show_cart_note -%}
+  <script
+    src="{{ 'cart-note.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endif -%}
 <script
   src="{{ 'dialog.js' | asset_url }}"
   type="module"
