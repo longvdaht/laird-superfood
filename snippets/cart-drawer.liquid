@@ -12,40 +12,7 @@
   fetchpriority="low"
 ></script>
 
-{% comment %}
-  The drawer's own component scripts are loaded HERE, outside div.cart-drawer__inner, on purpose.
-  On live, Nostra (edge cache) serves a cached empty-cart page, then patches personalized parts by
-  copying `div.cart-drawer__inner` innerHTML from the origin document. <script> tags inserted via
-  innerHTML never execute, so the copies inside cart-products.liquid / cart-cross-sell.liquid were
-  dead whenever the cart wasn't empty on page load: cart-gwp-watcher-component,
-  cart-cross-sell-carousel and cart-subscribe-toggle-component were never defined (no gift
-  auto-add, carousel arrows dead, subscribe toggle not updating). Not reproducible on
-  `shopify theme dev`, which bypasses Nostra. The tags in those snippets stay for the cart page;
-  a module URL only ever executes once, so the duplicates are harmless.
-{% endcomment %}
-{%- assign cart_drawer_scripts = 'component-cart-items.js,component-cart-quantity-selector.js,cart-subscribe-toggle.js,cart-gwp.js,cart-remove-loading.js,cart-drawer-height-lock.js,cart-drawer-dialog-sync.js' | split: ',' -%}
-{%- for script_name in cart_drawer_scripts -%}
-  <script
-    src="{{ script_name | asset_url }}"
-    type="module"
-    fetchpriority="low"
-  ></script>
-{%- endfor -%}
-{%- if settings.cart_cross_sell_enable -%}
-  <script
-    src="{{ 'cart-cross-sell.js' | asset_url }}"
-    type="module"
-    fetchpriority="low"
-  ></script>
-{%- endif -%}
-{%- if settings.show_cart_note -%}
-  <script
-    src="{{ 'cart-note.js' | asset_url }}"
-    type="module"
-    fetchpriority="low"
-  ></script>
-{%- endif -%}
-
+{% comment %} Cart component scripts are loaded in <head> - see snippets/scripts.liquid. {% endcomment %}
 <cart-drawer-component
   {% comment %}
     Cart Rebuild: `cart-drawer--empty` used to live on the <dialog> itself, kept in sync by
