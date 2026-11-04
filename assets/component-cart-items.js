@@ -36,6 +36,7 @@ class CartItemsComponent extends Component {
   // freshly (re)connected watcher - clear the flag and re-enable early, even while an earlier,
   // still-running correction (e.g. one deliberately held open) hasn't actually finished yet.
   #gwpCorrectingCount = 0;
+  #externalBusyCount = 0;
 
   connectedCallback() {
     super.connectedCallback();
@@ -323,8 +324,25 @@ class CartItemsComponent extends Component {
    * cause of the gift occasionally being left stale after a burst of rapid clicks).
    */
   #enableCartItems() {
-    if (this.#gwpCorrectingCount > 0) return;
+    if (this.#gwpCorrectingCount > 0 || this.#externalBusyCount > 0) return;
     this.classList.remove("cart-items-disabled");
+  }
+
+  /**
+   * Lets another cart component (the subscribe toggle) keep the cart disabled while ITS request
+   * is in flight, the same way a quantity update does - otherwise a quantity click made right
+   * after a toggle starts a second request while the first is still running, and the two
+   * responses arrive in whatever order the network feels like.
+   */
+  holdBusy() {
+    this.#externalBusyCount++;
+    this.#disableCartItems();
+  }
+
+  /** Pairs with holdBusy(); the cart only re-enables once nothing else is holding it. */
+  releaseBusy() {
+    this.#externalBusyCount = Math.max(0, this.#externalBusyCount - 1);
+    this.#enableCartItems();
   }
 
   /**

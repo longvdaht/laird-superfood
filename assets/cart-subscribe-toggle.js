@@ -6,9 +6,10 @@ import { ThemeEvents, CartUpdateEvent } from '@theme/events';
  * Toggles a cart line item between one-time purchase and a subscription (selling plan), and lets
  * the shopper change delivery frequency while subscribed.
  *
- * The public Cart API does not reliably support switching a line's selling_plan back to "none"
- * through /cart/change.js alone, so this removes the line and re-adds it, which is the
- * documented, guaranteed-correct path.
+ * The line is changed in place with a single /cart/change.js call (`selling_plan` set to a plan
+ * id, another plan id, or null for one-time), which keeps it exactly where it is in the cart.
+ * This used to remove the line and add it back, but Shopify puts a newly added line at the TOP
+ * of the cart, so every edit made the item jump up above the others.
  *
  * @typedef {object} Refs
  * @property {HTMLInputElement} checkbox
@@ -50,35 +51,29 @@ class CartSubscribeToggleComponent extends Component {
     this.setAttribute('data-disabled', '');
 
     const line = Number(this.dataset.line);
-    const variantId = this.dataset.variantId;
     const quantity = Number(this.dataset.quantity) || 1;
-    const sections = getCartSectionIds();
+
+    // Keep the whole cart disabled until this request (and the gift check it triggers) is done.
+    const cartItems = this.closest('cart-items-component');
+    if (cartItems && 'holdBusy' in cartItems && typeof cartItems.holdBusy === 'function') cartItems.holdBusy();
 
     try {
-      // Step 1: clear the current line.
-      await fetch(
-        Theme.routes.cart_change_url,
-        fetchConfig('json', { body: JSON.stringify({ line, quantity: 0 }) })
-      );
-
-      // Step 2: re-add with (or without) the selling plan.
-      /** @type {Record<string, unknown>} */
-      const addBody = {
-        id: variantId,
-        quantity,
-        sections,
-        sections_url: window.location.pathname,
-      };
-      if (sellingPlanId) addBody.selling_plan = sellingPlanId;
-
       const response = await fetch(
-        Theme.routes.cart_add_url,
-        fetchConfig('json', { body: JSON.stringify(addBody) })
+        Theme.routes.cart_change_url,
+        fetchConfig('json', {
+          body: JSON.stringify({
+            line,
+            quantity,
+            selling_plan: sellingPlanId,
+            sections: getCartSectionIds(),
+            sections_url: window.location.pathname,
+          }),
+        })
       );
       const data = await response.json();
 
-      if (data.status) {
-        console.error('cart-subscribe-toggle: add failed', data);
+      if (data.status || data.errors) {
+        console.error('cart-subscribe-toggle: change failed', data);
         return;
       }
 
@@ -86,8 +81,7 @@ class CartSubscribeToggleComponent extends Component {
         new CartUpdateEvent({}, this.id || 'cart-subscribe-toggle', {
           source: 'cart-subscribe-toggle',
           sections: data.sections,
-          // Lets cart-gwp.js skip its own /cart.js fetch (see component-cart-items.js for the
-          // same pattern) - shortens the window before it knows whether a correction is needed.
+          // /cart/change.js answers with the whole cart, so cart-gwp.js can skip its own fetch.
           cart: data,
         })
       );
@@ -95,6 +89,7 @@ class CartSubscribeToggleComponent extends Component {
       console.error(error);
     } finally {
       this.removeAttribute('data-disabled');
+      if (cartItems && 'releaseBusy' in cartItems && typeof cartItems.releaseBusy === 'function') cartItems.releaseBusy();
     }
   }
 }
