@@ -131,6 +131,15 @@
               %}
               <tr
                 role="row"
+                {% comment %}
+                  Cart Rebuild: morphSection's default row-matching falls back to a node's `id`
+                  attribute (see getNodeKey in morph.js) - without one, reordering rows (e.g. the
+                  subscribe toggle's remove+re-add, which moves a line to the end) is seen as
+                  position-based content changes instead of a move, causing rows to visually swap
+                  content/position on update. `item.key` is stable across cart updates for the
+                  same line, so using it as the id lets morph correctly detect moves.
+                {% endcomment %}
+                id="CartItem-{{ item.key }}"
                 class="cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}{% if is_gwp %} cart-items__table-row--gwp{% endif %}"
                 ref="cartItemRows[]"
                 data-parent-key="{{ item.parent_relationship.parent.key }}"
