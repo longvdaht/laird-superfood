@@ -423,7 +423,26 @@ function updateChildren(newNode, oldNode, options) {
       }
     }
 
-    if (oldMatch) {
+    if (oldMatch && containsOpenDialog(oldMatch)) {
+      // Moving a node out of the document and back in drops any modal <dialog> inside it out of
+      // the top layer (the `open` attribute stays, but there is no ::backdrop, it stops being
+      // positioned as a modal, and its CSS animations restart) - that is what made the cart
+      // drawer flash and slide back in, backdrop-less, on every cart update whenever the live
+      // siblings in front of it didn't line up 1:1 with the freshly rendered ones.
+      // So leave this node exactly where it is, and push the old siblings that are standing in
+      // front of it behind it instead; the end result has the same order, and whatever is left
+      // unmatched still gets removed below, just without ever detaching the dialog.
+      const blockers = [];
+      for (let node = oldChild; node && node !== oldMatch; node = node.nextSibling) blockers.push(node);
+      const after = oldMatch.nextSibling;
+      for (const blocker of blockers) oldNode.insertBefore(blocker, after);
+
+      morphed = walk(newChild, oldMatch, options);
+      if (morphed !== oldMatch) {
+        oldNode.replaceChild(morphed, oldMatch);
+        offset++;
+      }
+    } else if (oldMatch) {
       morphed = walk(newChild, oldMatch, options);
       if (morphed !== oldMatch) offset++;
       oldNode.insertBefore(morphed, oldChild);
@@ -431,7 +450,16 @@ function updateChildren(newNode, oldNode, options) {
       // Safe to morph in-place if neither has a key
       morphed = walk(newChild, oldChild, options);
       if (morphed !== oldChild) {
-        oldNode.replaceChild(morphed, oldChild);
+        if (containsOpenDialog(oldChild)) {
+          // Same reasoning as the reorder branch above: replacing this node would throw away the
+          // live modal <dialog> inside it (the replacement is a fresh, closed one), so the cart
+          // would visibly close. Slot the new node in front of it instead - the old node stays
+          // in the document and is still there to be matched against the fresh copy of itself
+          // further along (or removed at the end if the new tree really has no counterpart).
+          oldNode.insertBefore(morphed, oldChild);
+        } else {
+          oldNode.replaceChild(morphed, oldChild);
+        }
         offset++;
       }
     } else {
@@ -440,6 +468,15 @@ function updateChildren(newNode, oldNode, options) {
       offset++;
     }
   }
+}
+
+/**
+ * Whether a node is, or contains, a <dialog> that is currently open
+ * @param {Node} node - The node to check
+ * @returns {boolean}
+ */
+function containsOpenDialog(node) {
+  return node instanceof Element && (node.matches('dialog[open]') || node.querySelector('dialog[open]') !== null);
 }
 
 /**

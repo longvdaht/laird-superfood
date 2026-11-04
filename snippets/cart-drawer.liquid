@@ -13,7 +13,14 @@
 ></script>
 
 <cart-drawer-component
-  class="cart-drawer"
+  {% comment %}
+    Cart Rebuild: `cart-drawer--empty` used to live on the <dialog> itself, kept in sync by
+    assets/cart-drawer-dialog-sync.js. It now sits here instead - a plain ancestor of the dialog
+    - so the existing `.cart-drawer--empty .cart-drawer__heading` etc. descendant selectors (see
+    header-actions.liquid) keep working, and plain morphSection updates it for free: this element
+    has no data-skip-node-update, so no custom JS is needed to keep it in sync any more.
+  {% endcomment %}
+  class="cart-drawer{% if cart.empty? %} cart-drawer--empty{% endif %}"
   {{ block.shopify_attributes }}
   {% if settings.auto_open_cart_drawer %}
     auto-open
@@ -52,13 +59,14 @@
 
       data-skip-node-update stops morph from touching this node's own attributes at all
       (children still morph normally - see the comment on cart-items-component below for the
-      same mechanism). That also freezes `class`/`aria-labelledby`, which legitimately need to
-      keep changing with cart.empty? - assets/cart-drawer-dialog-sync.js handles syncing just
-      those two from the fresh section HTML on every cart update instead, without ever touching
-      `open`.
+      same mechanism). That also freezes `aria-labelledby`, which legitimately needs to keep
+      changing with cart.empty? - assets/cart-drawer-dialog-sync.js handles syncing just that
+      one from the fresh section HTML on every cart update instead, without ever touching `open`.
+      (`class` here is now static - see the cart-drawer--empty comment on <cart-drawer-component>
+      above - so it needs no such syncing at all.)
     {% endcomment %}
     data-skip-node-update
-    class="cart-drawer__dialog dialog-modal dialog-drawer color-{{ settings.drawer_color_scheme }}{% if cart.empty? %} cart-drawer--empty{%endif%}"
+    class="cart-drawer__dialog dialog-modal dialog-drawer color-{{ settings.drawer_color_scheme }}"
     aria-labelledby="{% if cart.empty? %}cart-drawer-heading-empty{% else %}cart-drawer-heading{% endif %}"
     scroll-lock
   >
