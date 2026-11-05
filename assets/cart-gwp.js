@@ -11,6 +11,10 @@ const MAX_CHECK_PASSES = 5;
 let checking = false;
 let recheck = false;
 
+// The cart contents (everything except the gift) the gift was last re-added for, so the "move the
+// gift back to the newest line" step below runs at most once per cart state and can never loop.
+let lastRotationKey = "";
+
 /**
  * Whether something is a full cart object (as /cart.js and /cart/change.js return), as opposed
  * to e.g. the single line item /cart/add.js returns.
@@ -18,7 +22,7 @@ let recheck = false;
  * @returns {boolean}
  */
 function isCart(value) {
-  return Boolean(value) && Array.isArray(value.items) && typeof value.total_price === "number";
+  return Boolean(value) && Array.isArray(value.items) && typeof value.total_price === "number" && typeof value.items_subtotal_price === "number";
 }
 
 /**
@@ -37,6 +41,13 @@ class CartGwpWatcherComponent extends Component {
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
+    // Applying or removing a discount code changes the total (and so whether the cart qualifies)
+    // but announces itself with its own event, not cart:update - without this, the gift was
+    // never re-checked after a code went on or off until the next page load.
+    document.addEventListener(
+      ThemeEvents.discountUpdate,
+      this.#handleCartUpdate,
+    );
     this.#check();
   }
 
@@ -44,6 +55,10 @@ class CartGwpWatcherComponent extends Component {
     super.disconnectedCallback();
     document.removeEventListener(
       ThemeEvents.cartUpdate,
+      this.#handleCartUpdate,
+    );
+    document.removeEventListener(
+      ThemeEvents.discountUpdate,
       this.#handleCartUpdate,
     );
   }
@@ -122,39 +137,77 @@ class CartGwpWatcherComponent extends Component {
    * @param {string} defaultVariantId
    */
   async #correct(cart, threshold, defaultVariantId) {
-    /** @type {{ line: number, quantity: number, price: number }[]} */
+    const giftVariantId = Number(defaultVariantId);
+
+    /** @param {any} item */
+    const isGiftLine = (item) => Boolean(item.properties && item.properties._gwp === "true");
+
+    /** @type {{ line: number, quantity: number }[]} */
     const giftLines = [];
+    let giftChargedTotal = 0;
+    let discountApplied = false;
     cart.items.forEach((/** @type {any} */ item, /** @type {number} */ index) => {
-      if (item.properties && item.properties._gwp === "true") {
-        giftLines.push({
-          line: index + 1,
-          quantity: item.quantity,
-          price: item.final_line_price,
-        });
+      if (isGiftLine(item)) {
+        giftLines.push({ line: index + 1, quantity: item.quantity });
+        giftChargedTotal += item.final_line_price;
+      }
+
+      // Shopify only gives the free unit once the cart really qualifies, so a discounted line of
+      // the gift product is its own confirmation - whichever line it landed on.
+      if (item.variant_id === giftVariantId && item.final_line_price < item.original_line_price) {
+        discountApplied = true;
       }
     });
 
-    // Exclude the gift lines' own price from the threshold check - the Buy X Get Y discount
-    // in Admin is keyed off the same "spend $X" condition, so when a quantity decrease drops
-    // real spend below threshold, Shopify's discount stops applying and the gift's line price
-    // reverts to full price in the same response. Without subtracting it here, that reverted
-    // price pushes cart.total_price back over threshold, qualifies stays true, and the gift
-    // never gets removed - a self-sustaining stuck state.
-    const giftTotal = giftLines.reduce((sum, gift) => sum + gift.price, 0);
-    const qualifies = cart.total_price - giftTotal >= threshold;
+    // What the shopper spends is everything except what the gift itself costs. That keeps the Buy X
+    // Get Y discount from propping itself up: when a quantity decrease drops real spend below the
+    // threshold, Shopify's discount stops applying and the gift's line price reverts to full price
+    // in the same response - left in, that price pushes the subtotal back over the threshold
+    // and the gift never gets removed. A product the shopper bought themselves does count (the
+    // discount counts it too), so adding the gift's own product can earn the gift.
+    // Uses items_subtotal_price (after line discounts such as Subscribe & Save, BEFORE cart-level
+    // codes like MISSYOU30): Shopify checks the Buy X Get Y spend before an order discount, so a
+    // code must not stop a cart that really spent enough from earning the gift.
+    const qualifies = discountApplied || cart.items_subtotal_price - giftChargedTotal >= threshold;
 
     if (!qualifies) {
-      await this.#changeLines(
-        giftLines.map(({ line }) => ({ line, quantity: 0 })),
-      );
-    } else if (giftLines.length === 0) {
+      await this.#changeLines(giftLines.map(({ line }) => ({ line, quantity: 0 })));
+      return;
+    }
+
+    if (giftLines.length === 0) {
       await this.#addGift(defaultVariantId);
-    } else {
-      // Exactly one unit, ever. A second gift line can only come from a race, so heal it.
-      const [keep, ...extras] = giftLines;
-      const changes = extras.map(({ line }) => ({ line, quantity: 0 }));
-      if (keep && keep.quantity !== 1) changes.push({ line: keep.line, quantity: 1 });
+      return;
+    }
+
+    // Exactly one unit, ever. A second gift line can only come from a race, so heal it.
+    const [keep, ...extras] = giftLines;
+    const changes = extras.map(({ line }) => ({ line, quantity: 0 }));
+    if (keep && keep.quantity !== 1) changes.push({ line: keep.line, quantity: 1 });
+    if (changes.length > 0) {
       await this.#changeLines(changes);
+      return;
+    }
+
+    // Shopify gives the free unit to the NEWEST line of the gift variant. If the shopper adds that
+    // same product themselves after the gift is already in the cart, the discount lands on THEIR
+    // line (it shows $0) while the real gift line pays full price. Taking the gift out and adding
+    // it back makes it the newest line again, which moves the discount back onto it.
+    const gift = keep && cart.items[keep.line - 1];
+    const discountOnWrongLine = cart.items.some(
+      (/** @type {any} */ item) =>
+        !isGiftLine(item) && item.variant_id === giftVariantId && item.final_line_price < item.original_line_price,
+    );
+    if (gift && gift.final_line_price > 0 && discountOnWrongLine) {
+      const key = cart.items
+        .filter((/** @type {any} */ item) => !isGiftLine(item))
+        .map((/** @type {any} */ item) => `${item.key}:${item.quantity}`)
+        .join("|");
+      if (key === lastRotationKey) return;
+      lastRotationKey = key;
+
+      await this.#changeLines([{ line: keep.line, quantity: 0 }]);
+      await this.#addGift(defaultVariantId);
     }
   }
 
