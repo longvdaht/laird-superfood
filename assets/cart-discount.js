@@ -33,6 +33,20 @@ class CartDiscount extends Component {
   }
 
   /**
+   * Keeps the cart dimmed and unclickable while this request (and the free gift check that
+   * follows it) is in flight, the same way a quantity change does. Returns the matching release.
+   * @returns {() => void}
+   */
+  #holdCart() {
+    /** @type {any} */
+    const cartItems = this.closest('cart-items-component');
+    if (!cartItems || typeof cartItems.holdBusy !== 'function') return () => {};
+
+    cartItems.holdBusy();
+    return () => cartItems.releaseBusy();
+  }
+
+  /**
    * Handles updates to the cart note.
    * @param {SubmitEvent} event - The submit event on our form.
    */
@@ -51,6 +65,7 @@ class CartDiscount extends Component {
     const discountCodeValue = discountCode.value;
 
     const abortController = this.#createAbortController();
+    const releaseCart = this.#holdCart();
 
     try {
       const existingDiscounts = this.#existingDiscounts();
@@ -112,6 +127,7 @@ class CartDiscount extends Component {
       morphSection(this.dataset.sectionId, newHtml);
     } catch (error) {
     } finally {
+      releaseCart();
       this.#activeFetch = null;
       cartPerformance.measureFromEvent('discount-update:user-action', event);
     }
@@ -147,6 +163,7 @@ class CartDiscount extends Component {
     existingDiscounts.splice(index, 1);
 
     const abortController = this.#createAbortController();
+    const releaseCart = this.#holdCart();
 
     try {
       const config = fetchConfig('json', {
@@ -164,6 +181,7 @@ class CartDiscount extends Component {
       morphSection(this.dataset.sectionId, data.sections[this.dataset.sectionId]);
     } catch (error) {
     } finally {
+      releaseCart();
       this.#activeFetch = null;
     }
   };
