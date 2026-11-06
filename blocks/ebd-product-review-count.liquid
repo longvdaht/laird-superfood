@@ -1,11 +1,6 @@
 
 <div class="product-review-count">
-  <div
-    class="yotpo bottomLine"
-    data-product-id="{{ product.id }}"
-    data-url="{{ shop.url }}{{ product.url }}"
-  ></div>
-  <span class="yotpo-review-count"></span>
+  {% render 'okendo-reviews-product-rating-summary', product: product %}
   <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
 </div>
 

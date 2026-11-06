@@ -1,11 +1,7 @@
 
 <div class="product-review-count">
-  <div
-    class="yotpo bottomLine"
-    data-product-id="7173361532963"
-    data-url="https://admin.shopify.com/store/laird-superfood/products/7173361532963"
-  ></div>
-  <span class="yotpo-review-count"></span>
+  {%- assign review_product = all_products['hydrate-variety-pack'] | default: product -%}
+  {% render 'okendo-reviews-product-rating-summary', product: review_product %}
   <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
 </div>
 

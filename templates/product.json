@@ -458,10 +458,17 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "okendo_reviews_widget_aHxFgM": {
+      "type": "okendo-reviews-widget",
+      "settings": {
+        "product": ""
+      }
     }
   },
   "order": [
     "main",
+    "okendo_reviews_widget_aHxFgM",
     "product_recommendations_qggXJq"
   ]
 }

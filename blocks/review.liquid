@@ -1,147 +1,24 @@
 {% liquid
   assign block_settings = block.settings
   assign product = closest.product
-  # Prioritize Yotpo provider metafields over the shared Shopify built-in reviews metafields
-  assign yotpo_rating = product.metafields.yotpo.reviews_average.value | default: product.metafields.yotpo.reviews_average
-  assign yotpo_count = product.metafields.yotpo.reviews_count.value | default: product.metafields.yotpo.reviews_count
-
-  if yotpo_rating != blank and yotpo_rating != 0 and yotpo_rating != '0'
-    assign rating = yotpo_rating | plus: 0
-    assign scale_max = 5
-    assign rating_count = yotpo_count | plus: 0
-  else
-    assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value | default: product.metafields.reviews.rating
-    assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
-    assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
-  endif
-
-  if product.handle == 'organic-prebiotic-daily-greens'
-    assign source_product = all_products['organic-prebiotic-daily-greens-14-8oz']
-    assign source_yotpo_count = source_product.metafields.yotpo.reviews_count.value | default: source_product.metafields.yotpo.reviews_count
-    if source_yotpo_count != blank and source_yotpo_count != 0 and source_yotpo_count != '0'
-      assign rating_count = source_yotpo_count | plus: 0
-    elsif source_product.metafields.reviews.rating_count != blank
-      assign rating_count = source_product.metafields.reviews.rating_count
-    endif
-  endif
-
-  if request.visual_preview_mode and product == blank
-    assign product = collections.all.products.first
-    assign rating = product.metafields.reviews.rating.value | default: 4
-    assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
-    assign rating_count = product.metafields.reviews.rating_count | default: 3
-  endif
+  # Okendo Reviews: star markup comes from Okendo product metafields (rendered by the snippet below)
+  assign okendo_count = product.metafields.okendo.summaryData.reviewCount | default: product.metafields.okendo.ReviewCount | default: 0
 -%}
 
-{%- if settings.show_product_card_rating != false and rating != blank -%}
-  {% liquid
-    assign star_count_rating = scale_max
-    assign decimal_rating = 0
-    assign decimal = rating | modulo: 1
-
-    if decimal >= 0.3 and decimal <= 0.7
-      assign decimal_rating = 0.5
-    elsif decimal > 0.7
-      assign decimal_rating = 1
-    endif
-
-    # this is used so I can tell how many stars I need to fill. When the decimal rating above is 0.5 or 1 I count it as one as the half star is dealt with with a SVG linear gradient.
-    assign decimal_rounded = decimal_rating | ceil
-
-    assign svg_filled_stars = rating | floor | plus: decimal_rounded
-  %}
-
+{%- if settings.show_product_card_rating != false and okendo_count > 0 -%}
   <a href="#product-reviews" class="rating-wrapper-link {% if product.type == blank %}non-produc-type{% endif %}" aria-label="{{ 'accessibility.scroll_to_reviews' | t | default: 'Scroll to reviews' }}">
   <div
     class="rating-wrapper justify-{{ block_settings.alignment }} rating-color--{{ block_settings.rating_color }}"
     {{ block.shopify_attributes }}
   >
-    <svg
-      class="visually-hidden"
-      style="width: 0; height: 0;"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 32 32"
-      role="presentation"
-    >
-      <defs>
-        <linearGradient id="half" x1="0" x2="100%" y1="0" y2="0">
-          <stop offset="50%" stop-color="var(--star-fill-color)"></stop>
-          <stop offset="50%" stop-color="{% if block_settings.stars_style == "outline" %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20){% endif %}"></stop>
-        </linearGradient>
-
-        <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="star">
-          <path d="M31.547 12a.848.848 0 00-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 00-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 00-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 001.23.893l8.428-4.434 8.432 4.432a.847.847 0 001.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 00.214-.869z" />
-        </symbol>
-      </defs>
-    </svg>
-    <div
-      class="rating"
-      aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
-    >
-      <style>
-        .rating {
-          --star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);
-        }
-
-        @media screen and (max-width: 400px) {
-          .rating {
-            --star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 0.9);
-          }
-        }
-      </style>
-      {% if block_settings.stars_style == 'single' %}
-        <svg
-          class="stars {% if svg_filled_stars > 0 %}filled-star{% endif %}"
-          viewBox="0 0 32 32"
-          style="--empty-star-fill-color: rgb(var(--star-fill-color-rgb) / var(--opacity-20)"
-          role="presentation"
-        >
-          <use xlink:href="#star"></use>
-        </svg>
-      {% else %}
-        {%- for star in (1..star_count_rating) -%}
-          <svg
-            class="stars {% if star <= svg_filled_stars %}filled-star{% endif %}"
-            viewBox="0 0 32 32"
-            style="--empty-star-fill-color:{% if block_settings.stars_style == 'outline' %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20){% endif %}"
-            role="presentation"
-          >
-            <use xlink:href="#star"{% if decimal_rating == 0.5 and star == svg_filled_stars %} fill="url(#half)"{% endif %}></use>
-            {% if block_settings.stars_style == "outline" %}
-              <use xlink:href="#star" fill="none" stroke="var(--star-fill-color)" stroke-width="var(--icon-stroke-width)"></use>
-            {% endif %}
-          </svg>
-        {%- endfor -%}
-      {% endif %}
-    </div>
-
-    {%- if block_settings.show_number or block_settings.stars_style == 'single' -%}
-      <p class="rating-count {{ block_settings.type_preset }}">
-        {%- if block_settings.stars_style == 'single' -%}
-          <span aria-hidden="true">{{- rating | round: 1 }}</span>
-        {%- endif -%}
-        {%- if block_settings.stars_style == 'single' and block_settings.show_number -%}
-          <span class="rating-count-separator">|</span>
-        {%- endif -%}
-        {%- if block_settings.show_number -%}
-          {% if template.name contains 'collection' %}
-            {{- rating_count }}
-            {{ 'content.reviews' | t }}
-          {% else %}
-            ({{- rating_count }}
-            {{ 'content.reviews' | t }})
-          {% endif %}
-        {%- endif -%}
-      </p>
-    {%- endif -%}
+    {% render 'okendo-reviews-product-rating-summary', product: product %}
   </div>
   </a>
   <script>
     (function() {
       document.querySelectorAll('a.rating-wrapper-link[href="#product-reviews"]').forEach(function(link) {
         link.addEventListener('click', function(e) {
-          var yotpoEl = document.querySelector('.yotpo-widget-clear');
-          var el = yotpoEl || document.getElementById('product-reviews');
+          var el = document.getElementById('product-reviews') || document.querySelector('[data-oke-widget]');
           if (el) {
             e.preventDefault();
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });
