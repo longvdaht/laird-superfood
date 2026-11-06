@@ -1,12 +1,12 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -626,10 +626,11 @@
         "color_2": ""
       }
     },
-    "ebd_pdp_reviews_C9BErN": {
-      "type": "ebd-pdp-reviews",
-      "name": "EBD PDP Reviews",
-      "settings": {}
+    "okendo_reviews_widget_C9BErN": {
+      "type": "okendo-reviews-widget",
+      "settings": {
+        "product": ""
+      }
     }
   },
   "order": [
@@ -642,6 +643,6 @@
     "ebd_global_separator_xFgfGm",
     "ebd_pdp_faqs_zpLkYg",
     "ebd_global_separator_7fD8Cx",
-    "ebd_pdp_reviews_C9BErN"
+    "okendo_reviews_widget_C9BErN"
   ]
 }

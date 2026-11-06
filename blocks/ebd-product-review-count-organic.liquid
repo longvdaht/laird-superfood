@@ -1,11 +1,7 @@
 
 <div class="product-review-count">
-  <div
-    class="yotpo bottomLine"
-    data-product-id="6801586847779"
-    data-url="https://lairdsuperfood.com/products/prebiotic-daily-greens"
-  ></div>
-  <span class="yotpo-review-count"></span>
+  {%- assign review_product = all_products['prebiotic-daily-greens'] | default: product -%}
+  {% render 'okendo-reviews-product-rating-summary', product: review_product %}
   <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
 </div>
 

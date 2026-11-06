@@ -1,0 +1,39 @@
+{%- liquid
+  assign widget_product = section.settings.product | default: product
+-%}
+{% capture product_data_attribute %}data-oke-reviews-product-id="shopify-{{ widget_product.id }}"{% endcapture %}
+<div id="product-reviews" class="okendo-reviews-widget__wrapper">
+  <div data-oke-widget {{ product_data_attribute }}>
+    {{ widget_product.metafields.okendo.ReviewsWidgetSnippet }}
+  </div>
+</div>
+
+{% stylesheet %}
+  .okendo-reviews-widget__wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 20px;
+    scroll-margin-top: 100px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Okendo Reviews Widget",
+  "class": "okendo-reviews-widget",
+  "presets": [
+    {
+      "name": "Okendo Reviews Widget",
+      "category": "Okendo"
+    }
+  ],
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "By Product",
+      "info": "When left blank, the widget will show reviews from the page product, or all reviews."
+    }
+  ]
+}
+{% endschema %}
