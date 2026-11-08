@@ -14,10 +14,7 @@
         
         
     {% if customer %}
-      window.loomi_ctx.ctags = []
-      {% for t in customer.tags %}
-        window.loomi_ctx.ctags.push("{{ t }}")
-      {% endfor %}
+      window.loomi_ctx.ctags = {{ customer.tags | json }};
     {% endif %}
 	{% if product %}
 	var product = {};
