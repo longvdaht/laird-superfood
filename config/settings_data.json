@@ -74,11 +74,11 @@
     "cart_gwp_enable": true,
     "cart_gwp_threshold": 100,
     "cart_gwp_label": "Free Gift",
-    "cart_gwp_product": "pumpkin-spice-superfood-creamer",
-    "cart_gwp_variant_id": "12489501147171",
+    "cart_gwp_product": "lavender-protein-matcha-free-gift",
+    "cart_gwp_variant_id": "",
     "cart_progress_text_start": "Add [[amount]] to get free shipping",
-    "cart_progress_text_tier1": "Add [[amount]] to get a free Pumpkin Creamer",
-    "cart_progress_text_complete": "You've unlocked free shipping & free Pumpkin Creamer",
+    "cart_progress_text_tier1": "Add [[amount]] to get a free Lavender Protein Matcha",
+    "cart_progress_text_complete": "You've unlocked free shipping & free Lavender Protein Matcha",
     "cart_progress_unlocked_label": "Unlocked",
     "cart_cross_sell_enable": true,
     "cart_cross_sell_heading_1": "Built for your routine",
@@ -153,11 +153,6 @@
         "disabled": false,
         "settings": {}
       },
-      "735721325670868888": {
-        "type": "shopify://apps/checkmate/blocks/checked_network/697a3444-1374-4f13-ba8c-ec03db25ebf0",
-        "disabled": false,
-        "settings": {}
-      },
       "10840395464443086010": {
         "type": "shopify://apps/alia/blocks/customer-app-frame/51f1d398-3e41-44da-b81e-defd5804b292",
         "disabled": false,
@@ -197,11 +192,6 @@
       },
       "10641372206048101839": {
         "type": "shopify://apps/rebuy-personalization-engine/blocks/rebuy-global-embed/a26ae9b9-933b-40bf-bbc6-bf1220bbc4dc",
-        "disabled": false,
-        "settings": {}
-      },
-      "15167910876538132640": {
-        "type": "shopify://apps/jurni-ai-personalized-funnels/blocks/jurni-core/51e0829e-f6f8-4328-8662-ab39f09b4d22",
         "disabled": false,
         "settings": {}
       },
