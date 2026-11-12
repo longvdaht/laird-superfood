@@ -33,14 +33,12 @@
 
     comment
       The gift tier follows the same rule as cart-gwp.js, so the bar and the watcher always agree:
-      the gift counts as reached when Shopify itself has applied the free gift discount to a line
-      of the gift product, or when spend - everything except what the gift line itself costs -
-      reaches the threshold. A copy of the gift product the shopper bought counts as spend, the
-      same way the discount counts it. Free shipping above still counts the whole total.
+      it is reached when spend - everything except what the gift line itself costs - reaches the
+      threshold. A copy of the gift product the shopper bought counts as spend. Free shipping
+      above still counts the whole total.
       Same variant lookup as cart-gwp-watcher.liquid.
     endcomment
     assign gwp_total = cart.items_subtotal_price
-    assign gwp_discount_applied = false
     if gwp_enabled
       assign gift_variant = settings.cart_gwp_product.selected_or_first_available_variant
       assign gift_variant_input = settings.cart_gwp_variant_id | strip
@@ -56,9 +54,6 @@
       for item in cart.items
         if item.properties._gwp == 'true'
           assign gwp_total = gwp_total | minus: item.final_line_price
-        endif
-        if item.variant_id == gift_variant.id and item.final_line_price < item.original_line_price
-          assign gwp_discount_applied = true
         endif
       endfor
     endif
@@ -79,9 +74,7 @@
     assign tier2_reached = false
     assign tier2_percent = 0
     if gwp_enabled
-      if gwp_discount_applied
-        assign tier2_reached = true
-      elsif gwp_threshold > 0 and gwp_total >= gwp_threshold
+      if gwp_threshold > 0 and gwp_total >= gwp_threshold
         assign tier2_reached = true
       endif
       assign tier2_percent = 100
