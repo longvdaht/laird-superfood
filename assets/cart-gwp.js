@@ -145,30 +145,22 @@ class CartGwpWatcherComponent extends Component {
     /** @type {{ line: number, quantity: number }[]} */
     const giftLines = [];
     let giftChargedTotal = 0;
-    let discountApplied = false;
     cart.items.forEach((/** @type {any} */ item, /** @type {number} */ index) => {
       if (isGiftLine(item)) {
         giftLines.push({ line: index + 1, quantity: item.quantity });
         giftChargedTotal += item.final_line_price;
       }
-
-      // Shopify only gives the free unit once the cart really qualifies, so a discounted line of
-      // the gift product is its own confirmation - whichever line it landed on.
-      if (item.variant_id === giftVariantId && item.final_line_price < item.original_line_price) {
-        discountApplied = true;
-      }
     });
 
-    // What the shopper spends is everything except what the gift itself costs. That keeps the Buy X
-    // Get Y discount from propping itself up: when a quantity decrease drops real spend below the
-    // threshold, Shopify's discount stops applying and the gift's line price reverts to full price
-    // in the same response - left in, that price pushes the subtotal back over the threshold
-    // and the gift never gets removed. A product the shopper bought themselves does count (the
-    // discount counts it too), so adding the gift's own product can earn the gift.
+    // What the shopper spends is everything except what the gift itself costs. The gift discount
+    // (Function Junction, filtered on the `_gwp` property) counts the gift line's own full price
+    // in the cart subtotal it checks, so a gift that is already free must not be treated as proof
+    // that the cart qualifies - otherwise the gift props the subtotal up and a cart that dropped
+    // under the threshold by up to the gift's price keeps its gift. A product the shopper bought
+    // themselves does count as spend.
     // Uses items_subtotal_price (after line discounts such as Subscribe & Save, BEFORE cart-level
-    // codes like MISSYOU30): Shopify checks the Buy X Get Y spend before an order discount, so a
-    // code must not stop a cart that really spent enough from earning the gift.
-    const qualifies = discountApplied || cart.items_subtotal_price - giftChargedTotal >= threshold;
+    // codes like MISSYOU30), so a code never stops a cart that really spent enough.
+    const qualifies = cart.items_subtotal_price - giftChargedTotal >= threshold;
 
     if (!qualifies) {
       await this.#changeLines(giftLines.map(({ line }) => ({ line, quantity: 0 })));
