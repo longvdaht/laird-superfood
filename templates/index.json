@@ -356,7 +356,7 @@
         "pause_on_hover": true,
         "show_dots": true,
         "dot_color": "#ffffff",
-        "show_arrows": true,
+        "show_arrows": false,
         "arrow_color": "#ffffff",
         "padding_top_desktop": 0,
         "padding_bottom_desktop": 0,
