@@ -353,7 +353,7 @@
         "loop": true,
         "autoplay": true,
         "autoplay_interval": 3,
-        "pause_on_hover": true,
+        "pause_on_hover": false,
         "show_dots": true,
         "dot_color": "#ffffff",
         "show_arrows": false,
