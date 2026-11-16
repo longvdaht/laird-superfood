@@ -351,7 +351,7 @@
         "transition": "slide",
         "slide_heights": "per_slide",
         "loop": true,
-        "autoplay": false,
+        "autoplay": true,
         "autoplay_interval": 3,
         "pause_on_hover": true,
         "show_dots": true,
