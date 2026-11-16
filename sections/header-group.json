@@ -16,11 +16,10 @@
       "blocks": {
         "text_mqWeR4": {
           "type": "text",
-          "disabled": true,
           "settings": {
-            "title": "Labor Day Sale",
+            "title": "BLACK FRIDAY Sale",
             "announcement_url": "shopify://collections/all",
-            "content": "<p>LABOR DAY SALE: <strong>25% OFF </strong>EVERYTHING | <strong>SHOP NOW</strong></p>"
+            "content": "<p>BLACK FRIDAY SALE: 30<strong>% OFF </strong>EVERYTHING | <strong>SHOP NOW</strong></p>"
           }
         },
         "text_7zxQTk": {
@@ -35,9 +34,9 @@
         "text_a9JJq9": {
           "type": "text",
           "settings": {
-            "title": "NEW: FUNCTIONAL INSTANT COFFEES",
-            "announcement_url": "shopify://collections/functional-instant-coffees",
-            "content": "<p>NEW: <strong>FUNCTIONAL INSTANT COFFEES</strong></p>"
+            "title": "NEW: ELECTROLYTE COFFEE",
+            "announcement_url": "shopify://collections/electrolyte-coffee",
+            "content": "<p>NEW: <strong>ELECTROLYTE COFFEE</strong></p>"
           }
         },
         "text_JAD4Dd": {
