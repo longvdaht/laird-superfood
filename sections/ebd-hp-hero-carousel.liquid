@@ -598,7 +598,7 @@
         buildCarousel();
       }
 
-      buildCarousel();
+      whenSwiperReady(buildCarousel);
 
       if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', onBreakpointChange);
       else if (mobileQuery.addListener) mobileQuery.addListener(onBreakpointChange);
@@ -608,6 +608,7 @@
         new IntersectionObserver(
           function (entries) {
             entries.forEach(function (entry) {
+              heroInView = entry.isIntersecting;
               if (entry.isIntersecting) {
                 playActiveSlideVideo();
                 if (swiper && swiper.autoplay && carouselOptions.autoplay && !reduceMotion) swiper.autoplay.start();
