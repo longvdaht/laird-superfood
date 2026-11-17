@@ -486,7 +486,7 @@
       // Only the slide on screen is allowed to play, so the hero never downloads or decodes
       // more than one video at a time.
       function playActiveSlideVideo() {
-        if (reduceMotion) return;
+        if (reduceMotion || !heroInView) return;
         var activeSlide = swiper ? swiper.slides[swiper.activeIndex] : wrapper.firstElementChild;
         everySlide.forEach(function (slide) {
           forEachVideoIn(slide, function (video) {
