@@ -456,9 +456,6 @@
       var mobileQuery = window.matchMedia('(max-width: 768px)');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var swiper = null;
-      // Kept up to date by the IntersectionObserver below. A carousel built while the hero is
-      // off screen must not start autoplaying or playing video.
-      var heroInView = true;
 
       function forEachVideoIn(slide, callback) {
         Array.prototype.forEach.call(slide.querySelectorAll('video'), callback);
@@ -486,7 +483,7 @@
       // Only the slide on screen is allowed to play, so the hero never downloads or decodes
       // more than one video at a time.
       function playActiveSlideVideo() {
-        if (reduceMotion || !heroInView) return;
+        if (reduceMotion) return;
         var activeSlide = swiper ? swiper.slides[swiper.activeIndex] : wrapper.firstElementChild;
         everySlide.forEach(function (slide) {
           forEachVideoIn(slide, function (video) {
@@ -569,20 +566,6 @@
         }
 
         swiper = new window.Swiper(container, swiperSettings);
-        if (!heroInView && swiper.autoplay) swiper.autoplay.stop();
-      }
-
-      // swiper-bundle.min.js is loaded with defer (snippets/scripts.liquid), so on a normal page
-      // load it only runs after this inline script. Without waiting for it the carousel never
-      // initialised on the storefront (no auto scroll, no dots). It only worked in the theme
-      // editor, where Swiper is already on the page when the section re-renders.
-      // Deferred scripts always run before DOMContentLoaded fires.
-      function whenSwiperReady(callback) {
-        if (typeof window.Swiper !== 'undefined' || document.readyState !== 'loading') {
-          callback();
-          return;
-        }
-        document.addEventListener('DOMContentLoaded', callback, { once: true });
       }
 
       function sectionWasRemoved() {
@@ -598,7 +581,7 @@
         buildCarousel();
       }
 
-      whenSwiperReady(buildCarousel);
+      buildCarousel();
 
       if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', onBreakpointChange);
       else if (mobileQuery.addListener) mobileQuery.addListener(onBreakpointChange);
@@ -608,7 +591,6 @@
         new IntersectionObserver(
           function (entries) {
             entries.forEach(function (entry) {
-              heroInView = entry.isIntersecting;
               if (entry.isIntersecting) {
                 playActiveSlideVideo();
                 if (swiper && swiper.autoplay && carouselOptions.autoplay && !reduceMotion) swiper.autoplay.start();
