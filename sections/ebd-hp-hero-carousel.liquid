@@ -456,6 +456,9 @@
       var mobileQuery = window.matchMedia('(max-width: 768px)');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var swiper = null;
+      // Kept up to date by the IntersectionObserver below. A carousel built while the hero is
+      // off screen must not start autoplaying or playing video.
+      var heroInView = true;
 
       function forEachVideoIn(slide, callback) {
         Array.prototype.forEach.call(slide.querySelectorAll('video'), callback);
@@ -566,6 +569,20 @@
         }
 
         swiper = new window.Swiper(container, swiperSettings);
+        if (!heroInView && swiper.autoplay) swiper.autoplay.stop();
+      }
+
+      // swiper-bundle.min.js is loaded with defer (snippets/scripts.liquid), so on a normal page
+      // load it only runs after this inline script. Without waiting for it the carousel never
+      // initialised on the storefront (no auto scroll, no dots). It only worked in the theme
+      // editor, where Swiper is already on the page when the section re-renders.
+      // Deferred scripts always run before DOMContentLoaded fires.
+      function whenSwiperReady(callback) {
+        if (typeof window.Swiper !== 'undefined' || document.readyState !== 'loading') {
+          callback();
+          return;
+        }
+        document.addEventListener('DOMContentLoaded', callback, { once: true });
       }
 
       function sectionWasRemoved() {
