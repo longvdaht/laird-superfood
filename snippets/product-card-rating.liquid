@@ -29,9 +29,15 @@
       assign rating_count = source_product.metafields.reviews.rating_count
     endif
   endif
+
+  # Merchant switch: product metafield custom.hide_reviews (boolean) hides all review UI for this product
+  assign hide_reviews = false
+  if product.metafields.custom.hide_reviews.value == true or product.metafields.custom.hide_reviews == 'true'
+    assign hide_reviews = true
+  endif
 -%}
 
-{%- if settings.show_product_card_rating != false and rating != blank -%}
+{%- if settings.show_product_card_rating != false and rating != blank and hide_reviews == false -%}
   {% liquid
     assign star_count_rating = scale_max
     assign decimal_rating = 0

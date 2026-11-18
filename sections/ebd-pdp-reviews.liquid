@@ -1,3 +1,10 @@
+{%- liquid
+  assign hide_reviews = false
+  if product.metafields.custom.hide_reviews.value == true or product.metafields.custom.hide_reviews == 'true'
+    assign hide_reviews = true
+  endif
+-%}
+{%- unless hide_reviews -%}
 <script type="text/javascript">
   (function(){
     if (document.querySelector('script[src*="staticw2.yotpo.com"]')) return;
@@ -31,6 +38,8 @@
   </div>
 
 </section>
+
+{%- endunless -%}
 
 {% schema %}
   {

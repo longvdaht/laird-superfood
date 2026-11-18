@@ -1,4 +1,11 @@
 
+{%- liquid
+  assign hide_reviews = false
+  if product.metafields.custom.hide_reviews.value == true or product.metafields.custom.hide_reviews == 'true'
+    assign hide_reviews = true
+  endif
+-%}
+{%- unless hide_reviews -%}
 <div class="product-review-count">
   <div
     class="yotpo bottomLine"
@@ -8,6 +15,8 @@
   <span class="yotpo-review-count"></span>
   <a href="#product-reviews" class="reviews-link"><span class="sparkle-emoji">✨</span>See reviews summary</a>
 </div>
+
+{%- endunless -%}
 
 {% schema %}
 {
