@@ -5,6 +5,8 @@
   assign rating_color = rating_color | default: 'primary'
   assign type_preset = type_preset | default: 'paragraph'
   assign alignment = alignment | default: 'left'
+  # Optional: render the count as "<count> <count_suffix>" (e.g. "1989 reviews") instead of "(1989)"
+  assign count_suffix = count_suffix | default: ''
 
   # Prioritize Yotpo provider metafields over the shared Shopify built-in reviews metafields
   assign yotpo_rating = product.metafields.yotpo.reviews_average.value | default: product.metafields.yotpo.reviews_average
@@ -103,7 +105,11 @@
             <span class="rating-count-separator">|</span>
           {%- endif -%}
           {%- if show_number -%}
-            ({{ rating_count }})
+            {%- if count_suffix != blank -%}
+              {{ rating_count }} {{ count_suffix }}
+            {%- else -%}
+              ({{ rating_count }})
+            {%- endif -%}
           {%- endif -%}
         </p>
       {%- endif -%}

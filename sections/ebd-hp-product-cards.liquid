@@ -5,7 +5,7 @@
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
           {% assign product = all_products[block.settings.product] %}
-          <div class="swiper-slide">
+          <div class="swiper-slide" {{ block.shopify_attributes }}>
             <a href="{{ product.url }}" class="slide-wrapper">
               <div class="badges-wrapper">
                 {% if block.settings.best_seller %}
@@ -30,28 +30,43 @@
                 {% endif %}
               </div>
               <div class="media">
-                <img loading="lazy" src="{{ product.featured_image | img_url: '750x' }}" alt="{{ product.title }}" class="product-image" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}">
+                {%- if product.featured_image != blank -%}
+                  <img
+                    loading="lazy"
+                    src="{{ product.featured_image | image_url: width: 640 }}"
+                    srcset="{{ product.featured_image | image_url: width: 320 }} 320w, {{ product.featured_image | image_url: width: 640 }} 640w, {{ product.featured_image | image_url: width: 960 }} 960w"
+                    sizes="(min-width: 1400px) 25vw, (min-width: 769px) 35vw, 320px"
+                    alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                    class="product-image"
+                    width="{{ product.featured_image.width }}"
+                    height="{{ product.featured_image.height }}"
+                  >
+                {%- endif -%}
               </div>
               <div class="details">
-                <div class="text">
-                  <h4 class="title darkblue">{{ product.title }}</h4>
-                  {% render 'product-card-rating', product: product %}
-                  <p class="price">{{ product.variants.first.price | money }}</p>
-                </div>
-                <p class="btn">SHOP NOW</p>
+                {% render 'product-card-rating', product: product, count_suffix: 'reviews' %}
+                <h4 class="title darkblue">{{ product.title }}</h4>
+                <p class="price">{{ product.variants.first.price | money }}</p>
               </div>
             </a>
           </div>
         {% endfor %}
       </div>
-      <div class="swiper-scrollbar"></div>
+      <div class="swiper-scrollbar swiper-scrollbar-darkblue"></div>
     </div>
+    {%- if section.settings.button_label != blank -%}
+      <div class="button-wrapper">
+        <a href="{{ section.settings.button_url | default: routes.all_products_collection_url }}" class="btn">
+          {{- section.settings.button_label -}}
+        </a>
+      </div>
+    {%- endif -%}
   </div>
 </div>
 
 
 
-{% schema %} 
+{% schema %}
   {
     "name": "HP Product Cards",
     "settings": [
@@ -59,6 +74,19 @@
         "id": "heading",
         "type": "text",
         "label": "Heading"
+      },
+      {
+        "id": "button_label",
+        "type": "text",
+        "label": "Button label",
+        "default": "SHOP ALL PRODUCTS",
+        "info": "Leave blank to hide the button."
+      },
+      {
+        "id": "button_url",
+        "type": "url",
+        "label": "Button link",
+        "info": "Defaults to all products."
       }
     ],
     "blocks": [
@@ -110,108 +138,163 @@
 {% stylesheet %}
   .ebd-hp-product-cards {
     position: relative;
-    padding-bottom: 65px;
     margin-bottom: 0;
     overflow: hidden;
-    padding: 45px 45px 65px;
+    padding: 48px 40px;
+    background-color: white;
 
     .content-wrapper {
       max-width: 1600px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      align-items: stretch;
+
+      > .swiper {
+        width: 100%;
+        min-width: 0;
+      }
+
+      h2 {
+        margin: 0;
+        text-align: center;
+      }
     }
 
     .swiper-slide {
-      border: solid 1px #003349;
       position: relative;
+      height: auto;
 
       .slide-wrapper {
-        padding: 0 25px 25px;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        height: 100%;
 
         .badges-wrapper {
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 1;
           display: flex;
           gap: 5px;
-          position: relative;
-          left: -10px;
+
           .badge {
             padding: 10px;
             font-size: 12px;
+            line-height: 14px;
             font-weight: 700;
             color: white;
 
             &.best-seller {
-              background-color: #3a758a;
+              background-color: var(--color-mediumblue);
             }
 
-            &.new-recipe {
-              background-color: #e11d48;
-            }
-
-            &.new-product {
-              background-color: #e11d48;
-            }
-
+            &.new-recipe,
+            &.new-product,
             &.new-look {
-              background-color: #e11d48;
+              background-color: var(--color-red);
             }
           }
         }
 
         .media {
-          margin-bottom: 25px;
+          aspect-ratio: 1;
+          overflow: hidden;
+
           img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: 0.4s;
           }
         }
 
         .details {
-          .text {
-            min-height: 100px;
-            margin-bottom: 15px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
 
-            h4 {
-              margin-bottom: 10px;
+          .product-card-rating-container {
+            margin: 0;
+
+            .rating-wrapper {
+              gap: 8px;
             }
 
-            p.price {
-              color: black;
+            .rating-count {
+              font-size: 18px;
+              line-height: 24px;
               font-weight: 600;
-              margin-bottom: 0;
             }
+          }
+
+          h4.title {
+            margin: 0;
+            font-size: 18px;
+            line-height: 24px;
+            font-weight: 600;
+          }
+
+          p.price {
+            margin: 0;
+            color: var(--color-mediumblue);
+            font-size: 16px;
+            line-height: 19px;
+            font-weight: 600;
           }
         }
 
         &:hover {
-          .media {
-            img {
-              transform: scale(1.03);
-            }
+          .media img {
+            transform: scale(1.03);
           }
         }
-
-
       }
     }
 
-    @media (max-width: 1024px) {
-      padding: 45px 45px 65px;
+    .swiper .swiper-scrollbar {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      transform: none;
+      width: 265px;
+      max-width: 100%;
+      margin: 30px auto 0;
+
+      &.swiper-scrollbar-lock {
+        display: none;
+      }
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
     }
 
     @media (max-width: 768px) {
-      padding: 45px 20px;
+      padding: 36px 20px;
+
+      .content-wrapper {
+        gap: 24px;
+
+        h2 {
+          text-align: left;
+        }
+      }
+
     }
   }
-
-
-
-
 {% endstylesheet %}
 
 {% javascript %}
   document.addEventListener('DOMContentLoaded', function () {
     var swiper = new Swiper('.ebd-hp-product-cards .swiper', {
-      slidesPerView: 1.15,
-      spaceBetween: 15,
+      slidesPerView: 1.1,
+      spaceBetween: 12,
+      watchOverflow: true,
       scrollbar: {
         el: '.ebd-hp-product-cards .swiper-scrollbar',
         draggable: true,
@@ -236,5 +319,3 @@
     });
   });
 {% endjavascript %}
-
-
