@@ -1,18 +1,38 @@
-<section class="ebd-video-collection-grid">
+<section
+  class="ebd-video-collection-grid"
+  style="--bg-opacity: {{ section.settings.bg_opacity | divided_by: 100.0 }};"
+>
+  {%- if section.settings.bg_image != blank -%}
+    <div class="bg-decoration" aria-hidden="true">
+      <img
+        src="{{ section.settings.bg_image | image_url: width: 1200 }}"
+        alt=""
+        loading="lazy"
+        width="{{ section.settings.bg_image.width }}"
+        height="{{ section.settings.bg_image.height }}"
+      >
+    </div>
+  {%- endif -%}
+
   <div class="content-wrapper">
-    <h2 class="darkblue">
-      {{ section.settings.heading }}
-    </h2>
+    <div class="heading">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="darkblue">
+        {{ section.settings.heading }}
+      </h2>
+    </div>
     <div class="swiper">
       <div class="swiper-wrapper">
-        {% for block in section.blocks %}          
-          <div class="swiper-slide">
+        {% for block in section.blocks %}
+          <div class="swiper-slide" {{ block.shopify_attributes }}>
             <a href="{{ block.settings.link_url }}" class="slide-wrapper" title="{{ block.settings.link_text }}">
               <div class="media-wrapper">
                 <video src="{{ block.settings.video.sources[1].url }}" muted loop playsinline></video>
-                <img class="poster" loading="lazy" src="{{ block.settings.image | img_url: '500x' }}" alt="{{ block.settings.link_text }}" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
+                <img class="poster" loading="lazy" src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.link_text }}" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}">
               </div>
-              <h4 class="darkblue">{{ block.settings.link_text }}</h4>
+              <h4 class="label">{{ block.settings.link_text }}</h4>
             </a>
           </div>
         {% endfor %}
@@ -27,9 +47,35 @@
     "name": "HP Video Collection Grid",
     "settings": [
       {
+        "id": "eyebrow",
+        "type": "text",
+        "label": "Eyebrow text",
+        "default": "Fuel your lifestyle"
+      },
+      {
         "id": "heading",
         "type": "text",
         "label": "Heading"
+      },
+      {
+        "type": "header",
+        "content": "Background decoration"
+      },
+      {
+        "id": "bg_image",
+        "type": "image_picker",
+        "label": "Leaf image",
+        "info": "Decorative image on the left side, behind the content."
+      },
+      {
+        "id": "bg_opacity",
+        "type": "range",
+        "label": "Leaf image opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 10
       }
     ],
     "blocks": [
@@ -71,20 +117,71 @@
 
 {% stylesheet %}
   section.ebd-video-collection-grid {
-    padding: 25px 45px 45px;
+    position: relative;
+    padding: 75px 44px 50px;
     overflow: hidden;
+    background-color: var(--color-mediumgray);
+
+    .bg-decoration {
+      position: absolute;
+      top: 26px;
+      left: -488px;
+      width: 764px;
+      pointer-events: none;
+      opacity: var(--bg-opacity, 0.1);
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    }
 
     .content-wrapper {
-        max-width: 1600px;
-        margin: 0 auto;
-        position: relative;
+      max-width: 1600px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+      align-items: stretch;
+
+      > .swiper {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .heading {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+
+        .eyebrow {
+          margin: 0;
+          color: var(--color-red-2);
+          font-size: 24px;
+          line-height: 28px;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+
+        h2 {
+          margin: 0;
+        }
+      }
+
+      .slide-wrapper {
+        display: block;
+        border-radius: 8px;
+        overflow: hidden;
+      }
 
       .media-wrapper {
         position: relative;
         width: 100%;
-        aspect-ratio: 2 / 3;
+        aspect-ratio: 254 / 288;
         overflow: hidden;
-        border: 1px solid #003349;
 
         video,
         .poster {
@@ -109,47 +206,80 @@
         }
       }
 
-      h4 {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 5px 0 0;
+      h4.label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70px;
+        margin: 0;
+        padding: 0 10px;
+        background-color: var(--color-darkblue);
+        color: white;
+        font-size: 20px;
+        line-height: 24px;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
       }
     }
 
-    
+    .swiper .swiper-scrollbar {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      transform: none;
+      width: 261px;
+      max-width: 100%;
+      margin: 28px auto 0;
 
-    @media (max-width: 768px) {
-      padding: 25px 20px 65px;
+      &.swiper-scrollbar-lock {
+        display: none;
+      }
     }
 
+    @media (max-width: 768px) {
+      padding: 48px 20px;
 
+      .bg-decoration {
+        top: auto;
+        bottom: -120px;
+        left: -260px;
+        width: 480px;
+      }
+
+      .content-wrapper {
+        gap: 24px;
+
+        .heading .eyebrow {
+          font-size: 18px;
+          line-height: 20px;
+        }
+      }
+    }
   }
-
 {% endstylesheet %}
 
 {% javascript %}
   const swiper = new Swiper('.ebd-video-collection-grid .swiper', {
-    slidesPerView: 1.45,
-    spaceBetween: 15,
+    slidesPerView: 1.35,
+    spaceBetween: 20,
+    watchOverflow: true,
     scrollbar: {
       el: '.ebd-video-collection-grid .swiper-scrollbar',
       draggable: true
     },
     breakpoints: {
-
       1200: {
-        slidesPerView: 5.25
+        slidesPerView: 5
       },
       1000: {
         slidesPerView: 4.5
       },
       700: {
-        slidesPerView: 3.25,
-        spaceBetween: 15
+        slidesPerView: 3.25
       },
       500: {
-        slidesPerView: 2.25,
-        spaceBetween: 15
+        slidesPerView: 2.25
       }
     }
   });
