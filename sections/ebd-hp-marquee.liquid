@@ -1,23 +1,86 @@
-<section class="hp-marquee">
-  <div class="marquee-wrapper">
-    {% for block in section.blocks %}
-      <div class="marquee-word">
-        <h4 class="darkblue">{{ block.settings.text }}</h4>
-      </div>
-    {% endfor %}
-    {% for block in section.blocks %}
-      <div class="marquee-word">
-        <h4 class="darkblue">{{ block.settings.text }}</h4>
-      </div>
-    {% endfor %}
-
-  </div>
+<section
+  class="hp-marquee"
+  style="--marquee-band: {{ section.settings.band_color }}; --marquee-text: {{ section.settings.text_color }}; --marquee-top: {{ section.settings.top_color }}; --marquee-bottom: {{ section.settings.bottom_color }};"
+>
+  <hp-wave-marquee
+    class="hp-marquee__wave"
+    data-speed="{{ section.settings.speed }}"
+    data-gap="{{ section.settings.word_gap }}"
+  >
+    <ul class="visually-hidden">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <li data-word {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    <svg class="hp-marquee__svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="HpMarqueePath-{{ section.id }}" data-guide></path>
+      </defs>
+      <path class="hp-marquee__top" data-top></path>
+      <path class="hp-marquee__band" data-band></path>
+      <text class="hp-marquee__text">
+        <textPath href="#HpMarqueePath-{{ section.id }}" data-text-path></textPath>
+      </text>
+      <text class="hp-marquee__text" data-measure visibility="hidden"></text>
+    </svg>
+  </hp-wave-marquee>
 </section>
 
 {% schema %}
   {
     "name": "HP Marquee",
-    "settings": [     
+    "settings": [
+      {
+        "type": "range",
+        "id": "speed",
+        "label": "Speed (pixels per second)",
+        "min": 10,
+        "max": 150,
+        "step": 5,
+        "default": 50
+      },
+      {
+        "type": "range",
+        "id": "word_gap",
+        "label": "Space between words",
+        "min": 20,
+        "max": 120,
+        "step": 4,
+        "unit": "px",
+        "default": 60
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "band_color",
+        "label": "Wave",
+        "default": "#3A758A"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "top_color",
+        "label": "Background above the wave",
+        "info": "Match the section above.",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "bottom_color",
+        "label": "Background below the wave",
+        "info": "Match the section below.",
+        "default": "#F8F4EF"
+      }
     ],
     "blocks": [
       {
@@ -44,51 +107,256 @@
 {% stylesheet %}
   .hp-marquee {
     width: 100%;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
-    background: #f5f5f5;
-    padding: 2rem 0;
-    margin: 25px 0;
+    background-color: var(--marquee-bottom);
 
-    .marquee-wrapper {
-      display: flex;
-      animation: marquee 30s linear infinite;
-      white-space: nowrap;
+    .hp-marquee__wave {
+      display: block;
+    }
 
-      .marquee-word {
-        display: inline-block;
-        margin-right: 3rem;
+    .hp-marquee__svg {
+      display: block;
+      width: 100%;
+      height: 148px;
+      overflow: hidden;
+    }
 
-        h4 {
-          margin: 0;
-        }
-      }
+    .hp-marquee__top {
+      fill: var(--marquee-top);
+    }
+
+    .hp-marquee__band {
+      fill: var(--marquee-band);
+    }
+
+    .hp-marquee__text {
+      fill: var(--marquee-text);
+      font-family: var(--font-primary);
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
     }
 
     @media (max-width: 768px) {
-      padding: 1.5rem 0;
-      margin: 25px 0;
-      .marquee-wrapper {
-        animation: marquee 15s linear infinite;
-        .marquee-word {
-          margin-right: 1.5rem;
-          h4 {
-            font-size: 1.1rem;
-          }
-        }
+      .hp-marquee__svg {
+        height: 116px;
       }
     }
   }
-
-
-
-
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-75%);
-    }
-  }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    if (customElements.get('hp-wave-marquee')) return;
+
+    // Wave outlines copied from Figma ("Fun Quote", V2). Points are the cubic Bezier chain of the
+    // band's top edge; the bottom edge is the same curve moved down by `thickness`.
+    const SHAPES = {
+      desktop: {
+        width: 1440,
+        height: 148,
+        thickness: 99,
+        points: [
+          [0, 20.83], [192, 50], [384, 58.33], [576, 33.33],
+          [732, 12.5], [888, -4.17], [1056, 16.67],
+          [1176, 33.33], [1308, 58.33], [1440, 45.83]
+        ]
+      },
+      mobile: {
+        width: 390,
+        height: 116,
+        thickness: 73,
+        points: [
+          [-72, 15.19], [33.87, 36.77], [139.73, 42.94], [245.6, 24.44],
+          [331.62, 9.02], [417.63, -3.31], [510.27, 12.1],
+          [576.43, 24.44], [649.22, 42.94], [722, 33.69]
+        ]
+      }
+    };
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    // Straight run added before/after the text guide so words enter and leave off-screen.
+    const LEAD_IN = 400;
+
+    const round = (n) => Math.round(n * 100) / 100;
+    const point = (p, dy = 0) => round(p[0]) + ' ' + round(p[1] + dy);
+    const curve = (points, dy) => {
+      let d = '';
+      for (let i = 1; i < points.length; i += 3) {
+        d += 'C' + point(points[i], dy) + ' ' + point(points[i + 1], dy) + ' ' + point(points[i + 2], dy);
+      }
+      return d;
+    };
+    const extend = (from, towards, length) => {
+      const dx = from[0] - towards[0];
+      const dy = from[1] - towards[1];
+      const size = Math.hypot(dx, dy) || 1;
+      return [from[0] + (dx / size) * length, from[1] + (dy / size) * length];
+    };
+
+    class HpWaveMarquee extends HTMLElement {
+      connectedCallback() {
+        this.svg = this.querySelector('svg');
+        this.topPath = this.querySelector('[data-top]');
+        this.bandPath = this.querySelector('[data-band]');
+        this.guide = this.querySelector('[data-guide]');
+        this.textPath = this.querySelector('[data-text-path]');
+        this.measure = this.querySelector('[data-measure]');
+        this.words = Array.from(this.querySelectorAll('[data-word]'))
+          .map((el) => el.textContent.trim())
+          .filter(Boolean);
+        this.speed = Number(this.dataset.speed) || 50;
+        this.gap = Number(this.dataset.gap) || 60;
+        this.offset = LEAD_IN;
+        this.setLength = 0;
+        this.visible = false;
+        this.paused = false;
+        this.width = 0;
+
+        this.mobileQuery = window.matchMedia('(max-width: 768px)');
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        this.onResize = () => this.layout();
+        this.onMotionChange = () => this.toggle();
+        this.onEnter = () => {
+          this.paused = true;
+          this.toggle();
+        };
+        this.onLeave = () => {
+          this.paused = false;
+          this.toggle();
+        };
+
+        this.resizeObserver = new ResizeObserver(this.onResize);
+        this.resizeObserver.observe(this);
+        this.intersectionObserver = new IntersectionObserver((entries) => {
+          this.visible = entries[0].isIntersecting;
+          this.toggle();
+        });
+        this.intersectionObserver.observe(this);
+        this.reducedMotion.addEventListener('change', this.onMotionChange);
+        this.addEventListener('mouseenter', this.onEnter);
+        this.addEventListener('mouseleave', this.onLeave);
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => this.layout(true));
+        }
+      }
+
+      disconnectedCallback() {
+        this.resizeObserver?.disconnect();
+        this.intersectionObserver?.disconnect();
+        this.reducedMotion?.removeEventListener('change', this.onMotionChange);
+        this.removeEventListener('mouseenter', this.onEnter);
+        this.removeEventListener('mouseleave', this.onLeave);
+        this.stop();
+      }
+
+      layout(force = false) {
+        const width = this.clientWidth;
+        if (!width || (!force && width === this.width)) return;
+        this.width = width;
+
+        const shape = this.mobileQuery.matches ? SHAPES.mobile : SHAPES.desktop;
+        const scale = width / shape.width;
+        const points = shape.points.map((p) => [p[0] * scale, p[1]]);
+        const first = points[0];
+        const last = points[points.length - 1];
+        const reversed = points.slice().reverse();
+        const height = shape.height;
+        const thickness = shape.thickness;
+
+        this.svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        this.topPath.setAttribute(
+          'd',
+          'M' + point(first) + curve(points, 0) + 'L' + round(last[0]) + ' -1L' + round(first[0]) + ' -1Z'
+        );
+        this.bandPath.setAttribute(
+          'd',
+          'M' + point(first) + curve(points, 0) + 'L' + point(last, thickness) + curve(reversed, thickness) + 'Z'
+        );
+
+        // Text baseline: centre of the band plus half the cap height (Rubik caps are ~0.7em).
+        const fontSize = parseFloat(window.getComputedStyle(this.measure).fontSize) || 20;
+        const baseline = thickness / 2 + fontSize * 0.35;
+        const start = extend(first, points[1], LEAD_IN);
+        const end = extend(last, points[points.length - 2], LEAD_IN);
+        this.guide.setAttribute(
+          'd',
+          'M' + point(start, baseline) + 'L' + point(first, baseline) + curve(points, baseline) + 'L' + point(end, baseline)
+        );
+
+        this.fillText();
+        this.toggle();
+      }
+
+      fillWords(target, copies, extra) {
+        target.textContent = '';
+        let index = 0;
+        const add = (text) => {
+          const tspan = document.createElementNS(SVG_NS, 'tspan');
+          tspan.textContent = text;
+          if (index > 0) tspan.setAttribute('dx', this.gap);
+          target.appendChild(tspan);
+          index += 1;
+        };
+        for (let i = 0; i < copies; i += 1) this.words.forEach(add);
+        if (extra) add(extra);
+      }
+
+      fillText() {
+        if (!this.words.length) return;
+
+        // Length of one full set of words (including the gap before the next set).
+        this.fillWords(this.measure, 1, this.words[0].charAt(0));
+        const setChars = this.words.join('').length;
+        try {
+          this.setLength =
+            this.measure.getStartPositionOfChar(setChars).x - this.measure.getStartPositionOfChar(0).x;
+        } catch (error) {
+          this.setLength = 0;
+        }
+        this.measure.textContent = '';
+        if (!(this.setLength > 0)) return;
+
+        const pathLength = this.guide.getTotalLength();
+        const copies = Math.ceil((pathLength - LEAD_IN + this.setLength) / this.setLength) + 1;
+        this.fillWords(this.textPath, copies);
+        this.wrapOffset();
+        this.textPath.setAttribute('startOffset', round(this.offset));
+      }
+
+      wrapOffset() {
+        while (this.offset <= LEAD_IN - this.setLength) this.offset += this.setLength;
+        if (this.offset > LEAD_IN) this.offset = LEAD_IN;
+      }
+
+      toggle() {
+        const shouldRun = this.visible && !this.paused && !this.reducedMotion.matches && this.setLength > 0;
+        if (shouldRun && !this.frame) {
+          this.lastTime = null;
+          this.frame = requestAnimationFrame((time) => this.tick(time));
+        } else if (!shouldRun) {
+          this.stop();
+        }
+      }
+
+      stop() {
+        if (this.frame) cancelAnimationFrame(this.frame);
+        this.frame = null;
+      }
+
+      tick(time) {
+        const elapsed = this.lastTime === null ? 0 : Math.min(time - this.lastTime, 100);
+        this.lastTime = time;
+        this.offset -= (this.speed * elapsed) / 1000;
+        this.wrapOffset();
+        this.textPath.setAttribute('startOffset', round(this.offset));
+        this.frame = requestAnimationFrame((next) => this.tick(next));
+      }
+    }
+
+    customElements.define('hp-wave-marquee', HpWaveMarquee);
+  })();
+{% endjavascript %}
