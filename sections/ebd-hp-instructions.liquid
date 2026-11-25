@@ -1,64 +1,81 @@
-<section class="hp-instructions">
+{%- assign step_count = section.settings.step_count | plus: 0 -%}
+
+<section class="hp-instructions" data-hp-instructions>
   <div class="content-wrapper">
     <div class="heading">
-      <h2 class="darkblue">{{ section.settings.heading }}</h2>
-      <div class="toggles">
-        {% for block in section.blocks %}
-          <button class="instructions-toggle" data-id="{{ block.settings.title | handleize }}">
-            {{ block.settings.title }}
-          </button>
-        {% endfor %}
-      </div>
-      <select class="instructions-select">
-        {% for block in section.blocks %}
-          <option value="{{ block.settings.title | handleize }}">
-            {{ block.settings.title }}
-          </option>
-        {% endfor %}
-      </select>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 1 -%}
+        <div class="toggles" role="tablist" aria-label="{{ section.settings.heading | escape }}">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="instructions-toggle{% if forloop.first %} active{% endif %}"
+              role="tab"
+              id="InstructionsTab-{{ block.id }}"
+              aria-controls="InstructionsPanel-{{ block.id }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              {% unless forloop.first %}
+                tabindex="-1"
+              {% endunless %}
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.title -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
     </div>
 
-    {% for block in section.blocks %}
-      <div data-id="{{ block.settings.title | handleize }}" class="instruction-wrapper">
-
-        <div class="instruction-card">
-          <div class="image">
-            <img loading="lazy" src="{{ block.settings.image_1 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_1.width }}" height="{{ block.settings.image_1.height }}">           
-          </div>
-          <div class="content">
-            {{ block.settings.content_1 }}
-          </div>
-        </div>
-
-        <div class="instruction-card">
-          <div class="image">
-            <img loading="lazy" src="{{ block.settings.image_2 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_2.width }}" height="{{ block.settings.image_2.height }}">          
-          </div>
-          <div class="content">
-            {{ block.settings.content_2 }}
-          </div> 
-        </div>
-
-        <div class="instruction-card">
-          <div class="image">
-            <img loading="lazy" src="{{ block.settings.image_3 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_3.width }}" height="{{ block.settings.image_3.height }}">           
-          </div>
-          <div class="content">
-            {{ block.settings.content_3 }}
-          </div>
-        </div>
-
-        <div class="instruction-card">
-          <div class="image">
-            <img loading="lazy" src="{{ block.settings.image_4 | img_url: '1000x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.image_4.width }}" height="{{ block.settings.image_4.height }}">           
-          </div>
-          <div class="content">
-            {{ block.settings.content_4 }}
-          </div>
-        </div>
-
+    {%- for block in section.blocks -%}
+      <div
+        class="instruction-wrapper"
+        id="InstructionsPanel-{{ block.id }}"
+        {% if section.blocks.size > 1 %}
+          role="tabpanel"
+          aria-labelledby="InstructionsTab-{{ block.id }}"
+        {% endif %}
+        style="--step-count: {{ step_count }};"
+        {% unless forloop.first %}
+          hidden
+        {% endunless %}
+      >
+        {%- for i in (1..step_count) -%}
+          {%- liquid
+            assign image_key = 'image_' | append: i
+            assign content_key = 'content_' | append: i
+            assign step_image = block.settings[image_key]
+            assign step_content = block.settings[content_key]
+          -%}
+          {%- if step_image != blank or step_content != blank -%}
+            <div class="instruction-card">
+              <div class="image">
+                {%- if step_image != blank -%}
+                  {{
+                    step_image
+                    | image_url: width: 840
+                    | image_tag:
+                      loading: 'lazy',
+                      alt: step_image.alt,
+                      widths: '300, 420, 600, 840',
+                      sizes: '(min-width: 1025px) min(420px, 30vw), (min-width: 769px) 31vw, 300px'
+                  }}
+                {%- endif -%}
+                <span class="step-badge" aria-hidden="true">{{ i }}</span>
+              </div>
+              {%- if step_content != blank -%}
+                <div class="content">
+                  <span class="visually-hidden">Step {{ i }}:</span>
+                  {{ step_content }}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
       </div>
-    {% endfor %}
+    {%- endfor -%}
   </div>
 </section>
 
@@ -70,6 +87,17 @@
         "id": "heading",
         "type": "text",
         "label": "Heading"
+      },
+      {
+        "id": "step_count",
+        "type": "select",
+        "label": "Steps to show",
+        "options": [
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }
+        ],
+        "default": "3",
+        "info": "Step numbers are added automatically. In each step, use a heading (H4) for the title and a paragraph for the note."
       }
     ],
     "blocks": [
@@ -83,6 +111,10 @@
             "label": "Title"
           },
           {
+            "type": "header",
+            "content": "Step 1"
+          },
+          {
             "id": "image_1",
             "type": "image_picker",
             "label": "Image #1"
@@ -91,6 +123,10 @@
             "id": "content_1",
             "type": "richtext",
             "label": "Content #1"
+          },
+          {
+            "type": "header",
+            "content": "Step 2"
           },
           {
             "id": "image_2",
@@ -103,6 +139,10 @@
             "label": "Content #2"
           },
           {
+            "type": "header",
+            "content": "Step 3"
+          },
+          {
             "id": "image_3",
             "type": "image_picker",
             "label": "Image #3"
@@ -111,6 +151,11 @@
             "id": "content_3",
             "type": "richtext",
             "label": "Content #3"
+          },
+          {
+            "type": "header",
+            "content": "Step 4",
+            "info": "Only shown when \"Steps to show\" is set to 4."
           },
           {
             "id": "image_4",
@@ -136,182 +181,250 @@
 
 {% stylesheet %}
   section.hp-instructions {
-    padding: 65px 45px;
+    padding: 75px 45px;
+    background-color: white;
 
     .content-wrapper {
-      max-width: 1600px;
+      max-width: 1308px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+    }
 
-      .heading {
-        display: flex;
-        gap: 25px;
-        align-items: center;
-        margin-bottom: 25px;
+    .heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
 
-        h2 {
-          margin: 0;
-        }
+      h2 {
+        margin: 0;
+        text-align: center;
+        text-transform: capitalize;
+      }
+    }
 
-        .toggles {
-          display: flex;
-          gap: 10px;
+    .toggles {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
 
-          button {
-            background-color: white;
-            color: var(--color-darkblue);
-            text-align: center;
-            display: block;
-            border: solid 2px var(--color-darkblue);
-            border-radius: 50px;
-            padding: 12px 25px;
-            font-weight: 600;
-            transition: .4s;
-            width: auto;
-            white-space: nowrap;
-            cursor: pointer;
-            text-transform: uppercase;
+    .instructions-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 25px;
+      border: 2px solid var(--color-darkblue);
+      border-radius: 50px;
+      background-color: white;
+      color: var(--color-darkblue);
+      font: inherit;
+      font-size: 13.3px;
+      line-height: 16px;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
 
-            &.active {
-              background-color: var(--color-darkblue);
-              color: white;
-            }
-          }
-
-        }
-
-        select {
-          display: none;
-        }
-
-
+      &:hover,
+      &.active {
+        background-color: var(--color-darkblue);
+        color: white;
       }
 
-      .instruction-wrapper {
-        display: grid;
-        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
-        gap: 20px;
+      &:focus-visible {
+        outline: 2px solid var(--color-darkblue);
+        outline-offset: 3px;
+      }
+    }
 
-        .instruction-card {
-          .image {
-            margin-bottom: 15px;
-          }
+    .instruction-wrapper {
+      display: grid;
+      grid-template-columns: repeat(var(--step-count, 3), minmax(0, 1fr));
+      gap: 24px;
 
-          .content {
-            p {
-              font-size: 14px;
-              line-height: 18px;
-            }
-          }
-        }
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    .instruction-card {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .instruction-card .image {
+      position: relative;
+      aspect-ratio: 420 / 565;
+      overflow: hidden;
+      border-radius: 16px;
+      background-color: var(--color-mediumgray);
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .step-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background-color: var(--color-darkblue);
+      color: white;
+      font-size: 22px;
+      line-height: 26px;
+      font-weight: 600;
+    }
+
+    .instruction-card .content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        color: var(--color-darkblue);
+        font-size: 16px;
+        line-height: 20px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        color: rgba(18, 18, 18, 0.81);
+        font-size: 14px;
+        line-height: 18px;
       }
     }
 
     @media (max-width: 1024px) {
-      padding: 45px;
-      .content-wrapper {
-        .heading {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 15px;
-        }
+      padding: 60px 30px;
 
-        .instruction-wrapper {
-          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
-        }
+      .content-wrapper {
+        gap: 30px;
+      }
+
+      .instruction-wrapper {
+        gap: 16px;
+      }
+
+      .instruction-card {
+        gap: 16px;
       }
     }
 
+    /* Mobile (Figma): heading left-aligned, compact pills in one row, steps scroll sideways */
     @media (max-width: 768px) {
       padding: 45px 20px;
+
       .content-wrapper {
-        .heading {
-          flex-direction: row;
-          align-items: center;
-          .toggles {
-            display: none;
-          }
+        gap: 24px;
+      }
 
-          select {
-            display: block;
-            border: solid 2px var(--color-darkblue);
-            padding: 12px 10px;
-            font-family: var(--font-main);
-            font-weight: 600;
-            color: var(--color-darkblue);
-            border-radius: 0;
-          }
+      .heading {
+        align-items: stretch;
+        gap: 12px;
 
+        h2 {
+          text-align: left;
         }
       }
-    }
 
-    @media (max-width: 500px) {
-      .content-wrapper {
-        .heading {
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
+      .toggles {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .instructions-toggle {
+        flex: 0 1 auto;
+        min-height: 49px;
+        padding: 8px 16px;
+        border-width: 1.5px;
+        font-size: 13px;
+        line-height: 15px;
+        font-weight: 500;
+        white-space: normal;
+      }
+
+      .instruction-wrapper {
+        display: flex;
+        gap: 8px;
+        margin: 0 -20px;
+        padding: 0 20px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 20px;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
         }
+      }
+
+      .instruction-card {
+        flex: 0 0 300px;
+        max-width: 80vw;
+        gap: 15px;
+        scroll-snap-align: start;
       }
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  const toggleButtons = document.querySelectorAll('.instructions-toggle');
-  const instructionWrappers = document.querySelectorAll('.instruction-wrapper');
-  const instructionSelect = document.querySelector('.instructions-select');
+  document.querySelectorAll('[data-hp-instructions]').forEach(function (section) {
+    var tabs = Array.prototype.slice.call(section.querySelectorAll('.instructions-toggle'));
+    if (!tabs.length) return;
 
-  // Hide all instruction wrappers initially except the first one
-  instructionWrappers.forEach((wrapper, index) => {
-    if (index !== 0) {
-      wrapper.style.display = 'none';
+    function select(tab, focus) {
+      tabs.forEach(function (other) {
+        var isActive = other === tab;
+        var panel = document.getElementById(other.getAttribute('aria-controls'));
+        other.classList.toggle('active', isActive);
+        other.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        other.tabIndex = isActive ? 0 : -1;
+        if (panel) {
+          panel.hidden = !isActive;
+          if (isActive) panel.scrollLeft = 0;
+        }
+      });
+      if (focus) tab.focus();
     }
-  });
 
-  // Set first button as active
-  if (toggleButtons.length > 0) {
-    toggleButtons[0].classList.add('active');
-  }
-
-  toggleButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const targetId = this.dataset.id;
-      
-      // Remove active class from all buttons
-      toggleButtons.forEach(btn => btn.classList.remove('active'));
-      
-      // Add active class to clicked button
-      this.classList.add('active');
-      
-      // Hide all instruction wrappers
-      instructionWrappers.forEach(wrapper => {
-        wrapper.style.display = 'none';
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () {
+        select(tab, false);
       });
-      
-      // Show the target instruction wrapper
-      const targetWrapper = document.querySelector(`.instruction-wrapper[data-id="${targetId}"]`);
-      if (targetWrapper) {
-        targetWrapper.style.display = 'grid';
-      }
+
+      tab.addEventListener('keydown', function (event) {
+        var next = null;
+        if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length];
+        if (event.key === 'ArrowLeft') next = tabs[(index - 1 + tabs.length) % tabs.length];
+        if (event.key === 'Home') next = tabs[0];
+        if (event.key === 'End') next = tabs[tabs.length - 1];
+        if (next) {
+          event.preventDefault();
+          select(next, true);
+        }
+      });
     });
   });
-
-  // Handle select change for mobile
-  if (instructionSelect) {
-    instructionSelect.addEventListener('change', function() {
-      const targetId = this.value;
-      
-      // Hide all instruction wrappers
-      instructionWrappers.forEach(wrapper => {
-        wrapper.style.display = 'none';
-      });
-      
-      // Show the target instruction wrapper
-      const targetWrapper = document.querySelector(`.instruction-wrapper[data-id="${targetId}"]`);
-      if (targetWrapper) {
-        targetWrapper.style.display = 'grid';
-      }
-    });
-  }
 {% endjavascript %}
