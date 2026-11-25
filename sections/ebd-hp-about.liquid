@@ -66,9 +66,6 @@
     </div>
 
     <div class="video-wrapper">
-      <div class="graphic-left">
-        {% render 'graphic-floral' %}
-      </div>
       {%- liquid
         # Pick the largest mp4 within 720p for mobile and 1080p for desktop. The video is only
         # loaded once it scrolls into view (see the script below), so it no longer costs the
@@ -117,19 +114,19 @@
           <span class="icon icon-play">{% render 'icon-play' %}</span>
           <span class="icon icon-pause hidden">{% render 'icon-pause' %}</span>
         </button>
-      <div class="graphic-right">
-        {% render 'graphic-floral' %}
-      </div>
-      <a href="{{ section.settings.product_url }}" title="Laird Superfood Instant Lattes">
-        <img
-          class="product-image"
-          src="{{ section.settings.product_image | img_url: '750x' }}"
-          alt="{{ section.settings.product_image.alt }}"
-          loading="lazy"
-          width="{{ section.settings.product_image.width }}"
-          height="{{ section.settings.product_image.height }}"
-        >
-      </a>
+      {%- if section.settings.product_image != blank -%}
+        <a href="{{ section.settings.product_url }}" title="Laird Superfood Instant Lattes">
+          {{
+            section.settings.product_image
+            | image_url: width: 600
+            | image_tag:
+              class: 'product-image',
+              loading: 'lazy',
+              widths: '240, 400, 600',
+              sizes: '(min-width: 769px) 289px, 117px'
+          }}
+        </a>
+      {%- endif -%}
     </div>
   </div>
 
@@ -226,7 +223,7 @@
 
 {% stylesheet %}
   .hp-about {
-    padding: 50px 45px 65px;
+    padding: 50px 45px 0;
     overflow: hidden;
     background-color: var(--color-mediumgray);
 
@@ -424,64 +421,42 @@
       }
     }
 
+    /* A Better Latte video (Figma V1 "Video"): rounded corners, no floral graphics, product shot
+       overlapping the bottom-left corner. */
     .video-wrapper {
       position: relative;
-      margin: 125px auto 85px;
-      max-width: 1200px;
+      margin: 75px auto;
+      max-width: 1320px;
+
       video {
+        display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
         position: relative;
         z-index: 1;
+        border-radius: 50px;
       }
 
       img.product-image {
         position: absolute;
-        bottom: -65px;
-        left: -125px;
+        bottom: -75px;
+        left: 44px;
         z-index: 1;
-        width: 400px;
+        width: min(289px, 22%);
+        height: auto;
         transition: 1s;
 
         &:hover {
           transform: scale(1.05);
         }
       }
-
-      .graphic-left {
-        position: absolute;
-        z-index: 0;
-        top: -40px;
-        width: 280px;
-        left: -80px;
-        animation: floralMove 10s infinite;
-        svg, img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      .graphic-right {
-        position: absolute;
-        z-index: 0;
-        bottom: -45px;
-        width: 400px;
-        right: -90px;
-        animation: floralMove 10s 2s infinite;
-
-        svg, img {
-          width: 100%;
-          height: 100%;
-          transform: rotate(15deg);
-        }
-      }
     }
 
     .video-toggle {
       position: absolute;
-      top: 25px;
-      right: 25px;
+      top: 35px;
+      right: 44px;
       z-index: 2;
       background: none;
       border: solid 2px white;
@@ -489,6 +464,11 @@
       width: 55px;
       height: 55px;
       cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 3px;
+      }
     }
 
     .icon {
@@ -515,7 +495,6 @@
           position: relative;
           top: 6px;
           left: 2px;
-        
         }
       }
     }
@@ -524,79 +503,49 @@
       display: none !important;
     }
 
-    @media (max-width: 1200px) {
+    @media (max-width: 1024px) {
+      max-width: 100%;
+      padding: 40px 30px 0;
+
       .video-wrapper {
-        max-width: 700px;
-        margin: 105px auto 45px;
+        margin: 60px auto;
 
-        .graphic-left {
-          width: 170px;
-          left: -50px;
-        }
-
-        .graphic-right {
-          width: 250px;
-          right: -60px;
+        video {
+          border-radius: 30px;
         }
 
         img.product-image {
-          width: 300px;
-          bottom: -45px;
-          left: -85px;
+          bottom: -60px;
+          left: 30px;
         }
       }
-    }
 
-    @media (max-width: 1024px) {
-      max-width: 100%;
-      padding: 40px 30px 25px;
+      .video-toggle {
+        top: 25px;
+        right: 30px;
+      }
     }
 
     @media (max-width: 768px) {
       padding: 24px 20px 0;
 
       .video-wrapper {
-        margin: 85px auto; 
+        margin: 48px -3px 36px;
+
+        video {
+          border-radius: 12px;
+        }
+
         img.product-image {
-          left: -35px;
-          width: 215px;
-          bottom: -50px;
+          left: 5px;
+          bottom: -12px;
+          width: 117px;
         }
       }
 
       .video-toggle {
-        width: 45px;
-        height: 45px;
-        top: 20px;
-        right: 20px;        
-      }
-
-      .icon {
-        &.icon-play {
-          svg {
-            width: 24px;  
-            top: 1px;
-          }          
-        } 
-        
-        &.icon-pause {
-          top: 0;
-          left: 0;
-        }
-      }
-    }
-
-    @media (max-width: 500px) {
-      .video-wrapper {
-        .graphic-right {
-          width: 180px;
-        }
-
-        img.product-image {
-          width: 175px;
-          bottom: -60px;
-          left: -25px;
-        }
+        top: 7px;
+        right: 7px;
       }
     }
   }
