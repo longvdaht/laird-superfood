@@ -1,45 +1,67 @@
 <div class="hp-about">
   <div class="content-wrapper">
-    <div class="image">
-      <picture>
-        {% if section.settings.image_mobile != blank %}
-          <source
-            media="(max-width: 768px)"
-            srcset="{{ section.settings.image_mobile | image_url: width: 750 }} 750w, {{ section.settings.image_mobile | image_url: width: 1100 }} 1100w, {{ section.settings.image_mobile | image_url: width: 1500 }} 1500w"
-            sizes="100vw"
-            width="{{ section.settings.image_mobile.width }}"
-            height="{{ section.settings.image_mobile.height }}"
-          >
-        {% endif %}
-        <source
-          media="(min-width: 769px)"
-          srcset="{{ section.settings.image | image_url: width: 1200 }} 1200w, {{ section.settings.image | image_url: width: 1800 }} 1800w, {{ section.settings.image | image_url: width: 2400 }} 2400w"
-          sizes="100vw"
-        >
-        <img
-          src="{{ section.settings.image | image_url: width: 1800 }}"
-          alt="About Us"
-          class="w-full h-full object-cover"
-          loading="lazy"
-          width="{{ section.settings.image.width }}"
-          height="{{ section.settings.image.height }}"
-        >
-      </picture>
-    </div>
-    <div class="content">
-      <div class="heading">
-        <h2 class="darkblue">{{ section.settings.heading }}</h2>
-        {% if section.settings.link_url %}
-          <a href="{{ section.settings.link_url }}" class="btn btn-outline">{{ section.settings.link_label }}</a>
-        {% endif %}
+    <div class="hp-about__story">
+      <div class="hp-about__heading">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="hp-about__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="darkblue">{{ section.settings.heading }}</h2>
+        {%- endif -%}
       </div>
-      <div class="text">
-        {{ section.settings.text }}
-        {% if section.settings.link_url %}
-          <div class="link-wrapper">
-            <a href="{{ section.settings.link_url }}" class="btn btn-outline">{{ section.settings.link_label }}</a>
+
+      {%- liquid
+        assign image_main = section.settings.image
+        assign image_secondary = section.settings.image_secondary
+        assign caption_title = section.settings.caption_title
+        assign caption_text = section.settings.caption_text
+      -%}
+      {%- if image_main != blank or image_secondary != blank or caption_title != blank or caption_text != blank -%}
+        <div class="hp-about__media">
+          {%- if image_main != blank -%}
+            {{
+              image_main
+              | image_url: width: 1400
+              | image_tag:
+                class: 'hp-about__image hp-about__image--main',
+                loading: 'lazy',
+                widths: '400, 600, 800, 1000, 1200, 1400',
+                sizes: '(min-width: 1440px) 610px, (min-width: 769px) 42vw, 80vw'
+            }}
+          {%- endif -%}
+          {%- if image_secondary != blank -%}
+            {{
+              image_secondary
+              | image_url: width: 800
+              | image_tag:
+                class: 'hp-about__image hp-about__image--secondary',
+                loading: 'lazy',
+                widths: '200, 400, 600, 800',
+                sizes: '(min-width: 1440px) 315px, (min-width: 769px) 22vw, 40vw'
+            }}
+          {%- endif -%}
+          {%- if caption_title != blank or caption_text != blank -%}
+            <div class="hp-about__caption">
+              {%- if caption_title != blank -%}
+                <p class="hp-about__caption-title">{{ caption_title }}</p>
+              {%- endif -%}
+              {%- if caption_text != blank -%}
+                <p class="hp-about__caption-text">{{ caption_text }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="hp-about__body">
+        {%- if section.settings.text != blank -%}
+          <div class="hp-about__text">{{ section.settings.text }}</div>
+        {%- endif -%}
+        {%- if section.settings.link_url != blank and section.settings.link_label != blank -%}
+          <div class="hp-about__link">
+            <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
           </div>
-        {% endif %}
+        {%- endif -%}
       </div>
     </div>
 
@@ -120,9 +142,24 @@
   "name": "HP About",
   "settings": [
     {
+      "type": "header",
+      "content": "Story"
+    },
+    {
+      "id": "eyebrow",
+      "type": "text",
+      "label": "Eyebrow text",
+      "default": "From the Waves to Your Cup"
+    },
+    {
       "id": "heading",
       "type": "text",
       "label": "Heading"
+    },
+    {
+      "id": "text",
+      "type": "richtext",
+      "label": "Text"
     },
     {
       "id": "link_url",
@@ -135,19 +172,32 @@
       "label": "Link Label"
     },
     {
-      "id": "text",
-      "type": "richtext",
-      "label": "Text"
-    },
-    {
       "id": "image",
       "type": "image_picker",
-      "label": "Image"
+      "label": "Main image",
+      "info": "The larger, tilted photo. Landscape, about 4:3."
     },
     {
-      "id": "image_mobile",
+      "id": "image_secondary",
       "type": "image_picker",
-      "label": "Image Mobile"
+      "label": "Secondary image",
+      "info": "The smaller photo overlapping the main one. Landscape, about 4:3."
+    },
+    {
+      "id": "caption_title",
+      "type": "text",
+      "label": "Caption title",
+      "default": "Gabby Reece | Laird Hamilton"
+    },
+    {
+      "id": "caption_text",
+      "type": "text",
+      "label": "Caption text",
+      "default": "Co-founders"
+    },
+    {
+      "type": "header",
+      "content": "Video"
     },
     {
       "id": "video",
@@ -176,35 +226,201 @@
 
 {% stylesheet %}
   .hp-about {
-    padding: 65px 45px;
+    padding: 50px 45px 65px;
     overflow: hidden;
+    background-color: var(--color-mediumgray);
 
     .content-wrapper {
       max-width: 1600px;
       margin: 0 auto;
+    }
 
-      .content {
-        margin-top: 25px;
-        display: flex;
-        gap: 65px;
+    /* Story: tilted photos on the left, heading + text on the right (Figma V1 "Founder-Story") */
+    .hp-about__story {
+      display: grid;
+      grid-template-columns: minmax(0, 760fr) minmax(0, 553fr);
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        'media heading'
+        'media body';
+      column-gap: 40px;
+      row-gap: 24px;
+      max-width: 1353px;
+      margin: 0 auto;
+    }
 
-        .heading {
-          width: 35%;
-          h2 {
-            max-width: 375px;
-          }
+    .hp-about__heading {
+      grid-area: heading;
+      align-self: end;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .hp-about__eyebrow {
+        margin: 0;
+        color: var(--color-red-2);
+        font-size: 24px;
+        line-height: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        margin: 0;
+        max-width: 352px;
+        text-transform: capitalize;
+      }
+    }
+
+    .hp-about__body {
+      grid-area: body;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .hp-about__text {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      p {
+        margin: 0;
+        color: var(--color-darkblue);
+        font-size: 18px;
+        line-height: 24px;
+      }
+    }
+
+    /* Image positions are the Figma offsets as a share of the 760x561 frame. Figma rotates around
+       the top-left corner, hence transform-origin. */
+    .hp-about__media {
+      grid-area: media;
+      align-self: center;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 760 / 561;
+    }
+
+    .hp-about__image {
+      position: absolute;
+      display: block;
+      height: auto;
+      object-fit: cover;
+      border-radius: 12px;
+      transform-origin: 0 0;
+    }
+
+    .hp-about__image--main {
+      left: 16.34%;
+      top: 4.89%;
+      width: 79.22%;
+      aspect-ratio: 602 / 445;
+      transform: rotate(3.45deg);
+    }
+
+    .hp-about__image--secondary {
+      z-index: 1;
+      left: -0.1%;
+      top: 14.38%;
+      width: 40.65%;
+      aspect-ratio: 309 / 229;
+      transform: rotate(-5.19deg);
+    }
+
+    .hp-about__caption {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+
+      p {
+        margin: 0;
+        color: var(--color-darkblue);
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .hp-about__caption-title {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hp-about__story {
+        column-gap: 30px;
+      }
+
+      .hp-about__heading .hp-about__eyebrow {
+        font-size: 20px;
+        line-height: 24px;
+      }
+
+      .hp-about__text p {
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hp-about__story {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas:
+          'heading'
+          'media'
+          'body';
+      }
+
+      .hp-about__heading {
+        align-self: auto;
+        align-items: center;
+        text-align: center;
+
+        .hp-about__eyebrow {
+          font-size: 18px;
+          line-height: 20px;
         }
 
-        .text {
-          width: 65%;
-          p {
-            color: var(--color-darkblue);
-          }
-
-          a.btn {
-            display: none;
-          }
+        h2 {
+          max-width: none;
+          font-size: 28px;
+          line-height: 30px;
         }
+      }
+
+      .hp-about__media {
+        width: calc(100% + 20px);
+        margin: 0 -10px;
+      }
+
+      .hp-about__image {
+        border-radius: 6px;
+      }
+
+      .hp-about__caption {
+        left: 4%;
+        bottom: 2px;
+        gap: 0;
+
+        .hp-about__caption-title {
+          font-size: 14px;
+        }
+      }
+
+      .hp-about__body {
+        gap: 25px;
+      }
+
+      .hp-about__text p {
+        font-size: 16px;
+        line-height: 26px;
       }
     }
 
@@ -333,51 +549,11 @@
 
     @media (max-width: 1024px) {
       max-width: 100%;
-      padding: 25px 45px;
-
-      .content-wrapper {
-        gap: 0;
-
-        h3 {
-          max-width: 100%;
-        }
-      }
+      padding: 40px 30px 25px;
     }
 
     @media (max-width: 768px) {
-      padding: 0 20px;
-
-      .content-wrapper {
-        .content {
-          flex-direction: column;
-          gap: 0;
-
-          .heading {
-            width: 100%;
-
-            h2 {
-              max-width: none;
-            }
-          }
-
-          a.btn {
-            display: none;
-          }
-
-          .text {
-            width: 100%;
-
-            .link-wrapper {
-              margin-top: 25px;
-              a.btn {
-                display: inline-block;
-              }
-            }
-
-
-          }
-        }
-      }
+      padding: 24px 20px 0;
 
       .video-wrapper {
         margin: 85px auto; 
