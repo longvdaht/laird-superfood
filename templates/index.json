@@ -841,6 +841,10 @@
         "heading": "One week to a better habit"
       }
     },
+    "ebd_hp_find_your_ritual_Rt4kQ2": {
+      "type": "ebd-hp-find-your-ritual",
+      "settings": {}
+    },
     "ebd_hp_find_us_QVafT7": {
       "type": "ebd-hp-find-us",
       "blocks": {
@@ -1007,6 +1011,7 @@
     "ebd_hp_faqs_yy3zTa",
     "tbx_hp_video_testimonials_QCPhhk",
     "ebd_hp_instructions_TBqGwV",
+    "ebd_hp_find_your_ritual_Rt4kQ2",
     "ebd_hp_find_us_QVafT7",
     "ebd_hp_instafeed_heading_RYVkwV",
     "1763535472c606350a"

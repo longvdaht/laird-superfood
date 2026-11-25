@@ -1,0 +1,194 @@
+{%- liquid
+  assign desktop_image = section.settings.image
+  assign mobile_image = section.settings.image_mobile | default: desktop_image
+  assign button_url = section.settings.button_url | default: '/pages/daily-ritual-quiz'
+-%}
+
+<section class="hp-ritual">
+  {%- if desktop_image != blank or mobile_image != blank -%}
+    <div class="hp-ritual__media">
+      {%- if desktop_image != blank -%}
+        {{
+          desktop_image
+          | image_url: width: 3000
+          | image_tag:
+            class: 'hp-ritual__image hp-ritual__image--desktop',
+            loading: 'lazy',
+            alt: '',
+            widths: '800, 1200, 1600, 2000, 2400, 3000',
+            sizes: '(min-width: 769px) 100vw, 1px'
+        }}
+      {%- endif -%}
+      {%- if mobile_image != blank -%}
+        {{
+          mobile_image
+          | image_url: width: 1200
+          | image_tag:
+            class: 'hp-ritual__image hp-ritual__image--mobile',
+            loading: 'lazy',
+            alt: '',
+            widths: '400, 600, 800, 1200',
+            sizes: '(max-width: 768px) 100vw, 1px'
+        }}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="hp-ritual__content">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="darkblue">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <p class="hp-ritual__text">{{ section.settings.text }}</p>
+    {%- endif -%}
+    {%- if section.settings.button_label != blank -%}
+      <a href="{{ button_url }}" class="btn">{{ section.settings.button_label }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "HP Find Your Ritual",
+    "settings": [
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Background image (desktop)",
+        "info": "Wide image, about 1440 × 374 or larger. Keep the middle clear for the text."
+      },
+      {
+        "id": "image_mobile",
+        "type": "image_picker",
+        "label": "Image (mobile)",
+        "info": "Shown above the text on mobile, about 390 × 223. Uses the desktop image if empty."
+      },
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading",
+        "default": "Find Your Ritual"
+      },
+      {
+        "id": "text",
+        "type": "text",
+        "label": "Text",
+        "default": "Take our quiz and we'll match you with the right products for your goals and lifestyle."
+      },
+      {
+        "id": "button_label",
+        "type": "text",
+        "label": "Button label",
+        "default": "TAKE THE QUIZ",
+        "info": "Leave blank to hide the button."
+      },
+      {
+        "id": "button_url",
+        "type": "url",
+        "label": "Button link",
+        "info": "Defaults to /pages/daily-ritual-quiz."
+      }
+    ],
+    "presets": [
+      {
+        "name": "HP Find Your Ritual",
+        "category": "Home Page"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  section.hp-ritual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: max(374px, 25.97vw);
+    padding: 50px 45px;
+    overflow: hidden;
+    background-color: var(--color-mediumgray);
+
+    .hp-ritual__media {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hp-ritual__image {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hp-ritual__image--mobile {
+      display: none;
+    }
+
+    .hp-ritual__content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 528px;
+      text-align: center;
+
+      h2 {
+        margin: 0;
+        text-transform: capitalize;
+      }
+    }
+
+    .hp-ritual__text {
+      max-width: 456px;
+      margin: 12px 0 0;
+      color: var(--color-darkblue);
+      font-size: 18px;
+      line-height: 24px;
+    }
+
+    .btn {
+      margin-top: 25px;
+    }
+
+    /* Mobile (Figma): image on top, text on white below */
+    @media (max-width: 768px) {
+      flex-direction: column;
+      min-height: 0;
+      padding: 0;
+      background-color: white;
+
+      .hp-ritual__media {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        aspect-ratio: 390 / 223;
+        overflow: hidden;
+      }
+
+      .hp-ritual__image--desktop {
+        display: none;
+      }
+
+      .hp-ritual__image--mobile {
+        display: block;
+      }
+
+      .hp-ritual__content {
+        max-width: none;
+        padding: 50px 37px;
+      }
+
+      .hp-ritual__text {
+        max-width: 316px;
+        font-size: 16px;
+        line-height: 26px;
+      }
+    }
+  }
+{% endstylesheet %}
