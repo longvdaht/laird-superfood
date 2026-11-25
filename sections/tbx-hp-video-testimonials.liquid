@@ -1,48 +1,153 @@
-<div class="hp-video-testimonials">
+<div
+  class="hp-video-testimonials{% if section.settings.top_wave %} has-top-wave{% endif %}{% if section.settings.bottom_wave %} has-bottom-wave{% endif %}"
+  style="--wave-top-color: {{ section.settings.top_wave_color }}; --wave-bottom-color: {{ section.settings.bottom_wave_color }};"
+>
+  {%- if section.settings.top_wave -%}
+    <div class="hp-video-testimonials__wave hp-video-testimonials__wave--top" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false">
+        <path d="M1440 26.67C1224 65 1008 76.67 792 41.67C612 12.5 432 4.17 240 33.33C132 50 60 70.83 0 58.33V0H1440Z"></path>
+      </svg>
+    </div>
+  {%- endif -%}
+
   <div class="content-wrapper">
     <div class="heading">
-      <h2 class="white">The people have spoken...</h2>
-      <p class="white">Loved by 12,357 people and counting!</p>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="white">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="white">{{ section.settings.subheading }}</p>
+      {%- endif -%}
     </div>
     <div class="swiper">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
-          <div class="swiper-slide">
+          {%- assign product = block.settings.product -%}
+          <div class="swiper-slide" {{ block.shopify_attributes }}>
             <div class="slide-wrapper">
-              <video playsinline preload="none" poster="{{ block.settings.video_poster | img_url: '750x' }}">
-                <source src="{{ block.settings.video.sources[1].url }}" type="video/mp4">                
+              <video
+                playsinline
+                preload="none"
+                {% if block.settings.video_poster != blank %}
+                  poster="{{ block.settings.video_poster | image_url: width: 750 }}"
+                {% endif %}
+              >
+                <source src="{{ block.settings.video.sources[1].url | default: block.settings.video.sources.first.url }}" type="video/mp4">
               </video>
-              <div class="video-control">
-                  <div class="play">
-                    {% render 'icon-play' %}
-                  </div>
-                  <div class="pause">
-                    {% render 'icon-pause' %}
-                  </div>              
-                </div>
+              <button type="button" class="video-control" aria-label="Play video">
+                <span class="play">
+                  {% render 'icon-play' %}
+                </span>
+                <span class="pause">
+                  {% render 'icon-pause' %}
+                </span>
+              </button>
             </div>
+
+            {%- if product != blank -%}
+              <a href="{{ product.url }}" class="testimonial-product">
+                <span class="testimonial-product__image">
+                  {%- if product.featured_image != blank -%}
+                    {{
+                      product.featured_image
+                      | image_url: width: 144
+                      | image_tag: loading: 'lazy', width: 72, height: 72, alt: product.featured_image.alt
+                    }}
+                  {%- endif -%}
+                </span>
+                <span class="testimonial-product__info">
+                  <span class="testimonial-product__title">{{ product.title }}</span>
+                  <span class="testimonial-product__price">
+                    <span class="price">{{ product.price | money }}</span>
+                    {%- if product.compare_at_price > product.price -%}
+                      <s class="compare-price">{{ product.compare_at_price | money }}</s>
+                    {%- endif -%}
+                  </span>
+                </span>
+              </a>
+            {%- endif -%}
           </div>
         {% endfor %}
       </div>
-      <div class="review-stars">
-        {% render 'icon-review-star-white' %}
+    </div>
+    {%- if section.settings.button_label != blank -%}
+      <div class="link-wrapper">
+        <a href="{{ section.settings.button_url | default: '/pages/reviews' }}" class="btn">
+          {{- section.settings.button_label -}}
+        </a>
       </div>
-    </div>
-    <div class="link-wrapper">
-      <a href="/pages/reviews" title="View All Reviews">
-        <button>
-          READ ALL REVIEWS
-        </button>
-      </a>
-    </div>
+    {%- endif -%}
   </div>
 
+  {%- if section.settings.bottom_wave -%}
+    <div class="hp-video-testimonials__wave hp-video-testimonials__wave--bottom" aria-hidden="true">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false">
+        <path d="M0 20.83C192 50 384 58.33 576 33.33C732 12.5 888 -4.17 1056 16.67C1176 33.33 1308 58.33 1440 45.83V100H0Z"></path>
+      </svg>
+    </div>
+  {%- endif -%}
 </div>
 
 {% schema %}
 {
   "name": "HP Video Testimonials",
-  "settings": [],
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "The people have spoken..."
+    },
+    {
+      "id": "subheading",
+      "type": "text",
+      "label": "Subheading",
+      "default": "Loved by 12,357 people and counting!"
+    },
+    {
+      "id": "button_label",
+      "type": "text",
+      "label": "Button label",
+      "default": "READ ALL REVIEWS",
+      "info": "Leave blank to hide the button."
+    },
+    {
+      "id": "button_url",
+      "type": "url",
+      "label": "Button link",
+      "info": "Defaults to /pages/reviews."
+    },
+    {
+      "type": "header",
+      "content": "Wave edges"
+    },
+    {
+      "id": "top_wave",
+      "type": "checkbox",
+      "label": "Show wave at the top",
+      "default": true
+    },
+    {
+      "id": "top_wave_color",
+      "type": "color",
+      "label": "Color above the top wave",
+      "info": "Match the section above.",
+      "default": "#F8F4EF"
+    },
+    {
+      "id": "bottom_wave",
+      "type": "checkbox",
+      "label": "Show wave at the bottom",
+      "default": true
+    },
+    {
+      "id": "bottom_wave_color",
+      "type": "color",
+      "label": "Color below the bottom wave",
+      "info": "Match the section below.",
+      "default": "#FFFFFF"
+    }
+  ],
   "blocks": [
     {
       "type": "Testimonial",
@@ -61,7 +166,8 @@
         {
           "id": "product",
           "type": "product",
-          "label": "Product"
+          "label": "Product",
+          "info": "Shown under the video with its image and price."
         }
       ]
     }
@@ -77,44 +183,94 @@
 
 {% stylesheet %}
   .hp-video-testimonials {
-    padding: 45px 45px;
+    position: relative;
+    padding: 35px 45px;
     overflow: hidden;
-    background-color: #3a758a;
-    
+    background-color: var(--color-mediumblue);
+
+    &.has-top-wave {
+      padding-top: 135px;
+    }
+
+    &.has-bottom-wave {
+      padding-bottom: 135px;
+    }
+
+    /* Wave edges (Figma V1): 100px strips painted with the neighbouring section's color */
+    .hp-video-testimonials__wave {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      pointer-events: none;
+
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .hp-video-testimonials__wave--top {
+      top: 0;
+      fill: var(--wave-top-color);
+    }
+
+    .hp-video-testimonials__wave--bottom {
+      bottom: 0;
+      fill: var(--wave-bottom-color);
+    }
+
     .content-wrapper {
       max-width: 1600px;
       margin: 0 auto;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 25px;
+
+      > .swiper {
+        width: 100%;
+        min-width: 0;
+      }
 
       .heading {
-        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
         h2 {
           margin: 0;
+          text-transform: capitalize;
+        }
+
+        p {
+          margin: 0;
+          font-size: 18px;
+          line-height: 24px;
         }
       }
 
-      .swiper {
-        .review-stars {
-          position: absolute;
-          top: -20px;
-          right: 25px;
-          z-index: 1;
-
-          svg {
-            transform: scale(2);
-            path {
-              stroke: #003349;
-              fill: #003349;
-            }
-          }
-        }
+      .swiper-slide {
+        width: 320px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
       }
 
       .slide-wrapper {
         position: relative;
         aspect-ratio: 0.65;
+        overflow: hidden;
+        border-radius: 8px;
+
+        &:has(+ .testimonial-product) {
+          border-radius: 8px 8px 0 0;
+        }
 
         video {
+          display: block;
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -124,20 +280,27 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%,-50%);
-          border: solid 2px #003349;
-          border-radius: 50%;
+          transform: translate(-50%, -50%);
           width: 60px;
           height: 60px;
-          display: flex;
-          justify-content: center;
+          padding: 0;
+          border: solid 2px white;
+          border-radius: 50%;
+          background: none;
           cursor: pointer;
+
+          &:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 3px;
+          }
 
           .play {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-45%, -50%);
+            display: block;
+            line-height: 0;
           }
 
           .pause {
@@ -150,126 +313,193 @@
           svg {
             width: 30px;
             height: auto;
+
             path {
-              fill: #003349;
+              fill: white;
             }
           }
         }
-      }  
-
-      .link-wrapper {
-        margin-top: 45px;
-        display: flex;
-        justify-content: center;
       }
 
-      button {
-        background-color: #e11d48;
-        color: #fff;
-        text-align: center;
-        display: block;
-        border: solid 2px transparent;
-        border-radius: 50px;
-        padding: 12px 25px;
-        font-weight: 600;
-        transition: .4s;
-        width: auto;
-        white-space: nowrap;
+      /* Product strip under each video */
+      .testimonial-product {
+        display: flex;
+        align-items: flex-start;
+        flex: 1;
+        padding: 8px;
+        background-color: white;
+        border-radius: 0 0 8px 8px;
+        color: var(--color-darkblue);
+        text-decoration: none;
 
-        &:hover {
-          background-color: white;
-          color: #e11d48;
+        &:focus-visible {
+          outline: 2px solid white;
+          outline-offset: 2px;
         }
+      }
+
+      .testimonial-product__image {
+        flex: none;
+        width: 72px;
+        height: 72px;
+        overflow: hidden;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        background-color: white;
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+
+      .testimonial-product__info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+        min-height: 72px;
+        padding: 4px 16px;
+      }
+
+      .testimonial-product__title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 16px;
+        line-height: 18px;
+        font-weight: 600;
+      }
+
+      .testimonial-product__price {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 16px;
+        line-height: 19px;
+
+        .price {
+          color: var(--color-mediumblue);
+          font-weight: 600;
+        }
+
+        .compare-price {
+          color: rgba(0, 0, 0, 0.81);
+          opacity: 0.4;
+        }
+      }
+
+      .link-wrapper {
+        display: flex;
+        justify-content: center;
       }
     }
 
     @media (max-width: 768px) {
       padding: 45px 20px;
 
-      .content-wrapper {
-        .swiper {
-          .review-stars {
-            display: none;
-          }
-        }
+      &.has-top-wave {
+        padding-top: 85px;
+      }
 
-        .link-wrapper {
-          margin-top: 45px;
+      &.has-bottom-wave {
+        padding-bottom: 85px;
+      }
+
+      .hp-video-testimonials__wave {
+        height: 40px;
+      }
+
+      .content-wrapper {
+        gap: 24px;
+
+        .heading {
+          h2 {
+            font-size: 28px;
+            line-height: 30px;
+          }
+
+          p {
+            font-size: 16px;
+            line-height: 22px;
+          }
         }
       }
     }
-    
   }
 {% endstylesheet %}
 
 
 {% javascript %}
-  var testimonialSwiper = new Swiper('.hp-video-testimonials .swiper', {
-    slidesPerView: 1.15,
-    spaceBetween: 15,
-    breakpoints: {
-      500: {
-        slidesPerView: 1.85,
-      },
-      700: {
-        slidesPerView: 2.15,
-      },
-      900: {
-        slidesPerView: 3.15,
-      },
-      1200: {
-        slidesPerView: 4,
-        spaceBetween: 20
-      },
-    },
-  });
+  document.querySelectorAll('.hp-video-testimonials').forEach(function (section) {
+    var swiperEl = section.querySelector('.swiper');
+    var testimonialSwiper = swiperEl && window.Swiper
+      ? new Swiper(swiperEl, {
+          slidesPerView: 'auto',
+          spaceBetween: 20,
+          watchOverflow: true,
+          breakpoints: {
+            1200: {
+              slidesPerView: 4,
+              spaceBetween: 20
+            }
+          }
+        })
+      : null;
 
-var wrappers = document.querySelectorAll('.hp-video-testimonials .slide-wrapper');
+    var wrappers = section.querySelectorAll('.slide-wrapper');
 
-function resetWrapper(w) {
-  var v = w.querySelector('video');
-  if (!v) return;
-  v.pause();
-  try { v.currentTime = 0; } catch(e) {}
-  v.load(); // forces the poster to show again
-  var play = w.querySelector('.video-control .play');
-  var pause = w.querySelector('.video-control .pause');
-  if (pause) pause.style.display = 'none';
-  if (play) play.style.display = 'block';
-}
+    function setPlaying(wrapper, playing) {
+      var control = wrapper.querySelector('.video-control');
+      var play = wrapper.querySelector('.video-control .play');
+      var pause = wrapper.querySelector('.video-control .pause');
+      if (pause) pause.style.display = playing ? 'block' : 'none';
+      if (play) play.style.display = playing ? 'none' : 'block';
+      if (control) control.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+    }
 
-wrappers.forEach(function(wrapper) {
-  var video = wrapper.querySelector('video');
-  var videoControl = wrapper.querySelector('.video-control');
-  var playBtn = wrapper.querySelector('.video-control .play');
-  var pauseBtn = wrapper.querySelector('.video-control .pause');
+    function resetWrapper(w) {
+      var v = w.querySelector('video');
+      if (!v) return;
+      v.pause();
+      try { v.currentTime = 0; } catch (e) {}
+      v.load(); // forces the poster to show again
+      setPlaying(w, false);
+    }
 
-  // Show poster again when the video ends
-  video.addEventListener('ended', function() {
-    resetWrapper(wrapper);
-  });
+    wrappers.forEach(function (wrapper) {
+      var video = wrapper.querySelector('video');
+      var videoControl = wrapper.querySelector('.video-control');
+      if (!video || !videoControl) return;
 
-  videoControl.addEventListener('click', function() {
-    if (video.paused) {
-      // Pause and reset every other slide to its poster
-      wrappers.forEach(function(otherWrapper) {
-        if (otherWrapper !== wrapper) resetWrapper(otherWrapper);
+      // Show poster again when the video ends
+      video.addEventListener('ended', function () {
+        resetWrapper(wrapper);
       });
-      playBtn.style.display = 'none';
-      pauseBtn.style.display = 'block';
-      video.play();
-    } else {
-      pauseBtn.style.display = 'none';
-      playBtn.style.display = 'block';
-      video.pause();
+
+      videoControl.addEventListener('click', function () {
+        if (video.paused) {
+          // Pause and reset every other slide to its poster
+          wrappers.forEach(function (otherWrapper) {
+            if (otherWrapper !== wrapper) resetWrapper(otherWrapper);
+          });
+          setPlaying(wrapper, true);
+          video.play();
+        } else {
+          setPlaying(wrapper, false);
+          video.pause();
+        }
+      });
+    });
+
+    if (testimonialSwiper) {
+      testimonialSwiper.on('slideChangeTransitionStart', function () {
+        wrappers.forEach(resetWrapper);
+      });
     }
   });
-});
-
-testimonialSwiper.on('slideChangeTransitionStart', function() {
-  wrappers.forEach(resetWrapper);
-});
-
-
-
 {% endjavascript %}
