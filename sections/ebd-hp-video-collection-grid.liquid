@@ -151,6 +151,13 @@
         min-width: 0;
       }
 
+      /* The section's custom CSS (theme editor) centers .swiper-wrapper. That only works while all
+         tiles fit; once the slider scrolls it shifts the first tiles off-screen. Keep the centering
+         for the locked (non-scrolling) state only. */
+      > .swiper:not(.swiper-lock) > .swiper-wrapper {
+        justify-content: flex-start !important;
+      }
+
       .heading {
         display: flex;
         flex-direction: column;
