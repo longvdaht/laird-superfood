@@ -18,28 +18,30 @@
       -%}
       {%- if image_main != blank or image_secondary != blank or caption_title != blank or caption_text != blank -%}
         <div class="hp-about__media">
-          {%- if image_main != blank -%}
-            {{
-              image_main
-              | image_url: width: 1400
-              | image_tag:
-                class: 'hp-about__image hp-about__image--main',
-                loading: 'lazy',
-                widths: '400, 600, 800, 1000, 1200, 1400',
-                sizes: '(min-width: 1440px) 610px, (min-width: 769px) 42vw, 80vw'
-            }}
-          {%- endif -%}
-          {%- if image_secondary != blank -%}
-            {{
-              image_secondary
-              | image_url: width: 800
-              | image_tag:
-                class: 'hp-about__image hp-about__image--secondary',
-                loading: 'lazy',
-                widths: '200, 400, 600, 800',
-                sizes: '(min-width: 1440px) 315px, (min-width: 769px) 22vw, 40vw'
-            }}
-          {%- endif -%}
+          <div class="hp-about__images">
+            {%- if image_main != blank -%}
+              {{
+                image_main
+                | image_url: width: 1400
+                | image_tag:
+                  class: 'hp-about__image hp-about__image--main',
+                  loading: 'lazy',
+                  widths: '400, 600, 800, 1000, 1200, 1400',
+                  sizes: '(min-width: 1440px) 610px, (min-width: 769px) 42vw, 80vw'
+              }}
+            {%- endif -%}
+            {%- if image_secondary != blank -%}
+              {{
+                image_secondary
+                | image_url: width: 800
+                | image_tag:
+                  class: 'hp-about__image hp-about__image--secondary',
+                  loading: 'lazy',
+                  widths: '200, 400, 600, 800',
+                  sizes: '(min-width: 1440px) 315px, (min-width: 769px) 22vw, 40vw'
+              }}
+            {%- endif -%}
+          </div>
           {%- if caption_title != blank or caption_text != blank -%}
             <div class="hp-about__caption">
               {%- if caption_title != blank -%}
@@ -266,6 +268,7 @@
         margin: 0;
         max-width: 352px;
         text-transform: capitalize;
+        text-wrap: balance;
       }
     }
 
@@ -296,6 +299,10 @@
     .hp-about__media {
       grid-area: media;
       align-self: center;
+      width: 100%;
+    }
+
+    .hp-about__images {
       position: relative;
       width: 100%;
       aspect-ratio: 760 / 561;
@@ -327,11 +334,13 @@
       transform: rotate(-5.19deg);
     }
 
+    /* In normal flow under the photos, pulled up into the frame's empty bottom-left corner
+       (Figma: caption top at 518/561 of the frame). A percentage margin follows the frame width,
+       so the caption never runs into the main photo whatever the screen size. */
     .hp-about__caption {
-      position: absolute;
+      position: relative;
       z-index: 2;
-      left: 0;
-      bottom: 0;
+      margin-top: -5.6%;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -402,8 +411,7 @@
       }
 
       .hp-about__caption {
-        left: 4%;
-        bottom: 2px;
+        padding-left: 4%;
         gap: 0;
 
         .hp-about__caption-title {
