@@ -1,33 +1,78 @@
-<section class="hp-faqs">
+<section
+  class="hp-faqs{% if section.settings.show_wave %} hp-faqs--wave{% endif %}"
+  style="--faq-wave-color: {{ section.settings.wave_color }};"
+>
+  {%- if section.settings.show_wave -%}
+    <div class="hp-faqs__wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false">
+        <path d="M0 20.83C192 50 384 58.33 576 33.33C732 12.5 888 -4.17 1056 16.67C1176 33.33 1308 58.33 1440 45.83V0H0Z"></path>
+      </svg>
+    </div>
+  {%- endif -%}
+
   <div class="content-wrapper">
-    <h2 class="darkblue">{{ section.settings.heading }}</h2>
-    <div class="faq-wrapper">
-      {% for block in section.blocks %}
-        <div class="faq-single">
-          <div class="faq-toggle">
-            <h4 class="darkblue">{{ block.settings.title }}</h4>            
-            <div class="toggle-icon">
-              <div class="bar"></div>
-              <div class="bar"></div>
-            </div>
-          </div>
-          <div class="toggle-content">
+    <div class="hp-faqs__heading">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hp-faqs__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    <div class="hp-faqs__list">
+      {%- for block in section.blocks -%}
+        <div class="hp-faqs__item" {{ block.shopify_attributes }}>
+          <h3 class="hp-faqs__question">
+            <button
+              type="button"
+              class="hp-faqs__toggle"
+              aria-expanded="false"
+              aria-controls="Faq-{{ block.id }}"
+              data-faq-toggle
+            >
+              <span>{{ block.settings.title }}</span>
+              <span class="hp-faqs__icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="hp-faqs__answer" id="Faq-{{ block.id }}" hidden>
             {{ block.settings.faq_content }}
           </div>
         </div>
-      {% endfor %}
-    </div>
-    <div class="link-wrapper">
-      <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
+      {%- endfor -%}
+
+      {%- if section.settings.link_url != blank and section.settings.link_label != blank -%}
+        <div class="link-wrapper">
+          <a href="{{ section.settings.link_url }}" class="btn">{{ section.settings.link_label }}</a>
+        </div>
+      {%- endif -%}
     </div>
   </div>
-  <img loading="lazy" src="{{ section.settings.background_image | img_url: '1000x' }}" alt="{{ section.settings.background_image.alt }}" class="floating-image" width="{{ section.settings.background_image.width }}" height="{{ section.settings.background_image.height }}">
+
+  {%- if section.settings.background_image != blank -%}
+    {{
+      section.settings.background_image
+      | image_url: width: 1700
+      | image_tag:
+        class: 'floating-image',
+        loading: 'lazy',
+        alt: '',
+        widths: '600, 900, 1200, 1700',
+        sizes: '(min-width: 769px) min(842px, 59vw), 1px'
+    }}
+  {%- endif -%}
 </section>
 
 {% schema %}
   {
     "name": "HP FAQ",
     "settings": [
+      {
+        "id": "eyebrow",
+        "type": "text",
+        "label": "Eyebrow text",
+        "default": "FAQs"
+      },
       {
         "id": "heading",
         "type": "text",
@@ -36,7 +81,8 @@
       {
         "id": "background_image",
         "type": "image_picker",
-        "label": "Background Image"
+        "label": "Image",
+        "info": "Shown at the bottom left on desktop, hidden on mobile. Use a square-ish transparent PNG (the latte glass from the design)."
       },
       {
         "id": "link_url",
@@ -47,6 +93,23 @@
         "id": "link_label",
         "type": "text",
         "label": "Link Label"
+      },
+      {
+        "type": "header",
+        "content": "Top wave"
+      },
+      {
+        "id": "show_wave",
+        "type": "checkbox",
+        "label": "Show wave at the top",
+        "default": true
+      },
+      {
+        "id": "wave_color",
+        "type": "color",
+        "label": "Wave color",
+        "info": "Match the section above.",
+        "default": "#3A758A"
       }
     ],
     "blocks": [
@@ -79,157 +142,246 @@
 {% stylesheet %}
   section.hp-faqs {
     position: relative;
-    padding: 85px 45px;
-    background-color: var(--color-tan);
+    padding: 35px 65px 85px;
+    background-color: white;
     overflow: hidden;
 
+    &.hp-faqs--wave {
+      padding-top: 135px;
+    }
+
+    .hp-faqs__wave {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      pointer-events: none;
+
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        fill: var(--faq-wave-color);
+      }
+    }
+
     .content-wrapper {
-      max-width: 1200px;
-      margin: 0 auto;
       position: relative;
       z-index: 1;
+      max-width: 1310px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 500fr) minmax(0, 669fr);
+      align-items: start;
+      gap: 45px;
+    }
+
+    .hp-faqs__heading {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
 
       h2 {
-        margin: 0 0 30px;
+        margin: 0;
+        text-transform: capitalize;
+      }
+    }
+
+    .hp-faqs__eyebrow {
+      margin: 0;
+      color: var(--color-red-2);
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hp-faqs__item {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 51, 73, 0.15);
+
+      &:first-child {
+        padding-top: 0;
       }
 
-      .faq-wrapper {
-        width: 80%;
-        .faq-single {
-          border-bottom: solid 2px white;
+      &:last-child,
+      &:has(+ .link-wrapper) {
+        border-bottom: 0;
+      }
+    }
 
-          &:last-of-type {
-            border-bottom: none;
-          }
+    .hp-faqs__question {
+      margin: 0;
+    }
 
-          .faq-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 0;
-            cursor: pointer;
-            gap: 20px;
+    .hp-faqs__toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: rgba(0, 51, 73, 0.81);
+      font: inherit;
+      font-size: 18px;
+      line-height: 22px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
 
-            h4 {
-              margin: 0;
-            }
+      &:focus-visible {
+        outline: 2px solid var(--color-darkblue);
+        outline-offset: 4px;
+      }
+    }
 
-            .toggle-icon {
-              width: 20px;
-              height: 20px;
-              border-radius: 50%;
-              background-color: var(--color-darkblue);
-              position: relative;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
-              transition: transform .25s ease;
-              
-              .bar {
-                position: absolute;
-                background-color: #ffffff;
-                border-radius: 2px;
-              }
+    /* Round +/− button: dark blue when closed, red when open */
+    .hp-faqs__icon {
+      position: relative;
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--color-darkblue);
+      transition: background-color 0.2s ease;
 
-              .bar:nth-child(1) {
-                width: 12px;
-                height: 2px;
-              }
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 2px;
+        margin: -1px 0 0 -8px;
+        border-radius: 2px;
+        background-color: white;
+        transition: transform 0.2s ease;
+      }
 
-              .bar:nth-child(2) {
-                width: 2px;
-                height: 12px;
-              }
-            }
-          }
+      &::after {
+        transform: rotate(90deg);
+      }
+    }
 
-          .toggle-content {
-            display: none;
-            padding: 0 0 20px;
-            color: var(--color-darkblue);
+    .hp-faqs__toggle[aria-expanded='true'] .hp-faqs__icon {
+      background-color: var(--color-red);
 
-            p {
-              margin: 0 0 10px;
-              last-child {
-                margin-bottom: 0;
-              }
-            }
-          }
+      &::after {
+        transform: rotate(0deg);
+      }
+    }
 
-          &.active {
-            .toggle-content {
-              display: block;
-            }
+    .hp-faqs__answer {
+      padding: 12px 45px 0 0;
+      color: var(--color-darkblue);
 
-            .toggle-icon {
-              transform: rotate(180deg);
-            }
+      p {
+        margin: 0 0 10px;
+        font-size: 16px;
+        line-height: 22px;
 
-            .toggle-icon .bar:nth-child(2) {
-              opacity: 0;
-            }
-          }
+        &:last-child {
+          margin-bottom: 0;
         }
       }
     }
 
     .link-wrapper {
-      margin-top: 45px;
+      margin-top: 25px;
     }
 
+    /* Figma: 842px wide, 243px past the left edge, 316px below the bottom (at 1440px).
+       Scales down with the viewport below that. */
     img.floating-image {
       position: absolute;
-      top: -85px;
-      right: -25px;
-      height: auto;
-      width: 450px;
-      pointer-events: none;
       z-index: 0;
-    }
-
-    @media (max-width: 1600px) {
-      .content-wrapper {
-        .faq-wrapper {
-          width: 65%;
-        }
-      }
+      left: max(-243px, -16.9vw);
+      bottom: max(-316px, -21.95vw);
+      width: min(842px, 58.5vw);
+      height: auto;
+      aspect-ratio: 842 / 876;
+      object-fit: cover;
+      object-position: center;
+      pointer-events: none;
     }
 
     @media (max-width: 1024px) {
-      padding: 65px 45px;
-      .content-wrapper {
-        .faq-wrapper {
-          width: 65%;
-        }
+      padding: 35px 30px 65px;
+
+      &.hp-faqs--wave {
+        padding-top: 110px;
       }
 
-      img.floating-image {
-        width: 350px;
-        top: 50%;
-        transform: translateY(-50%);
+      .content-wrapper {
+        gap: 30px;
+      }
+
+      .hp-faqs__eyebrow {
+        font-size: 20px;
+        line-height: 24px;
       }
     }
 
     @media (max-width: 768px) {
       padding: 45px 20px;
-      .content-wrapper {
-        h2 {
-          margin-bottom: 15px;
-        }
-        .faq-wrapper {
-          width: 100%;
 
-          .faq-single {
-            .faq-toggle {
-              padding: 15px 0;
-            }
-          }
+      &.hp-faqs--wave {
+        padding-top: 80px;
+      }
+
+      .hp-faqs__wave {
+        height: 36px;
+      }
+
+      .content-wrapper {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 15px;
+      }
+
+      .hp-faqs__eyebrow {
+        font-size: 18px;
+        line-height: 20px;
+      }
+
+      .hp-faqs__heading h2 {
+        font-size: 28px;
+        line-height: 30px;
+      }
+
+      .hp-faqs__item {
+        padding: 10px 0;
+
+        &:first-child {
+          padding-top: 10px;
         }
       }
 
+      .hp-faqs__toggle {
+        font-size: 16px;
+        line-height: 20px;
+        color: var(--color-darkblue);
+      }
+
+      .hp-faqs__icon {
+        width: 20px;
+        height: 20px;
+
+        &::before,
+        &::after {
+          width: 10px;
+          margin-left: -5px;
+        }
+      }
+
+      .hp-faqs__answer {
+        padding-right: 0;
+      }
+
       .link-wrapper {
-        margin-top: 25px;
         display: flex;
         justify-content: center;
       }
@@ -242,15 +394,13 @@
 {% endstylesheet %}
 
 {% javascript %}
-  document.addEventListener('DOMContentLoaded', function() {
-    const faqItems = document.querySelectorAll('.hp-faqs .faq-single');
-
-    faqItems.forEach(function(item) {
-      const toggle = item.querySelector('.faq-toggle');
-      if (!toggle) return;
-
-      toggle.addEventListener('click', function() {
-        item.classList.toggle('active');
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.hp-faqs [data-faq-toggle]').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        const answer = document.getElementById(toggle.getAttribute('aria-controls'));
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (answer) answer.hidden = !open;
       });
     });
   });
