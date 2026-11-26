@@ -1,17 +1,24 @@
-<section
-  class="ebd-video-collection-grid"
-  style="--bg-opacity: {{ section.settings.bg_opacity | divided_by: 100.0 }};"
->
-  {%- if section.settings.bg_image != blank -%}
-    <div class="bg-decoration" aria-hidden="true">
-      <img
-        src="{{ section.settings.bg_image | image_url: width: 1200 }}"
-        alt=""
-        loading="lazy"
-        width="{{ section.settings.bg_image.width }}"
-        height="{{ section.settings.bg_image.height }}"
-      >
-    </div>
+<section class="ebd-video-collection-grid">
+  {%- if section.settings.show_leaves -%}
+    {%- comment -%} Faint leaf decoration from Figma V1 (Frame 55); continues into the From the Waves section below {%- endcomment -%}
+    <img
+      class="bg-decoration bg-decoration--left"
+      src="{{ 'hp-lineup-leaves-left.svg' | asset_url }}"
+      alt=""
+      width="276"
+      height="565"
+      loading="lazy"
+      aria-hidden="true"
+    >
+    <img
+      class="bg-decoration bg-decoration--right"
+      src="{{ 'hp-lineup-leaves-right.svg' | asset_url }}"
+      alt=""
+      width="340"
+      height="212"
+      loading="lazy"
+      aria-hidden="true"
+    >
   {%- endif -%}
 
   <div class="content-wrapper">
@@ -62,20 +69,10 @@
         "content": "Background decoration"
       },
       {
-        "id": "bg_image",
-        "type": "image_picker",
-        "label": "Leaf image",
-        "info": "Decorative image on the left side, behind the content."
-      },
-      {
-        "id": "bg_opacity",
-        "type": "range",
-        "label": "Leaf image opacity",
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "unit": "%",
-        "default": 10
+        "id": "show_leaves",
+        "type": "checkbox",
+        "label": "Show leaf decoration",
+        "default": true
       }
     ],
     "blocks": [
@@ -122,19 +119,22 @@
     overflow: hidden;
     background-color: var(--color-mediumgray);
 
+    /* Leaves (Figma: 276px bottom-left, 340px bottom-right at 1440). Scales down below 1440. */
     .bg-decoration {
       position: absolute;
-      top: 26px;
-      left: -488px;
-      width: 764px;
+      bottom: 0;
+      height: auto;
       pointer-events: none;
-      opacity: var(--bg-opacity, 0.1);
+    }
 
-      img {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
+    .bg-decoration--left {
+      left: 0;
+      width: min(276px, 19.2vw);
+    }
+
+    .bg-decoration--right {
+      right: 0;
+      width: min(340px, 23.6vw);
     }
 
     .content-wrapper {
@@ -247,11 +247,13 @@
     @media (max-width: 768px) {
       padding: 48px 20px;
 
-      .bg-decoration {
-        top: auto;
-        bottom: -120px;
-        left: -260px;
-        width: 480px;
+      /* Same leaves at ~0.7 scale, like From the Waves on mobile */
+      .bg-decoration--left {
+        width: 198px;
+      }
+
+      .bg-decoration--right {
+        width: 237px;
       }
 
       .content-wrapper {
