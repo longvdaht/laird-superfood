@@ -1,14 +1,41 @@
 <section class="hp-instafeed-heading">
-  <div class="content-wrapper">
-    <h4 class="darkblue">{{ section.settings.subheading }}</h4>
-    <h2 class="darkblue">{{ section.settings.heading }}</h2>
-    <div class="socials-wrapper">
-      {% for block in section.blocks %}
-        <a href="{{ block.settings.social_url }}" title="{{ block.settings.title }}" target="_blank">
-          <img loading="lazy" src="{{ block.settings.social_icon | img_url: '150x' }}" alt="{{ block.settings.title }}" width="{{ block.settings.social_icon.width }}" height="{{ block.settings.social_icon.height }}">
-        </a>
-      {% endfor %}
-      <h5>{{ section.settings.handle }}</h5>
+  {%- comment -%}
+    Uses the theme's page-width grid so the heading lines up with the Instafeed grid below at every width.
+  {%- endcomment -%}
+  <div class="section section--page-width">
+    <div class="hp-instafeed-heading__inner">
+      {%- if section.settings.subheading != blank -%}
+        <p class="hp-instafeed-heading__eyebrow">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="darkblue">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 or section.settings.handle != blank -%}
+        <div class="socials-wrapper">
+          {%- for block in section.blocks -%}
+            <a
+              href="{{ block.settings.social_url }}"
+              class="social-link"
+              target="_blank"
+              rel="noopener"
+              aria-label="{{ block.settings.title | escape }}"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.social_icon != blank -%}
+                {{
+                  block.settings.social_icon
+                  | image_url: width: 60
+                  | image_tag: loading: 'lazy', width: 30, height: 30, alt: ''
+                }}
+              {%- endif -%}
+            </a>
+          {%- endfor -%}
+          {%- if section.settings.handle != blank -%}
+            <span class="handle">{{ section.settings.handle }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -20,7 +47,8 @@
       {
         "id": "subheading",
         "type": "text",
-        "label": "Subheading"
+        "label": "Subheading",
+        "info": "Optional small line above the heading. Leave blank to match the design."
       },
       {
         "id": "heading",
@@ -31,6 +59,10 @@
         "id": "handle",
         "type": "text",
         "label": "Handle"
+      },
+      {
+        "type": "paragraph",
+        "content": "The photo grid is the Instafeed app section below. Set its bottom padding to 75px in its section settings."
       }
     ],
     "blocks": [
@@ -67,43 +99,75 @@
 
 {% stylesheet %}
   section.hp-instafeed-heading {
-    padding: 65px 65px 25px;
+    padding: 75px 0 25px;
+    background-color: white;
 
-    .content-wrapper {
-      max-width: 1440px;
-      h4 {
-        margin-bottom: 0;
-      }
+    .hp-instafeed-heading__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
 
       h2 {
-        margin-bottom: 10px;
-      }
-
-      .socials-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-
-        a {
-          width: 30px;
-          height: 30px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        h5 {
-          margin: 0;
-        }
+        margin: 0;
       }
     }
 
-    @media (max-width: 1024px) {
-      padding: 65px 45px 25px;
+    .hp-instafeed-heading__eyebrow {
+      margin: 0 0 5px;
+      color: var(--color-darkblue);
+      font-size: 18px;
+      line-height: 22px;
+      font-weight: 700;
     }
 
-    @media (max-width: 1024px) {
-      padding: 65px 20px 20px;
+    .socials-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      padding-top: 10px;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-darkblue);
+        outline-offset: 2px;
+      }
+    }
+
+    .handle {
+      color: var(--color-darkblue);
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      padding: 50px 0 20px;
+
+      .hp-instafeed-heading__inner h2 {
+        font-size: 28px;
+        line-height: 30px;
+      }
+
+      .hp-instafeed-heading__eyebrow {
+        font-size: 16px;
+        line-height: 20px;
+      }
     }
   }
 {% endstylesheet %}
