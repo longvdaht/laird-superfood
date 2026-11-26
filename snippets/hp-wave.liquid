@@ -1,0 +1,49 @@
+{%- doc -%}
+  Wave edge used between homepage sections (Figma V1). Draws one of the two Figma wave curves and
+  paints the area above or below it with `currentColor`, so the caller sets the color with CSS `color`.
+  The SVG stretches to fill its parent (preserveAspectRatio none); size the parent in the section CSS.
+
+  @param {string} [shape] - 'a' (default): the main curve used under most sections. 'b': the curve used on top of HP Video Testimonials.
+  @param {string} [fill] - 'below' (default) paints under the curve, 'above' paints over it.
+  @param {number} [height] - viewBox height, default 100. Use 60 to keep a flatter wave when filling above with shape 'a'.
+  @param {string} [class] - Extra class names for the SVG element.
+
+  @example
+  {% render 'hp-wave', fill: 'above', class: 'hp-faqs__wave-svg' %}
+{%- enddoc -%}
+{%- liquid
+  assign wave_height = height | default: 100
+  if shape == 'b'
+    assign curve = 'M1440 26.67C1224 65 1008 76.67 792 41.67C612 12.5 432 4.17 240 33.33C132 50 60 70.83 0 58.33'
+    if fill == 'above'
+      assign close = 'V0H1440Z'
+    else
+      assign close = 'V' | append: wave_height | append: 'H1440Z'
+    endif
+  else
+    assign curve = 'M0 20.83C192 50 384 58.33 576 33.33C732 12.5 888 -4.17 1056 16.67C1176 33.33 1308 58.33 1440 45.83'
+    if fill == 'above'
+      assign close = 'V0H0Z'
+    else
+      assign close = 'V' | append: wave_height | append: 'H0Z'
+    endif
+  endif
+-%}
+<svg
+  class="hp-wave{% if class != blank %} {{ class }}{% endif %}"
+  viewBox="0 0 1440 {{ wave_height }}"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d="{{ curve }}{{ close }}"></path>
+</svg>
+
+{% stylesheet %}
+  .hp-wave {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+{% endstylesheet %}

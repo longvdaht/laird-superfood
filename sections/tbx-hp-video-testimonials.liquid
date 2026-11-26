@@ -4,9 +4,7 @@
 >
   {%- if section.settings.top_wave -%}
     <div class="hp-video-testimonials__wave hp-video-testimonials__wave--top" aria-hidden="true">
-      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false">
-        <path d="M1440 26.67C1224 65 1008 76.67 792 41.67C612 12.5 432 4.17 240 33.33C132 50 60 70.83 0 58.33V0H1440Z"></path>
-      </svg>
+      {%- render 'hp-wave', shape: 'b', fill: 'above' -%}
     </div>
   {%- endif -%}
 
@@ -81,9 +79,7 @@
 
   {%- if section.settings.bottom_wave -%}
     <div class="hp-video-testimonials__wave hp-video-testimonials__wave--bottom" aria-hidden="true">
-      <svg viewBox="0 0 1440 100" preserveAspectRatio="none" focusable="false">
-        <path d="M0 20.83C192 50 384 58.33 576 33.33C732 12.5 888 -4.17 1056 16.67C1176 33.33 1308 58.33 1440 45.83V100H0Z"></path>
-      </svg>
+      {%- render 'hp-wave', fill: 'below' -%}
     </div>
   {%- endif -%}
 </div>
@@ -203,22 +199,16 @@
       width: 100%;
       height: 100px;
       pointer-events: none;
-
-      svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
     }
 
     .hp-video-testimonials__wave--top {
       top: 0;
-      fill: var(--wave-top-color);
+      color: var(--wave-top-color);
     }
 
     .hp-video-testimonials__wave--bottom {
       bottom: 0;
-      fill: var(--wave-bottom-color);
+      color: var(--wave-bottom-color);
     }
 
     .content-wrapper {

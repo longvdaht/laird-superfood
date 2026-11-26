@@ -4,9 +4,7 @@
 >
   {%- if section.settings.show_wave -%}
     <div class="hp-faqs__wave" aria-hidden="true">
-      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" focusable="false">
-        <path d="M0 20.83C192 50 384 58.33 576 33.33C732 12.5 888 -4.17 1056 16.67C1176 33.33 1308 58.33 1440 45.83V0H0Z"></path>
-      </svg>
+      {%- render 'hp-wave', fill: 'above', height: 60 -%}
     </div>
   {%- endif -%}
 
@@ -158,13 +156,7 @@
       width: 100%;
       height: 60px;
       pointer-events: none;
-
-      svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-        fill: var(--faq-wave-color);
-      }
+      color: var(--faq-wave-color);
     }
 
     .content-wrapper {
