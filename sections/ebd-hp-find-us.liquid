@@ -1,12 +1,35 @@
-<section class="hp-find-us">
+{%- capture logos -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.logo != blank -%}
+      <li class="hp-find-us__logo" {{ block.shopify_attributes }}>
+        {{
+          block.settings.logo
+          | image_url: width: 400
+          | image_tag:
+            loading: 'lazy',
+            alt: block.settings.title,
+            widths: '200, 300, 400',
+            sizes: '135px'
+        }}
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<section class="hp-find-us" style="--find-us-speed: {{ section.settings.speed }}s;">
   <div class="content-wrapper">
-    <h2 class="darkblue">{{ section.settings.heading }}</h2>
-    <div class="logo-grid">
-      {% for block in section.blocks %}
-        <div class="grid-item">
-          <img loading="lazy" src="{{ block.settings.logo | img_url: '500x' }}" alt="{{ block.settings.title }}" class="logo" width="{{ block.settings.logo.width }}" height="{{ block.settings.logo.height }}">
-        </div>
-      {% endfor %}
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hp-find-us__label">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="hp-find-us__strip">
+      <ul class="hp-find-us__track" role="list">
+        {{ logos }}
+      </ul>
+      {%- comment -%} Copy for the seamless scrolling loop on mobile/tablet {%- endcomment -%}
+      <ul class="hp-find-us__track hp-find-us__track--clone" role="list" aria-hidden="true">
+        {{ logos | replace: ' alt="', ' data-alt="' | replace: '<img ', '<img alt="" ' }}
+      </ul>
     </div>
   </div>
 </section>
@@ -18,7 +41,19 @@
       {
         "id": "heading",
         "type": "text",
-        "label": "Heading"
+        "label": "Label",
+        "info": "Shown in red capitals next to the logos, e.g. Available At."
+      },
+      {
+        "id": "speed",
+        "type": "range",
+        "label": "Logo scroll speed (mobile/tablet)",
+        "min": 10,
+        "max": 60,
+        "step": 5,
+        "unit": "s",
+        "default": 30,
+        "info": "Seconds for one full loop. On desktop the logos sit in one row."
       }
     ],
     "blocks": [
@@ -34,7 +69,8 @@
           {
             "id": "title",
             "type": "text",
-            "label": "Title"
+            "label": "Title",
+            "info": "Used as the logo's alt text."
           }
         ]
       }
@@ -50,63 +86,137 @@
 
 {% stylesheet %}
   section.hp-find-us {
-    padding: 65px 45px;
+    padding: 20px 40px;
+    overflow: hidden;
+    background-color: var(--color-mediumgray);
+    border-top: 1px solid var(--color-darkblue);
+    border-bottom: 1px solid var(--color-darkblue);
 
     .content-wrapper {
-      h2 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    .hp-find-us__label {
+      flex: 0 0 auto;
+      min-width: min(284px, 20vw);
+      margin: 0;
+      color: var(--color-red-2);
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hp-find-us__strip {
+      display: flex;
+      min-width: 0;
+    }
+
+    .hp-find-us__track {
+      display: flex;
+      align-items: center;
+      gap: clamp(24px, 3.5vw, 50px);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hp-find-us__track--clone {
+      display: none;
+    }
+
+    .hp-find-us__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 1 135px;
+      min-width: 0;
+      height: 94px;
+
+      img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    /* Mobile/tablet: label on top, logos scroll sideways in a loop */
+    @media (max-width: 1024px) {
+      padding: 35px 0 20px;
+
+      .content-wrapper {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .hp-find-us__label {
+        min-width: 0;
+        padding: 0 20px;
+        font-size: 18px;
+        line-height: 20px;
         text-align: center;
       }
 
-      .logo-grid {
-        display: grid;
-        grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
-        gap: 35px;
+      .hp-find-us__strip {
+        align-self: stretch;
+        overflow: hidden;
+      }
 
-        .grid-item {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          img.logo {
-            height: 100%;
-            width: 100%;
-            max-width: 200px;
-          }
-        }
+      .hp-find-us__track,
+      .hp-find-us__track--clone {
+        display: flex;
+        flex: none;
+        gap: 32px;
+        padding-right: 32px;
+        animation: hp-find-us-scroll var(--find-us-speed, 30s) linear infinite;
+      }
 
+      .hp-find-us__strip:hover .hp-find-us__track {
+        animation-play-state: paused;
+      }
 
+      .hp-find-us__logo {
+        flex: 0 0 135px;
       }
     }
 
-    @media (max-width: 1024px) {
-      padding: 45px;
-      .content-wrapper {
-        .logo-grid {
-          grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
-          gap: 25px 35px;
-
-          img.logo {
-            max-width: 155px;
-          }
-        }
+    /* Tablet: a bit more space so one set of logos is wider than the screen (seamless loop) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .hp-find-us__track,
+      .hp-find-us__track--clone {
+        gap: 40px;
+        padding-right: 40px;
       }
     }
 
-    @media (max-width: 768px) {
-      padding: 45px 20px;
+    @media (max-width: 1024px) and (prefers-reduced-motion: reduce) {
+      .hp-find-us__strip {
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
 
-      .content-wrapper {
-        .logo-grid {
-          grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      .hp-find-us__track {
+        animation: none;
+        padding-left: 20px;
+      }
 
-          img.logo {
-            max-width: 115px;
-          }
-          
-        }
+      .hp-find-us__track--clone {
+        display: none;
       }
     }
-
   }
 
-
+  @keyframes hp-find-us-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
 {% endstylesheet %}
